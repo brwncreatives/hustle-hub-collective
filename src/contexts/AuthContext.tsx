@@ -2,9 +2,10 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User, createClient } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
 
+// Initialize Supabase client
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
+  'https://YOUR_PROJECT_URL.supabase.co',  // Replace with your Supabase project URL
+  'YOUR_ANON_KEY'  // Replace with your Supabase anon key
 );
 
 type AuthContextType = {
