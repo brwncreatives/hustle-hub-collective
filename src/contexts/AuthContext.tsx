@@ -4,8 +4,8 @@ import { useToast } from '@/hooks/use-toast';
 
 // Initialize Supabase client
 const supabase = createClient(
-  'https://YOUR_PROJECT_URL.supabase.co',  // Replace with your Supabase project URL
-  'YOUR_ANON_KEY'  // Replace with your Supabase anon key
+  'https://zpbqzuazbmgyifhwphga.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwYnF6dWF6Ym1neWlmaHdwaGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMjI0MTgsImV4cCI6MjA0OTY5ODQxOH0.HVvzkkFpq4m_AecBfYHyyVYHoZgJRIi8uxMxvBOBLmA'
 );
 
 type AuthContextType = {
