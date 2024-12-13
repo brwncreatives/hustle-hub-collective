@@ -41,21 +41,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      if (error) {
+        if (error.message === 'Invalid login credentials') {
+          toast({ 
+            description: "Invalid email or password. Please check your credentials or sign up if you don't have an account.", 
+            variant: "destructive" 
+          });
+        } else {
+          toast({ description: error.message, variant: "destructive" });
+        }
+        throw error;
+      }
       toast({ description: "Successfully signed in!" });
     } catch (error: any) {
-      toast({ description: error.message, variant: "destructive" });
       throw error;
     }
   };
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) throw error;
-      toast({ description: "Check your email for the confirmation link!" });
+      const { error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: {
+          emailRedirectTo: window.location.origin
+        }
+      });
+      if (error) {
+        toast({ description: error.message, variant: "destructive" });
+        throw error;
+      }
+      toast({ 
+        description: "Please check your email for the confirmation link to complete your registration!", 
+        duration: 6000
+      });
     } catch (error: any) {
-      toast({ description: error.message, variant: "destructive" });
       throw error;
     }
   };
@@ -63,10 +83,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        toast({ description: error.message, variant: "destructive" });
+        throw error;
+      }
       toast({ description: "Successfully signed out!" });
     } catch (error: any) {
-      toast({ description: error.message, variant: "destructive" });
       throw error;
     }
   };
