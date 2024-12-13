@@ -60,11 +60,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
+      // Get the current URL, removing any path or query parameters
+      const baseUrl = window.location.origin;
+      
       const { error } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
-          emailRedirectTo: window.location.origin
+          emailRedirectTo: baseUrl
         }
       });
       if (error) {
