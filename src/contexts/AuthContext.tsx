@@ -54,31 +54,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       toast({ description: "Successfully signed in!" });
     } catch (error: any) {
+      console.error('Sign in error:', error);
       throw error;
     }
   };
 
   const signUp = async (email: string, password: string) => {
     try {
-      // Get the current URL, removing any path or query parameters
-      const baseUrl = window.location.origin;
-      
-      const { error } = await supabase.auth.signUp({ 
+      console.log('Starting signup process for:', email);
+      const { data, error } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
-          emailRedirectTo: baseUrl
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            email_confirm_sent: true,
+          }
         }
       });
+      
+      console.log('Signup response:', { data, error });
+
       if (error) {
+        console.error('Signup error:', error);
         toast({ description: error.message, variant: "destructive" });
         throw error;
       }
+
+      if (data?.user?.identities?.length === 0) {
+        toast({ 
+          description: "An account with this email already exists. Please try signing in instead.", 
+          variant: "destructive" 
+        });
+        return;
+      }
+
       toast({ 
-        description: "Please check your email for the confirmation link to complete your registration!", 
+        description: "Please check your email (including spam folder) for the confirmation link to complete your registration!", 
         duration: 6000
       });
     } catch (error: any) {
+      console.error('Detailed signup error:', error);
       throw error;
     }
   };
@@ -92,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       toast({ description: "Successfully signed out!" });
     } catch (error: any) {
+      console.error('Sign out error:', error);
       throw error;
     }
   };
