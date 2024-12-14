@@ -22,13 +22,6 @@ const Index = () => {
 
   const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
 
-  const handleCreateGroup = () => {
-    toast({
-      title: "Coming Soon!",
-      description: "Group creation will be available in the next update.",
-    });
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -108,7 +101,11 @@ const Index = () => {
           <p className="text-center text-muted-foreground">
             Create an accountability group to stay motivated!
           </p>
-          <Button className="w-full" variant="outline" onClick={handleCreateGroup}>
+          <Button 
+            className="w-full" 
+            variant="outline" 
+            onClick={() => navigate("/create-group")}
+          >
             Create a Group
           </Button>
         </CardContent>

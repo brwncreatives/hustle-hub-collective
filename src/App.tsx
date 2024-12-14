@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import GoalCreation from "./pages/GoalCreation";
+import GroupCreation from "./pages/GroupCreation";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/create-goal" element={<GoalCreation />} />
+            <Route path="/create-group" element={<GroupCreation />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
