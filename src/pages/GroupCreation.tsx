@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Target } from "lucide-react";
+import { Users, Target, Mail } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GroupInvite from "@/components/GroupInvite";
 import { useState } from "react";
@@ -24,6 +24,7 @@ const groupFormSchema = z.object({
   name: z.string().min(1, "Group name is required").max(100),
   description: z.string().max(500, "Description must be less than 500 characters"),
   maxMembers: z.number().min(2, "Group must allow at least 2 members").max(50, "Group cannot have more than 50 members"),
+  inviteEmails: z.string().optional(),
 });
 
 type GroupFormValues = z.infer<typeof groupFormSchema>;
@@ -39,6 +40,7 @@ const GroupCreation = () => {
       name: "",
       description: "",
       maxMembers: 10,
+      inviteEmails: "",
     },
   });
 
@@ -146,6 +148,29 @@ const GroupCreation = () => {
                     </FormControl>
                     <FormDescription>
                       Set a limit for the number of members (2-50)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="inviteEmails"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Invite Members (Optional)</FormLabel>
+                    <FormControl>
+                      <div className="flex items-center space-x-2">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <Input 
+                          placeholder="Enter email addresses separated by commas..."
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      Add email addresses of people you'd like to invite
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
