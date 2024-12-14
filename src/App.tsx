@@ -7,6 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import GoalCreation from "./pages/GoalCreation";
 import GroupCreation from "./pages/GroupCreation";
+import GroupLanding from "./pages/GroupLanding";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/create-goal" element={<GoalCreation />} />
             <Route path="/create-group" element={<GroupCreation />} />
+            <Route path="/join-group" element={<GroupLanding />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
