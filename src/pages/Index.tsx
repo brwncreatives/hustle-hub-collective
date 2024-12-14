@@ -7,10 +7,12 @@ import { Target, Users, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthForms } from "@/components/AuthForms";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const { toast } = useToast();
   const { user, signOut, loading } = useAuth();
+  const navigate = useNavigate();
 
   const motivationalQuotes = [
     "Every Saturday is a fresh start to achieve your goals!",
@@ -71,11 +73,14 @@ const Index = () => {
 
       {/* Active Goals */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <Target className="h-5 w-5" />
             Active Goals
           </CardTitle>
+          <Button onClick={() => navigate("/create-goal")} size="sm">
+            Add Goal
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -88,9 +93,6 @@ const Index = () => {
             </div>
             <Progress value={33} className="h-2" />
           </div>
-          <Button className="w-full" onClick={() => toast({ description: "Add goal feature coming soon!" })}>
-            Add New Goal
-          </Button>
         </CardContent>
       </Card>
 
