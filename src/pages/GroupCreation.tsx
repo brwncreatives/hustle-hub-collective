@@ -17,6 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Users, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import GroupInvite from "@/components/GroupInvite";
+import { useState } from "react";
 
 const groupFormSchema = z.object({
   name: z.string().min(1, "Group name is required").max(100),
@@ -29,24 +31,48 @@ type GroupFormValues = z.infer<typeof groupFormSchema>;
 const GroupCreation = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
 
   const form = useForm<GroupFormValues>({
     resolver: zodResolver(groupFormSchema),
     defaultValues: {
       name: "",
       description: "",
-      maxMembers: 10,  // Changed from "10" to 10
+      maxMembers: 10,
     },
   });
 
-  const onSubmit = (data: GroupFormValues) => {
-    console.log("Group created:", data);
-    toast({
-      title: "Group Created",
-      description: "Your accountability group has been successfully created!",
-    });
-    navigate("/");
+  const onSubmit = async (data: GroupFormValues) => {
+    try {
+      // Here we would normally save the group to the database
+      // For now, we'll simulate it with a timeout
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setCreatedGroupId("sample-group-id"); // Replace with actual group ID from database
+      
+      toast({
+        title: "Success",
+        description: "Your accountability group has been created!",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create group. Please try again.",
+      });
+    }
   };
+
+  if (createdGroupId) {
+    return (
+      <div className="container mx-auto px-4 py-6 max-w-2xl">
+        <GroupInvite groupId={createdGroupId} groupName={form.getValues("name")} />
+        <div className="mt-4 flex justify-end">
+          <Button onClick={() => navigate("/")}>Go to Dashboard</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-2xl">
@@ -114,7 +140,7 @@ const GroupCreation = () => {
                           min="2" 
                           max="50" 
                           {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}  // Convert string to number
+                          onChange={(e) => field.onChange(Number(e.target.value))}
                         />
                       </div>
                     </FormControl>
