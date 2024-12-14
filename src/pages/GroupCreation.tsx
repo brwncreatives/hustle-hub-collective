@@ -21,9 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const groupFormSchema = z.object({
   name: z.string().min(1, "Group name is required").max(100),
   description: z.string().max(500, "Description must be less than 500 characters"),
-  maxMembers: z.string().transform((val) => parseInt(val, 10)).pipe(
-    z.number().min(2, "Group must allow at least 2 members").max(50, "Group cannot have more than 50 members")
-  ),
+  maxMembers: z.number().min(2, "Group must allow at least 2 members").max(50, "Group cannot have more than 50 members"),
 });
 
 type GroupFormValues = z.infer<typeof groupFormSchema>;
@@ -37,7 +35,7 @@ const GroupCreation = () => {
     defaultValues: {
       name: "",
       description: "",
-      maxMembers: "10",
+      maxMembers: 10,  // Changed from "10" to 10
     },
   });
 
@@ -111,7 +109,13 @@ const GroupCreation = () => {
                     <FormControl>
                       <div className="flex items-center space-x-2">
                         <Users className="h-4 w-4 text-muted-foreground" />
-                        <Input type="number" min="2" max="50" {...field} />
+                        <Input 
+                          type="number" 
+                          min="2" 
+                          max="50" 
+                          {...field}
+                          onChange={(e) => field.onChange(Number(e.target.value))}  // Convert string to number
+                        />
                       </div>
                     </FormControl>
                     <FormDescription>
