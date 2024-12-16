@@ -17,9 +17,15 @@ const supabase = createClient(
 
 const GroupLanding = () => {
   const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // TODO: Replace with actual group title from your data
+  const groupTitle = "Study Group"; // This should be fetched from your database
 
   const handleJoinRequest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +39,15 @@ const GroupLanding = () => {
       return;
     }
 
+    if (!email || !firstName || !lastName) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('group_join_requests')
@@ -40,7 +55,10 @@ const GroupLanding = () => {
           {
             user_id: user.id,
             group_id: '1', // This should be dynamic based on the actual group
-            message: message,
+            message,
+            email,
+            first_name: firstName,
+            last_name: lastName,
             status: 'pending'
           }
         ]);
@@ -60,6 +78,9 @@ const GroupLanding = () => {
         description: "Your request to join has been submitted. The group admin will review it shortly.",
       });
       setMessage("");
+      setEmail("");
+      setFirstName("");
+      setLastName("");
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -76,7 +97,7 @@ const GroupLanding = () => {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Users className="h-6 w-6" />
-            <CardTitle>Request to Join Group</CardTitle>
+            <CardTitle>Join {groupTitle}</CardTitle>
           </div>
           <CardDescription>
             Submit a request to join this group. The group admin will review your request.
@@ -93,6 +114,47 @@ const GroupLanding = () => {
             </div>
           ) : (
             <form onSubmit={handleJoinRequest} className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">
+                  Email Address
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label htmlFor="firstName" className="text-sm font-medium">
+                    First Name
+                  </label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    placeholder="Enter your first name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="lastName" className="text-sm font-medium">
+                    Last Name
+                  </label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="Enter your last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
               <div className="space-y-2">
                 <label htmlFor="message" className="text-sm font-medium">
                   Message to Group Admin
