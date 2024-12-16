@@ -37,30 +37,40 @@ const GroupInvite = ({ groupId, groupName }: GroupInviteProps) => {
       return;
     }
 
-    const { error } = await supabase
-      .from('group_invites')
-      .insert([
-        { 
-          group_id: groupId,
-          email: email,
-          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
-        }
-      ]);
+    try {
+      const { error } = await supabase
+        .from('group_invites')
+        .insert([
+          { 
+            group_id: groupId,
+            email: email,
+            expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
+          }
+        ]);
 
-    if (error) {
+      if (error) {
+        console.error('Supabase error:', error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to send invite",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Invitation sent successfully",
+      });
+      setEmail("");
+    } catch (error) {
+      console.error('Error sending invite:', error);
       toast({
         variant: "destructive",
         title: "Error",
         description: "Failed to send invite",
       });
-      return;
     }
-
-    toast({
-      title: "Success",
-      description: "Invitation sent successfully",
-    });
-    setEmail("");
   };
 
   return (
