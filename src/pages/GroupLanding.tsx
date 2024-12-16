@@ -4,47 +4,67 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForms } from "@/components/AuthForms";
 import { Shield, Users } from "lucide-react";
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  'https://zpbqzuazbmgyifhwphga.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwYnF6dWF6Ym1neWlmaHdwaGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMjI0MTgsImV4cCI6MjA0OTY5ODQxOH0.HVvzkkFpq4m_AecBfYHyyVYHoZgJRIi8uxMxvBOBLmA'
+);
 
 const GroupLanding = () => {
-  const [accessCode, setAccessCode] = useState("");
+  const [message, setMessage] = useState("");
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmitCode = async (e: React.FormEvent) => {
+  const handleJoinRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!user) {
       toast({
         title: "Authentication Required",
-        description: "Please log in to join this group",
+        description: "Please log in to request joining this group",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      // TODO: Implement actual code verification logic with Supabase
-      // For now, we'll simulate a check
-      if (accessCode.length < 6) {
+      const { error } = await supabase
+        .from('group_join_requests')
+        .insert([
+          {
+            user_id: user.id,
+            group_id: '1', // This should be dynamic based on the actual group
+            message: message,
+            status: 'pending'
+          }
+        ]);
+
+      if (error) {
+        console.error('Error submitting join request:', error);
         toast({
-          title: "Invalid Code",
-          description: "Please check your access code and try again",
+          title: "Error",
+          description: "Unable to submit join request. Please try again later.",
           variant: "destructive",
         });
         return;
       }
 
-      // If verification is successful, navigate to the full group page
-      // TODO: Replace with actual group ID from verification
-      navigate(`/groups/${accessCode}`);
+      toast({
+        title: "Success",
+        description: "Your request to join has been submitted. The group admin will review it shortly.",
+      });
+      setMessage("");
     } catch (error) {
+      console.error('Error:', error);
       toast({
         title: "Error",
-        description: "Unable to verify access code. Please try again later.",
+        description: "An unexpected error occurred. Please try again later.",
         variant: "destructive",
       });
     }
@@ -56,10 +76,10 @@ const GroupLanding = () => {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Users className="h-6 w-6" />
-            <CardTitle>Join Private Group</CardTitle>
+            <CardTitle>Request to Join Group</CardTitle>
           </div>
           <CardDescription>
-            Enter your access code to join this group
+            Submit a request to join this group. The group admin will review your request.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -67,23 +87,26 @@ const GroupLanding = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Shield className="h-5 w-5" />
-                <p>Please sign in to access this group</p>
+                <p>Please sign in to request joining this group</p>
               </div>
               <AuthForms />
             </div>
           ) : (
-            <form onSubmit={handleSubmitCode} className="space-y-4">
+            <form onSubmit={handleJoinRequest} className="space-y-4">
               <div className="space-y-2">
-                <Input
-                  type="text"
-                  placeholder="Enter access code"
-                  value={accessCode}
-                  onChange={(e) => setAccessCode(e.target.value)}
-                  className="w-full"
+                <label htmlFor="message" className="text-sm font-medium">
+                  Message to Group Admin
+                </label>
+                <Textarea
+                  id="message"
+                  placeholder="Briefly explain why you'd like to join this group..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="min-h-[100px]"
                 />
               </div>
               <Button type="submit" className="w-full">
-                Join Group
+                Submit Join Request
               </Button>
             </form>
           )}
