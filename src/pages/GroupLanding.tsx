@@ -49,6 +49,14 @@ const GroupLanding = () => {
     }
 
     try {
+      console.log('Submitting join request:', {
+        user_id: user.id,
+        email,
+        firstName,
+        lastName,
+        message
+      });
+
       const { error } = await supabase
         .from('group_join_requests')
         .insert([
