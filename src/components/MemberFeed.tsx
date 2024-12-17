@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, User, TrendingUp, Users } from "lucide-react";
+import { Bell, User, TrendingUp, Users, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 type Member = {
   id: string;
@@ -54,21 +55,45 @@ const mockMembers: Member[] = [
 export function MemberFeed() {
   const { toast } = useToast();
   const [nudgedMembers, setNudgedMembers] = useState<Set<string>>(new Set());
+  const [comments, setComments] = useState<{ [key: string]: string }>({});
+  const [showCommentField, setShowCommentField] = useState<{ [key: string]: boolean }>({});
 
-  const handleNudge = (memberId: string, memberName: string) => {
+  const handleTapIn = (memberId: string, memberName: string) => {
     if (nudgedMembers.has(memberId)) {
       toast({
-        description: `You've already encouraged ${memberName} recently!`,
+        description: `You've already tapped in for ${memberName}'s goal today!`,
         variant: "destructive",
       });
       return;
     }
 
-    setNudgedMembers(new Set([...nudgedMembers, memberId]));
-    toast({
-      title: "Encouragement sent! 🎉",
-      description: `You've sent encouragement to ${memberName}!`,
+    const comment = comments[memberId]?.trim() || "";
+    
+    // Here you would typically send this to your backend
+    console.log("Tap in recorded:", {
+      memberId,
+      memberName,
+      comment,
+      timestamp: new Date().toISOString(),
     });
+
+    setNudgedMembers(new Set([...nudgedMembers, memberId]));
+    setComments({ ...comments, [memberId]: "" });
+    setShowCommentField({ ...showCommentField, [memberId]: false });
+
+    toast({
+      title: "Tapped in! 🎯",
+      description: comment 
+        ? `You've tapped in to ${memberName}'s goal with a comment!`
+        : `You've tapped in to ${memberName}'s goal!`,
+    });
+  };
+
+  const toggleCommentField = (memberId: string) => {
+    setShowCommentField(prev => ({
+      ...prev,
+      [memberId]: !prev[memberId]
+    }));
   };
 
   return (
@@ -100,15 +125,40 @@ export function MemberFeed() {
                       </p>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={nudgedMembers.has(member.id) ? "text-primary" : ""}
-                    onClick={() => handleNudge(member.id, member.name)}
-                  >
-                    <Bell className="h-4 w-4" />
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      variant={nudgedMembers.has(member.id) ? "secondary" : "default"}
+                      size="sm"
+                      onClick={() => toggleCommentField(member.id)}
+                      className="flex items-center gap-2"
+                    >
+                      <Bell className="h-4 w-4" />
+                      Tap In
+                    </Button>
+                  </div>
                 </div>
+                
+                {showCommentField[member.id] && (
+                  <div className="mt-4 space-y-2">
+                    <Textarea
+                      placeholder="Add a quick update (optional)..."
+                      value={comments[member.id] || ""}
+                      onChange={(e) => setComments(prev => ({
+                        ...prev,
+                        [member.id]: e.target.value
+                      }))}
+                      className="min-h-[80px]"
+                    />
+                    <Button 
+                      onClick={() => handleTapIn(member.id, member.name)}
+                      className="w-full"
+                    >
+                      <Send className="h-4 w-4 mr-2" />
+                      Submit Update
+                    </Button>
+                  </div>
+                )}
+
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>{member.goal.progress}% Complete</span>
