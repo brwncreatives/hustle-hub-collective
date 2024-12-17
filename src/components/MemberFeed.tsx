@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, User, TrendingUp, Users, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/contexts/AuthContext";
 
 type Member = {
   id: string;
@@ -54,6 +55,7 @@ const mockMembers: Member[] = [
 
 export function MemberFeed() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [nudgedMembers, setNudgedMembers] = useState<Set<string>>(new Set());
   const [comments, setComments] = useState<{ [key: string]: string }>({});
   const [showCommentField, setShowCommentField] = useState<{ [key: string]: boolean }>({});
@@ -61,7 +63,7 @@ export function MemberFeed() {
   const handleTapIn = (memberId: string, memberName: string) => {
     if (nudgedMembers.has(memberId)) {
       toast({
-        description: `You've already tapped in for ${memberName}'s goal today!`,
+        description: `You've already tapped in for your goal today!`,
         variant: "destructive",
       });
       return;
@@ -82,10 +84,26 @@ export function MemberFeed() {
     setShowCommentField({ ...showCommentField, [memberId]: false });
 
     toast({
-      title: "Tapped in! 🎯",
+      title: "Progress Updated! 🎯",
       description: comment 
-        ? `You've tapped in to ${memberName}'s goal with a comment!`
-        : `You've tapped in to ${memberName}'s goal!`,
+        ? `You've logged your progress with a comment!`
+        : `You've logged your progress!`,
+    });
+  };
+
+  const handleNudge = (memberId: string, memberName: string) => {
+    if (nudgedMembers.has(memberId)) {
+      toast({
+        description: `You've already encouraged ${memberName} today!`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setNudgedMembers(new Set([...nudgedMembers, memberId]));
+    toast({
+      title: "Encouragement sent! 🎉",
+      description: `You've sent encouragement to ${memberName}!`,
     });
   };
 
@@ -107,66 +125,82 @@ export function MemberFeed() {
       <CardContent>
         <ScrollArea className="h-[400px] pr-4">
           <div className="space-y-4">
-            {mockMembers.map((member) => (
-              <Card key={member.id} className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={member.avatar} />
-                      <AvatarFallback>
-                        <User className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1">
-                      <h4 className="font-medium">{member.name}</h4>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <TrendingUp className="h-4 w-4" />
-                        {member.goal.title}
-                      </p>
+            {mockMembers.map((member) => {
+              const isOwnGoal = member.id === user?.id;
+              
+              return (
+                <Card key={member.id} className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AvatarImage src={member.avatar} />
+                        <AvatarFallback>
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="space-y-1">
+                        <h4 className="font-medium">{member.name}</h4>
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <TrendingUp className="h-4 w-4" />
+                          {member.goal.title}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      {isOwnGoal ? (
+                        <Button
+                          variant={nudgedMembers.has(member.id) ? "secondary" : "default"}
+                          size="sm"
+                          onClick={() => toggleCommentField(member.id)}
+                          className="flex items-center gap-2"
+                        >
+                          <Send className="h-4 w-4" />
+                          Tap In
+                        </Button>
+                      ) : (
+                        <Button
+                          variant={nudgedMembers.has(member.id) ? "secondary" : "default"}
+                          size="sm"
+                          onClick={() => handleNudge(member.id, member.name)}
+                          className="flex items-center gap-2"
+                        >
+                          <Bell className="h-4 w-4" />
+                          Nudge
+                        </Button>
+                      )}
                     </div>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <Button
-                      variant={nudgedMembers.has(member.id) ? "secondary" : "default"}
-                      size="sm"
-                      onClick={() => toggleCommentField(member.id)}
-                      className="flex items-center gap-2"
-                    >
-                      <Bell className="h-4 w-4" />
-                      Tap In
-                    </Button>
-                  </div>
-                </div>
-                
-                {showCommentField[member.id] && (
-                  <div className="mt-4 space-y-2">
-                    <Textarea
-                      placeholder="Add a quick update (optional)..."
-                      value={comments[member.id] || ""}
-                      onChange={(e) => setComments(prev => ({
-                        ...prev,
-                        [member.id]: e.target.value
-                      }))}
-                      className="min-h-[80px]"
-                    />
-                    <Button 
-                      onClick={() => handleTapIn(member.id, member.name)}
-                      className="w-full"
-                    >
-                      <Send className="h-4 w-4 mr-2" />
-                      Submit Update
-                    </Button>
-                  </div>
-                )}
+                  
+                  {isOwnGoal && showCommentField[member.id] && (
+                    <div className="mt-4 space-y-2">
+                      <Textarea
+                        placeholder="Add a quick update about your progress..."
+                        value={comments[member.id] || ""}
+                        onChange={(e) => setComments(prev => ({
+                          ...prev,
+                          [member.id]: e.target.value
+                        }))}
+                        className="min-h-[80px]"
+                      />
+                      <Button 
+                        onClick={() => handleTapIn(member.id, member.name)}
+                        className="w-full"
+                      >
+                        <Send className="h-4 w-4 mr-2" />
+                        Submit Update
+                      </Button>
+                    </div>
+                  )}
 
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>{member.goal.progress}% Complete</span>
+                  <div className="mt-4 space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>{member.goal.progress}% Complete</span>
+                    </div>
+                    <Progress value={member.goal.progress} className="h-2" />
                   </div>
-                  <Progress value={member.goal.progress} className="h-2" />
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </ScrollArea>
       </CardContent>
