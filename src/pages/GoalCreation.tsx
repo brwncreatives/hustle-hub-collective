@@ -17,25 +17,57 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, Goal, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const goalFormSchema = z.object({
   title: z.string().min(1, "Title is required").max(100),
   description: z.string().max(500, "Description must be less than 500 characters"),
-  targetDate: z.string().min(1, "Target date is required"),
+  quarter: z.string().min(1, "Quarter is required"),
 });
 
 type GoalFormValues = z.infer<typeof goalFormSchema>;
 
+const getCurrentQuarter = () => {
+  const currentMonth = new Date().getMonth();
+  return `Q${Math.floor(currentMonth / 3) + 1}-${new Date().getFullYear()}`;
+};
+
+const getQuarterDateRange = (quarter: string) => {
+  const [q, year] = quarter.split("-");
+  const quarterNum = parseInt(q.slice(1)) - 1;
+  const startMonth = quarterNum * 3;
+  const endMonth = startMonth + 2;
+  
+  const startDate = new Date(parseInt(year), startMonth, 1);
+  const endDate = new Date(parseInt(year), endMonth + 1, 0);
+  
+  return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+};
+
 const GoalCreation = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const currentYear = new Date().getFullYear();
+  const quarters = [
+    `Q1-${currentYear}`,
+    `Q2-${currentYear}`,
+    `Q3-${currentYear}`,
+    `Q4-${currentYear}`,
+  ];
 
   const form = useForm<GoalFormValues>({
     resolver: zodResolver(goalFormSchema),
     defaultValues: {
       title: "",
       description: "",
-      targetDate: new Date().toISOString().split("T")[0],
+      quarter: getCurrentQuarter(),
     },
   });
 
@@ -102,18 +134,32 @@ const GoalCreation = () => {
 
               <FormField
                 control={form.control}
-                name="targetDate"
+                name="quarter"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Target Date</FormLabel>
+                    <FormLabel>Quarter</FormLabel>
                     <FormControl>
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <Input type="date" {...field} />
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a quarter" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {quarters.map((q) => (
+                              <SelectItem key={q} value={q}>
+                                {q} ({getQuarterDateRange(q)})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </FormControl>
                     <FormDescription>
-                      When do you want to achieve this goal?
+                      Select which quarter this goal is for. It's recommended to have no more than 2-3 goals per quarter for better focus and achievement.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
