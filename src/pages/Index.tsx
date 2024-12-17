@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthForms } from "@/components/AuthForms";
 import { useNavigate } from "react-router-dom";
+import { MemberFeed } from "@/components/MemberFeed";
 
 const Index = () => {
   const { toast } = useToast();
@@ -88,6 +89,9 @@ const Index = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Member Feed */}
+      <MemberFeed />
 
       {/* Accountability Groups */}
       <Card>
