@@ -21,9 +21,9 @@ const Index = () => {
   const [hasTappedIn, setHasTappedIn] = useState(false);
 
   const motivationalQuotes = [
-    "Every Saturday is a fresh start to achieve your goals!",
-    "Small progress is still progress.",
-    "Your future self will thank you for starting today.",
+    "Hustle hard, dream bigger! 🗽",
+    "Every Saturday is your chance to level up! 💪",
+    "Make your mark on these streets! 🌟",
   ];
 
   const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
@@ -58,123 +58,144 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+      <div className="flex items-center justify-center min-h-screen bg-[#221F26]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F97316]" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-6 min-h-screen flex items-center justify-center">
+      <div className="container mx-auto px-4 py-6 min-h-screen flex items-center justify-center bg-gradient-to-br from-[#221F26] to-[#403E43]">
         <AuthForms />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6 max-w-md md:max-w-2xl">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Avatar>
-            <AvatarImage src={user.user_metadata.avatar_url || "https://github.com/shadcn.png"} />
-            <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-          <div>
-            <h2 className="font-semibold">Welcome back!</h2>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
-          </div>
-        </div>
-        <Button variant="outline" size="icon" onClick={() => signOut()}>
-          <Trophy className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Motivational Quote */}
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground italic">{randomQuote}</p>
-        </CardContent>
-      </Card>
-
-      {/* Active Goals */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Target className="h-5 w-5" />
-            Active Goals
-          </CardTitle>
-          <Button onClick={() => navigate("/create-goal")} size="sm">
-            Add Goal
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-medium">Learn React Native</p>
-                <p className="text-sm text-muted-foreground">Complete 3 tutorials this week</p>
-              </div>
-              <div className="flex flex-col gap-2 items-end">
-                <Badge>In Progress</Badge>
-                <Button
-                  variant={hasTappedIn ? "secondary" : "default"}
-                  size="sm"
-                  onClick={() => setShowCommentField(!showCommentField)}
-                  className="flex items-center gap-2"
-                >
-                  <Send className="h-4 w-4" />
-                  Tap In
-                </Button>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#221F26] to-[#403E43] text-white">
+      <div className="container mx-auto px-4 py-6 space-y-6 max-w-md md:max-w-2xl">
+        {/* Header */}
+        <div className="flex items-center justify-between bg-[#F97316]/10 p-4 rounded-lg backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <Avatar className="border-2 border-[#F97316]">
+              <AvatarImage src={user.user_metadata.avatar_url || "https://github.com/shadcn.png"} />
+              <AvatarFallback className="bg-[#F97316]">{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h2 className="font-bold text-xl bg-gradient-to-r from-[#F97316] to-[#D946EF] text-transparent bg-clip-text">
+                Welcome to the Hustle
+              </h2>
+              <p className="text-sm text-[#F97316]/80">{user.email}</p>
             </div>
-            {showCommentField && (
-              <div className="mt-4 space-y-2">
-                <Textarea
-                  placeholder="Add a quick update about your progress..."
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  className="min-h-[80px]"
-                />
-                <Button 
-                  onClick={handleTapIn}
-                  className="w-full"
-                >
-                  <Send className="h-4 w-4 mr-2" />
-                  Submit Update
-                </Button>
-              </div>
-            )}
-            <Progress value={33} className="h-2" />
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Member Feed */}
-      <MemberFeed />
-
-      {/* Accountability Groups */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Your Groups
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-center text-muted-foreground">
-            Create an accountability group to stay motivated!
-          </p>
           <Button 
-            className="w-full" 
             variant="outline" 
-            onClick={() => navigate("/create-group")}
+            size="icon" 
+            onClick={() => signOut()}
+            className="border-[#F97316] text-[#F97316] hover:bg-[#F97316] hover:text-white transition-all"
           >
-            Create a Group
+            <Trophy className="h-4 w-4" />
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+
+        {/* Motivational Quote */}
+        <Card className="border-none bg-[#F97316]/5 backdrop-blur-sm">
+          <CardContent className="pt-6">
+            <p className="text-center text-xl font-bold bg-gradient-to-r from-[#F97316] to-[#D946EF] text-transparent bg-clip-text">
+              {randomQuote}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Active Goals */}
+        <Card className="border-none bg-black/20 backdrop-blur-sm">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-lg flex items-center gap-2 text-[#F97316]">
+              <Target className="h-5 w-5" />
+              Active Goals
+            </CardTitle>
+            <Button 
+              onClick={() => navigate("/create-goal")}
+              size="sm"
+              className="bg-[#F97316] hover:bg-[#F97316]/80 text-white"
+            >
+              Add Goal
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-medium text-white">Learn React Native</p>
+                  <p className="text-sm text-[#F97316]/80">Complete 3 tutorials this week</p>
+                </div>
+                <div className="flex flex-col gap-2 items-end">
+                  <Badge className="bg-[#F97316] hover:bg-[#F97316]/80">In Progress</Badge>
+                  <Button
+                    variant={hasTappedIn ? "secondary" : "default"}
+                    size="sm"
+                    onClick={() => setShowCommentField(!showCommentField)}
+                    className={`flex items-center gap-2 ${
+                      hasTappedIn 
+                        ? "bg-[#403E43] hover:bg-[#403E43]/80" 
+                        : "bg-[#F97316] hover:bg-[#F97316]/80"
+                    }`}
+                  >
+                    <Send className="h-4 w-4" />
+                    Tap In
+                  </Button>
+                </div>
+              </div>
+              {showCommentField && (
+                <div className="mt-4 space-y-2">
+                  <Textarea
+                    placeholder="Add a quick update about your progress..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="min-h-[80px] bg-black/20 border-[#F97316]/20 focus:border-[#F97316] text-white"
+                  />
+                  <Button 
+                    onClick={handleTapIn}
+                    className="w-full bg-[#F97316] hover:bg-[#F97316]/80"
+                  >
+                    <Send className="h-4 w-4 mr-2" />
+                    Submit Update
+                  </Button>
+                </div>
+              )}
+              <Progress value={33} className="h-2 bg-black/20">
+                <div className="h-full bg-gradient-to-r from-[#F97316] to-[#D946EF] rounded-full" />
+              </Progress>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Member Feed */}
+        <MemberFeed />
+
+        {/* Accountability Groups */}
+        <Card className="border-none bg-black/20 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2 text-[#F97316]">
+              <Users className="h-5 w-5" />
+              Your Groups
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-center text-[#F97316]/80">
+              Create an accountability group to stay motivated!
+            </p>
+            <Button 
+              className="w-full border-2 border-[#F97316] bg-transparent hover:bg-[#F97316] text-[#F97316] hover:text-white transition-all" 
+              variant="outline" 
+              onClick={() => navigate("/create-group")}
+            >
+              Create a Group
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
