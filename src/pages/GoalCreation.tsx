@@ -35,7 +35,7 @@ type GoalFormValues = z.infer<typeof goalFormSchema>;
 
 const getCurrentQuarter = () => {
   const currentMonth = new Date().getMonth();
-  return `Q${Math.floor(currentMonth / 3) + 1}-${new Date().getFullYear()}`;
+  return `Q${Math.floor(currentMonth / 3) + 1}-2025`;
 };
 
 const getQuarterDateRange = (quarter: string) => {
@@ -54,12 +54,11 @@ const GoalCreation = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const currentYear = new Date().getFullYear();
   const quarters = [
-    `Q1-${currentYear}`,
-    `Q2-${currentYear}`,
-    `Q3-${currentYear}`,
-    `Q4-${currentYear}`,
+    "Q1-2025",
+    "Q2-2025",
+    "Q3-2025",
+    "Q4-2025",
   ];
 
   const form = useForm<GoalFormValues>({
