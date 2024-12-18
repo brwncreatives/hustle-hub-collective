@@ -1,18 +1,18 @@
 import { Card, CardContent } from "@/components/ui/card";
 
 const motivationalQuotes = [
-  "Hustle hard, dream bigger! 🗽",
-  "Every Saturday is your chance to level up! 💪",
-  "Make your mark on these streets! 🌟",
+  "Dream bigger, work harder! ✨",
+  "Every Saturday is a new opportunity! 💫",
+  "Make your mark! 🌟",
 ];
 
 export const MotivationalQuote = () => {
   const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
 
   return (
-    <Card className="border-none bg-[#F97316]/5 backdrop-blur-sm">
+    <Card className="border-none bg-white/5 backdrop-blur-sm">
       <CardContent className="pt-6">
-        <p className="text-center text-xl font-bold bg-gradient-to-r from-[#F97316] to-[#D946EF] text-transparent bg-clip-text">
+        <p className="text-center text-xl font-bold text-primary">
           {randomQuote}
         </p>
       </CardContent>

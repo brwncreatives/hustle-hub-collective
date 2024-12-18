@@ -43,16 +43,16 @@ export const ActiveGoals = () => {
   };
 
   return (
-    <Card className="border-none bg-black/20 backdrop-blur-sm">
+    <Card className="border-none bg-white/5 backdrop-blur-sm">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg flex items-center gap-2 text-[#F97316]">
+        <CardTitle className="text-lg flex items-center gap-2 text-primary">
           <Target className="h-5 w-5" />
           Active Goals
         </CardTitle>
         <Button 
           onClick={() => navigate("/create-goal")}
           size="sm"
-          className="bg-[#F97316] hover:bg-[#F97316]/80 text-white"
+          className="bg-primary hover:bg-primary/80 text-primary-foreground"
         >
           Add Goal
         </Button>
@@ -61,20 +61,16 @@ export const ActiveGoals = () => {
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <div>
-              <p className="font-medium text-white">Learn React Native</p>
-              <p className="text-sm text-[#F97316]/80">Complete 3 tutorials this week</p>
+              <p className="font-medium text-foreground">Learn React Native</p>
+              <p className="text-sm text-muted-foreground">Complete 3 tutorials this week</p>
             </div>
             <div className="flex flex-col gap-2 items-end">
-              <Badge className="bg-[#F97316] hover:bg-[#F97316]/80">In Progress</Badge>
+              <Badge variant="default">In Progress</Badge>
               <Button
                 variant={hasTappedIn ? "secondary" : "default"}
                 size="sm"
                 onClick={() => setShowCommentField(!showCommentField)}
-                className={`flex items-center gap-2 ${
-                  hasTappedIn 
-                    ? "bg-[#403E43] hover:bg-[#403E43]/80" 
-                    : "bg-[#F97316] hover:bg-[#F97316]/80"
-                }`}
+                className="flex items-center gap-2"
               >
                 <Send className="h-4 w-4" />
                 Tap In
@@ -87,19 +83,19 @@ export const ActiveGoals = () => {
                 placeholder="Add a quick update about your progress..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="min-h-[80px] bg-black/20 border-[#F97316]/20 focus:border-[#F97316] text-white"
+                className="min-h-[80px] bg-white/5 border-primary/20 focus:border-primary"
               />
               <Button 
                 onClick={handleTapIn}
-                className="w-full bg-[#F97316] hover:bg-[#F97316]/80"
+                className="w-full"
               >
                 <Send className="h-4 w-4 mr-2" />
                 Submit Update
               </Button>
             </div>
           )}
-          <Progress value={33} className="h-2 bg-black/20">
-            <div className="h-full bg-gradient-to-r from-[#F97316] to-[#D946EF] rounded-full" />
+          <Progress value={33} className="h-2">
+            <div className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full" />
           </Progress>
         </div>
       </CardContent>
