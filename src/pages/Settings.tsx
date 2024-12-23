@@ -33,11 +33,32 @@ const Settings = () => {
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
+      const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
 
+      // First, check if the bucket exists, if not create it
+      const { data: buckets } = await supabase
+        .storage
+        .listBuckets();
+
+      const avatarsBucket = buckets?.find(bucket => bucket.name === 'avatars');
+      
+      if (!avatarsBucket) {
+        const { error: createBucketError } = await supabase
+          .storage
+          .createBucket('avatars', { public: true });
+
+        if (createBucketError) {
+          throw new Error('Failed to create storage bucket. Please try again.');
+        }
+      }
+
+      // Now attempt to upload the file
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) {
         throw uploadError;
@@ -45,7 +66,7 @@ const Settings = () => {
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       setAvatarUrl(publicUrl);
       
@@ -61,9 +82,10 @@ const Settings = () => {
         description: "Avatar updated successfully!",
       });
     } catch (error: any) {
+      console.error('Avatar upload error:', error);
       toast({
         variant: "destructive",
-        description: error.message || "Error updating avatar",
+        description: error.message || "Error updating avatar. Please try again.",
       });
     } finally {
       setUploading(false);
