@@ -43,12 +43,8 @@ export const ActiveGoals = () => {
   };
 
   return (
-    <Card className="border-none bg-white/5 backdrop-blur-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-lg flex items-center gap-2 text-primary">
-          <Target className="h-5 w-5" />
-          Active Goals
-        </CardTitle>
+    <div className="space-y-4">
+      <div className="flex justify-end">
         <Button 
           onClick={() => navigate("/create-goal")}
           size="sm"
@@ -56,16 +52,23 @@ export const ActiveGoals = () => {
         >
           Add Goal
         </Button>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="font-medium text-foreground">Learn React Native</p>
-              <p className="text-sm text-muted-foreground">Complete 3 tutorials this week</p>
-            </div>
-            <div className="flex flex-col gap-2 items-end">
-              <Badge variant="default">In Progress</Badge>
+      </div>
+      
+      <Card className="border-none bg-white/5 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2 text-primary">
+            <Target className="h-5 w-5" />
+            Active Goals
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between items-start">
+              <div>
+                <Badge variant="default" className="mb-2 bg-green-500 hover:bg-green-600">In Progress</Badge>
+                <p className="font-medium text-foreground">Learn React Native</p>
+                <p className="text-sm text-muted-foreground">Complete 3 tutorials this week</p>
+              </div>
               <Button
                 variant={hasTappedIn ? "secondary" : "default"}
                 size="sm"
@@ -76,29 +79,29 @@ export const ActiveGoals = () => {
                 Tap In
               </Button>
             </div>
+            {showCommentField && (
+              <div className="mt-4 space-y-2">
+                <Textarea
+                  placeholder="Add a quick update about your progress..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  className="min-h-[80px] bg-white/5 border-primary/20 focus:border-primary"
+                />
+                <Button 
+                  onClick={handleTapIn}
+                  className="w-full"
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Submit Update
+                </Button>
+              </div>
+            )}
+            <Progress value={33} className="h-2">
+              <div className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full" />
+            </Progress>
           </div>
-          {showCommentField && (
-            <div className="mt-4 space-y-2">
-              <Textarea
-                placeholder="Add a quick update about your progress..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="min-h-[80px] bg-white/5 border-primary/20 focus:border-primary"
-              />
-              <Button 
-                onClick={handleTapIn}
-                className="w-full"
-              >
-                <Send className="h-4 w-4 mr-2" />
-                Submit Update
-              </Button>
-            </div>
-          )}
-          <Progress value={33} className="h-2">
-            <div className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full" />
-          </Progress>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
