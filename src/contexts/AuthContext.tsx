@@ -11,7 +11,7 @@ const supabase = createClient(
 type AuthContextType = {
   user: User | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<void>;
   signOut: () => Promise<void>;
   loading: boolean;
 };
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, firstName?: string, lastName?: string) => {
     try {
       console.log('Starting signup process for:', email);
       const { data, error } = await supabase.auth.signUp({ 
@@ -68,6 +68,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
+            first_name: firstName,
+            last_name: lastName,
             email_confirm_sent: true,
           }
         }

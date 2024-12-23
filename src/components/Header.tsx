@@ -8,13 +8,24 @@ interface HeaderProps {
 }
 
 export const Header = ({ user, signOut }: HeaderProps) => {
-  // Get the first and last name from email, or use a default
-  const emailName = user.email?.split('@')[0] || '';
-  const [firstName, lastName] = emailName.split(/[._-]/).map(part => 
-    part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
-  );
-  const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName || 'User';
+  // Get the full name from user metadata, fallback to email-based name if not available
+  const firstName = user.user_metadata?.first_name;
+  const lastName = user.user_metadata?.last_name;
   
+  // If no metadata name is available, extract from email as fallback
+  let displayName = `${firstName || ''} ${lastName || ''}`.trim();
+  if (!displayName) {
+    const emailName = user.email?.split('@')[0] || '';
+    const [firstPart, lastPart] = emailName.split(/[._-]/).map(part => 
+      part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+    );
+    displayName = firstPart && lastPart ? `${firstPart} ${lastPart}` : firstPart || 'User';
+  }
+  
+  // Get initials for avatar fallback
+  const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase() || 
+    displayName.split(' ').map(n => n[0]).join('').toUpperCase();
+
   return (
     <div className="space-y-4">
       <h1 className="text-3xl font-bold text-primary text-center">Hustle Saturday</h1>
@@ -23,14 +34,14 @@ export const Header = ({ user, signOut }: HeaderProps) => {
           <Avatar className="border-2 border-primary">
             <AvatarImage src={user.user_metadata.avatar_url || "https://github.com/shadcn.png"} />
             <AvatarFallback className="bg-primary">
-              {firstName?.charAt(0)}{lastName?.charAt(0)}
+              {initials}
             </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="font-bold text-xl text-primary">
               Welcome Back
             </h2>
-            <p className="text-sm text-muted-foreground capitalize">{fullName}</p>
+            <p className="text-sm text-muted-foreground">{displayName}</p>
           </div>
         </div>
         <Button 
