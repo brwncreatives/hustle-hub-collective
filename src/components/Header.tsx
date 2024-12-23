@@ -8,8 +8,12 @@ interface HeaderProps {
 }
 
 export const Header = ({ user, signOut }: HeaderProps) => {
-  // Get the name from email by taking everything before the @ symbol
-  const name = user.email?.split('@')[0] || 'User';
+  // Get the first and last name from email, or use a default
+  const emailName = user.email?.split('@')[0] || '';
+  const [firstName, lastName] = emailName.split(/[._-]/).map(part => 
+    part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+  );
+  const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName || 'User';
   
   return (
     <div className="space-y-4">
@@ -18,13 +22,15 @@ export const Header = ({ user, signOut }: HeaderProps) => {
         <div className="flex items-center gap-3">
           <Avatar className="border-2 border-primary">
             <AvatarImage src={user.user_metadata.avatar_url || "https://github.com/shadcn.png"} />
-            <AvatarFallback className="bg-primary">{name.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarFallback className="bg-primary">
+              {firstName?.charAt(0)}{lastName?.charAt(0)}
+            </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="font-bold text-xl text-primary">
               Welcome Back
             </h2>
-            <p className="text-sm text-muted-foreground capitalize">{name}</p>
+            <p className="text-sm text-muted-foreground capitalize">{fullName}</p>
           </div>
         </div>
         <Button 
