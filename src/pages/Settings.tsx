@@ -35,24 +35,6 @@ const Settings = () => {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
 
-      // First, check if the bucket exists, if not create it
-      const { data: buckets } = await supabase
-        .storage
-        .listBuckets();
-
-      const avatarsBucket = buckets?.find(bucket => bucket.name === 'avatars');
-      
-      if (!avatarsBucket) {
-        const { error: createBucketError } = await supabase
-          .storage
-          .createBucket('avatars', { public: true });
-
-        if (createBucketError) {
-          throw new Error('Failed to create storage bucket. Please try again.');
-        }
-      }
-
-      // Now attempt to upload the file
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
@@ -61,6 +43,9 @@ const Settings = () => {
         });
 
       if (uploadError) {
+        if (uploadError.message.includes('bucket')) {
+          throw new Error('Storage is not properly configured. Please contact support.');
+        }
         throw uploadError;
       }
 
