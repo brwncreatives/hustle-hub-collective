@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import GoalCreation from "./pages/GoalCreation";
 import GroupCreation from "./pages/GroupCreation";
 import GroupLanding from "./pages/GroupLanding";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/create-goal" element={<GoalCreation />} />
             <Route path="/create-group" element={<GroupCreation />} />
             <Route path="/join-group" element={<GroupLanding />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

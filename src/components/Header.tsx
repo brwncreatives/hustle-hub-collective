@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Trophy } from "lucide-react";
+import { Trophy, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   user: any;
@@ -8,6 +9,7 @@ interface HeaderProps {
 }
 
 export const Header = ({ user, signOut }: HeaderProps) => {
+  const navigate = useNavigate();
   // Get the full name from user metadata, fallback to email-based name if not available
   const firstName = user.user_metadata?.first_name;
   const lastName = user.user_metadata?.last_name;
@@ -44,14 +46,24 @@ export const Header = ({ user, signOut }: HeaderProps) => {
             <p className="text-sm text-muted-foreground">{displayName}</p>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          size="icon" 
-          onClick={() => signOut()}
-          className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all"
-        >
-          <Trophy className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={() => navigate('/settings')}
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => signOut()}
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all"
+          >
+            <Trophy className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
