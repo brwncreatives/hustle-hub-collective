@@ -37,15 +37,9 @@ const Settings = () => {
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
+        .upload(fileName, file);
 
       if (uploadError) {
-        if (uploadError.message.includes('bucket')) {
-          throw new Error('Storage is not properly configured. Please contact support.');
-        }
         throw uploadError;
       }
 
