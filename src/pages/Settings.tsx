@@ -37,9 +37,16 @@ const Settings = () => {
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
       if (uploadError) {
+        console.error('Upload error details:', uploadError);
+        if (uploadError.message.includes('bucket')) {
+          throw new Error('Storage bucket not found. Please ensure the "avatars" bucket exists in your Supabase project.');
+        }
         throw uploadError;
       }
 
