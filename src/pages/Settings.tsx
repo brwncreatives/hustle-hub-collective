@@ -3,10 +3,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { createClient } from '@supabase/supabase-js';
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const supabase = createClient(
   'https://zpbqzuazbmgyifhwphga.supabase.co',
@@ -19,6 +20,55 @@ const Settings = () => {
   const { toast } = useToast();
   const [firstName, setFirstName] = useState(user?.user_metadata?.first_name || "");
   const [lastName, setLastName] = useState(user?.user_metadata?.last_name || "");
+  const [avatarUrl, setAvatarUrl] = useState(user?.user_metadata?.avatar_url || "");
+  const [uploading, setUploading] = useState(false);
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('You must select an image to upload.');
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user?.id}-${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setAvatarUrl(publicUrl);
+      
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl }
+      });
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      toast({
+        description: "Avatar updated successfully!",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        description: error.message || "Error updating avatar",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +78,7 @@ const Settings = () => {
         data: {
           first_name: firstName,
           last_name: lastName,
+          avatar_url: avatarUrl,
         }
       });
 
@@ -42,6 +93,10 @@ const Settings = () => {
         description: error.message || "Failed to update profile",
       });
     }
+  };
+
+  const getInitials = () => {
+    return ((firstName?.[0] || "") + (lastName?.[0] || "")).toUpperCase() || user?.email?.[0].toUpperCase() || "?";
   };
 
   return (
@@ -61,6 +116,30 @@ const Settings = () => {
             <CardTitle>Profile Settings</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="flex flex-col items-center mb-6">
+              <Avatar className="h-24 w-24 mb-4">
+                <AvatarImage src={avatarUrl} alt="Profile" />
+                <AvatarFallback>{getInitials()}</AvatarFallback>
+              </Avatar>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  disabled={uploading}
+                  className="hidden"
+                  id="avatar-upload"
+                />
+                <Button
+                  variant="outline"
+                  onClick={() => document.getElementById('avatar-upload')?.click()}
+                  disabled={uploading}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {uploading ? "Uploading..." : "Change Avatar"}
+                </Button>
+              </div>
+            </div>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Input
