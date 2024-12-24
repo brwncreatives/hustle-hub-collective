@@ -33,27 +33,25 @@ const Settings = () => {
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${user?.id}/${Math.random()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, {
+        .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
         });
 
       if (uploadError) {
         console.error('Upload error details:', uploadError);
-        if (uploadError.message.includes('bucket')) {
-          throw new Error('Storage bucket not found. Please ensure the "avatars" bucket exists in your Supabase project.');
-        }
         throw uploadError;
       }
 
-      const { data: { publicUrl } } = supabase.storage
+      const { data } = supabase.storage
         .from('avatars')
-        .getPublicUrl(fileName);
+        .getPublicUrl(filePath);
 
+      const publicUrl = data.publicUrl;
       setAvatarUrl(publicUrl);
       
       const { error: updateError } = await supabase.auth.updateUser({
