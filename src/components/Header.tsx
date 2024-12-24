@@ -1,13 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Trophy } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
   user: any;
@@ -60,15 +58,6 @@ export const Header = ({ user, signOut }: HeaderProps) => {
             </h2>
             <p className="text-sm text-muted-foreground">{displayName}</p>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all"
-          >
-            <Trophy className="h-4 w-4" />
-          </Button>
         </div>
       </div>
     </div>
