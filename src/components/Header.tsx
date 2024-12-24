@@ -32,31 +32,29 @@ export const Header = ({ user, signOut }: HeaderProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between bg-white/10 p-4 rounded-lg backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Avatar className="border-2 border-primary cursor-pointer hover:opacity-80">
-                <AvatarImage src={user.user_metadata.avatar_url || "https://github.com/shadcn.png"} />
-                <AvatarFallback className="bg-primary">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem onClick={() => navigate('/settings')}>
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => signOut()}>
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div>
-            <h2 className="font-bold text-xl text-primary">
-              Welcome {displayName}
-            </h2>
-          </div>
+        <div>
+          <h2 className="font-bold text-xl text-primary">
+            Welcome {displayName}
+          </h2>
         </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar className="border-2 border-primary cursor-pointer hover:opacity-80">
+              <AvatarImage src={user.user_metadata.avatar_url || "https://github.com/shadcn.png"} />
+              <AvatarFallback className="bg-primary">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut()}>
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <h1 className="text-3xl font-bold text-primary text-center">Hustle Saturday</h1>
     </div>
