@@ -17,13 +17,13 @@ export const Header = ({ user, signOut }: HeaderProps) => {
   const firstName = user.user_metadata?.first_name;
   const lastName = user.user_metadata?.last_name;
   
-  let displayName = `${firstName || ''} ${lastName || ''}`.trim();
+  let displayName = firstName || '';
   if (!displayName) {
     const emailName = user.email?.split('@')[0] || '';
-    const [firstPart, lastPart] = emailName.split(/[._-]/).map(part => 
+    const [firstPart] = emailName.split(/[._-]/).map(part => 
       part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
     );
-    displayName = firstPart && lastPart ? `${firstPart} ${lastPart}` : firstPart || 'User';
+    displayName = firstPart || 'User';
   }
   
   const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase() || 
@@ -31,7 +31,6 @@ export const Header = ({ user, signOut }: HeaderProps) => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-3xl font-bold text-primary text-center">Hustle Saturday</h1>
       <div className="flex items-center justify-between bg-white/10 p-4 rounded-lg backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <DropdownMenu>
@@ -54,12 +53,12 @@ export const Header = ({ user, signOut }: HeaderProps) => {
           </DropdownMenu>
           <div>
             <h2 className="font-bold text-xl text-primary">
-              Welcome Back
+              Welcome {displayName}
             </h2>
-            <p className="text-sm text-muted-foreground">{displayName}</p>
           </div>
         </div>
       </div>
+      <h1 className="text-3xl font-bold text-primary text-center">Hustle Saturday</h1>
     </div>
   );
 };
