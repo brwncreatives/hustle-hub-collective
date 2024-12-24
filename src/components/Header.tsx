@@ -30,7 +30,8 @@ export const Header = ({ user, signOut }: HeaderProps) => {
     displayName.split(' ').map(n => n[0]).join('').toUpperCase();
 
   return (
-    <div className="space-y-4">
+    <div>
+      <h1 className="text-3xl font-bold text-primary text-center mb-4">Hustle Saturday</h1>
       <div className="flex items-center justify-between bg-white/10 p-4 rounded-lg backdrop-blur-sm">
         <div>
           <h2 className="font-bold text-xl text-primary">
@@ -56,7 +57,6 @@ export const Header = ({ user, signOut }: HeaderProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <h1 className="text-3xl font-bold text-primary text-center">Hustle Saturday</h1>
     </div>
   );
 };
