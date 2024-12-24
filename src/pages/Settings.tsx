@@ -23,6 +23,23 @@ const Settings = () => {
   const [avatarUrl, setAvatarUrl] = useState(user?.user_metadata?.avatar_url || "");
   const [uploading, setUploading] = useState(false);
 
+  const ensureAvatarsBucketExists = async () => {
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const avatarsBucket = buckets?.find(bucket => bucket.name === 'avatars');
+    
+    if (!avatarsBucket) {
+      const { error } = await supabase.storage.createBucket('avatars', {
+        public: true,
+        fileSizeLimit: 1024 * 1024 * 2 // 2MB
+      });
+      
+      if (error) {
+        console.error('Error creating bucket:', error);
+        throw error;
+      }
+    }
+  };
+
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
@@ -32,10 +49,19 @@ const Settings = () => {
       }
 
       const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
+      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+      
+      if (!fileExt || !allowedExtensions.includes(fileExt)) {
+        throw new Error('File type not supported. Please upload an image (JPG, PNG, or GIF).');
+      }
+
+      // Ensure the avatars bucket exists
+      await ensureAvatarsBucketExists();
+
       const filePath = `${user?.id}/${Math.random()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -47,11 +73,10 @@ const Settings = () => {
         throw uploadError;
       }
 
-      const { data } = supabase.storage
+      const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-      const publicUrl = data.publicUrl;
       setAvatarUrl(publicUrl);
       
       const { error: updateError } = await supabase.auth.updateUser({
