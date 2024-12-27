@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { TaskList } from "./TaskList";
 
 export const ActiveGoals = () => {
   const { toast } = useToast();
@@ -14,6 +15,7 @@ export const ActiveGoals = () => {
   const [showCommentField, setShowCommentField] = useState(false);
   const [comment, setComment] = useState("");
   const [hasTappedIn, setHasTappedIn] = useState(false);
+  const [showTasks, setShowTasks] = useState(false);
 
   const handleTapIn = () => {
     if (hasTappedIn) {
@@ -36,7 +38,7 @@ export const ActiveGoals = () => {
 
     toast({
       title: "Progress Updated! 🎯",
-      description: comment 
+      description: comment
         ? "You've logged your progress with a comment!"
         : "You've logged your progress!",
     });
@@ -45,7 +47,7 @@ export const ActiveGoals = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button 
+        <Button
           onClick={() => navigate("/create-goal")}
           size="sm"
           className="bg-primary hover:bg-primary/80 text-primary-foreground"
@@ -53,7 +55,7 @@ export const ActiveGoals = () => {
           Add Goal
         </Button>
       </div>
-      
+
       <Card className="border-none bg-white/5 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2 text-primary">
@@ -65,20 +67,39 @@ export const ActiveGoals = () => {
           <div className="space-y-2">
             <div className="flex justify-between items-start">
               <div>
-                <Badge variant="default" className="mb-2 bg-green-500 hover:bg-green-600">In Progress</Badge>
+                <Badge
+                  variant="default"
+                  className="mb-2 bg-green-500 hover:bg-green-600"
+                >
+                  In Progress
+                </Badge>
                 <p className="font-medium text-foreground">Learn React Native</p>
-                <p className="text-sm text-muted-foreground">Complete 3 tutorials this week</p>
+                <p className="text-sm text-muted-foreground">
+                  Complete 3 tutorials this week
+                </p>
               </div>
-              <Button
-                variant={hasTappedIn ? "secondary" : "default"}
-                size="sm"
-                onClick={() => setShowCommentField(!showCommentField)}
-                className="flex items-center gap-2"
-              >
-                <Send className="h-4 w-4" />
-                Tap In
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowTasks(!showTasks)}
+                >
+                  {showTasks ? "Hide Tasks" : "Show Tasks"}
+                </Button>
+                <Button
+                  variant={hasTappedIn ? "secondary" : "default"}
+                  size="sm"
+                  onClick={() => setShowCommentField(!showCommentField)}
+                  className="flex items-center gap-2"
+                >
+                  <Send className="h-4 w-4" />
+                  Tap In
+                </Button>
+              </div>
             </div>
+
+            {showTasks && <TaskList goalId="learn-react-native" />}
+
             {showCommentField && (
               <div className="mt-4 space-y-2">
                 <Textarea
@@ -87,10 +108,7 @@ export const ActiveGoals = () => {
                   onChange={(e) => setComment(e.target.value)}
                   className="min-h-[80px] bg-white/5 border-primary/20 focus:border-primary"
                 />
-                <Button 
-                  onClick={handleTapIn}
-                  className="w-full"
-                >
+                <Button onClick={handleTapIn} className="w-full">
                   <Send className="h-4 w-4 mr-2" />
                   Submit Update
                 </Button>
