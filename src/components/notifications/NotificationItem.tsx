@@ -2,20 +2,25 @@ import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NotificationItemProps {
+  id: string;
   message: string;
   timestamp: string;
-  isRead?: boolean;
+  isRead: boolean;
+  onRead: (id: string) => void;
 }
 
 export const NotificationItem = ({
+  id,
   message,
   timestamp,
   isRead = false,
+  onRead,
 }: NotificationItemProps) => {
   return (
     <div
+      onClick={() => !isRead && onRead(id)}
       className={cn(
-        "flex items-start gap-3 p-3 rounded-lg transition-colors",
+        "flex items-start gap-3 p-3 rounded-lg transition-colors cursor-pointer",
         !isRead && "bg-[#F0EAFE] hover:bg-[#E9E3FD]",
         isRead && "hover:bg-muted"
       )}
