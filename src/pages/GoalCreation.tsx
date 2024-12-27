@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { GoalFormValues } from "@/components/goal/types";
 
 const GoalCreation = () => {
   const { user, signOut } = useAuth();
@@ -34,7 +35,6 @@ const GoalCreation = () => {
         <GoalForm
           onSubmit={handleSubmit}
           title="Create New Goal"
-          showCompleted={showCompleted}
         />
       </div>
     </div>
