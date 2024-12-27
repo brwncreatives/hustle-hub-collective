@@ -18,11 +18,17 @@ export const GoalBingoCard = () => {
   const totalCells = gridSize * gridSize;
 
   useEffect(() => {
-    // Mock data with a completed goal for demonstration
+    // Mock data with multiple completed goals for demonstration
     const mockGoals = [
       { id: '1', title: 'Complete React Course', status: 'completed', quarter: 'Q1-2024' },
-      { id: '2', title: 'Build Portfolio', status: 'in progress', quarter: 'Q1-2024' },
-      { id: '3', title: 'Learn TypeScript', status: 'not started', quarter: 'Q1-2024' },
+      { id: '2', title: 'Build Portfolio', status: 'completed', quarter: 'Q1-2024' },
+      { id: '3', title: 'Learn TypeScript', status: 'completed', quarter: 'Q1-2024' },
+      { id: '4', title: 'Write Documentation', status: 'in progress', quarter: 'Q1-2024' },
+      { id: '5', title: 'Deploy Apps', status: 'not started', quarter: 'Q1-2024' },
+      { id: '6', title: 'Create Portfolio', status: 'completed', quarter: 'Q1-2024' },
+      { id: '7', title: 'Learn Testing', status: 'completed', quarter: 'Q1-2024' },
+      { id: '8', title: 'Master Git', status: 'in progress', quarter: 'Q1-2024' },
+      { id: '9', title: 'Study Design', status: 'not started', quarter: 'Q1-2024' },
     ];
     setGoals(mockGoals);
   }, []);
@@ -45,7 +51,6 @@ export const GoalBingoCard = () => {
     checkForBingo();
   }, [goals]);
 
-  // Create a 5x5 grid with goals and empty cells
   const createBingoGrid = () => {
     const grid = [];
     const completedGoals = goals.filter(goal => goal.status.toLowerCase() === 'completed');
@@ -72,7 +77,7 @@ export const GoalBingoCard = () => {
   const getGoalIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return <Trophy className="h-5 w-5 text-[#9b87f5]" />;
+        return <Trophy className="h-6 w-6 text-[#9b87f5] animate-pulse" />;
       case 'in progress':
         return <Star className="h-5 w-5 text-yellow-500" />;
       case 'not started':
@@ -85,11 +90,11 @@ export const GoalBingoCard = () => {
   const getGoalColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return 'bg-[#9b87f5]/10 border-[#9b87f5] shadow-md shadow-[#9b87f5]/20';
+        return 'bg-[#9b87f5]/20 border-2 border-[#9b87f5] shadow-lg shadow-[#9b87f5]/30 scale-105 transform transition-all duration-200';
       case 'in progress':
-        return 'bg-yellow-50 border-yellow-200';
+        return 'bg-yellow-50 border border-yellow-200';
       case 'not started':
-        return 'bg-gray-50 border-gray-200';
+        return 'bg-gray-50 border border-gray-200';
       default:
         return 'bg-gray-50/50 border-dashed border-gray-200';
     }
@@ -111,12 +116,12 @@ export const GoalBingoCard = () => {
             row.map((goal, colIndex) => (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`aspect-square p-2 border rounded-lg flex flex-col items-center justify-center text-center transition-all ${getGoalColor(goal.status)}`}
+                className={`aspect-square p-2 border rounded-lg flex flex-col items-center justify-center text-center transition-all hover:scale-105 ${getGoalColor(goal.status)}`}
               >
                 {goal.status !== 'empty' ? (
                   <>
                     {getGoalIcon(goal.status)}
-                    <span className="text-xs mt-1 line-clamp-2">{goal.title}</span>
+                    <span className="text-xs mt-1 line-clamp-2 font-medium">{goal.title}</span>
                   </>
                 ) : (
                   <span className="text-xs text-gray-400">Empty</span>
