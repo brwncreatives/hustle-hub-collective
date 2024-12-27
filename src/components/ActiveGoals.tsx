@@ -10,6 +10,7 @@ interface Goal {
   id: string;
   title: string;
   status: string;
+  quarter?: string;
 }
 
 export const ActiveGoals = () => {
@@ -21,10 +22,24 @@ export const ActiveGoals = () => {
   useEffect(() => {
     const storedGoals = localStorage.getItem('goals');
     if (storedGoals) {
-      setGoals(JSON.parse(storedGoals));
-      console.log("Retrieved goals:", JSON.parse(storedGoals));
+      const parsedGoals = JSON.parse(storedGoals);
+      // Add quarter information if not present
+      const goalsWithQuarter = parsedGoals.map((goal: Goal) => ({
+        ...goal,
+        quarter: goal.quarter || getCurrentQuarter()
+      }));
+      setGoals(goalsWithQuarter);
+      console.log("Retrieved goals:", goalsWithQuarter);
     }
   }, []);
+
+  const getCurrentQuarter = () => {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    const quarter = Math.ceil((month + 1) / 3);
+    return `Q${quarter}-${year}`;
+  };
 
   const startEditingStatus = (goalId: string, currentStatus: string) => {
     setEditingStatus(goalId);
@@ -78,6 +93,9 @@ export const ActiveGoals = () => {
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
                     {goal.title}
+                    <span className="text-sm text-muted-foreground">
+                      ({goal.quarter})
+                    </span>
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <GoalStatusBadge
