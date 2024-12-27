@@ -53,21 +53,17 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
   const currentWeek = getCurrentWeekInQuarter(new Date());
 
-  const weeksToShow = isOpen
-    ? Object.keys(groupedTasks)
-        .sort((a, b) => {
-          // Always put current week first
-          if (parseInt(a.replace('week', '')) === currentWeek) return -1;
-          if (parseInt(b.replace('week', '')) === currentWeek) return 1;
-          // Then sort the rest normally
-          const weekA = parseInt(a.replace('week', ''));
-          const weekB = parseInt(b.replace('week', ''));
-          return weekA - weekB;
-        })
-    : Object.keys(groupedTasks).filter(weekKey => {
-        const weekNumber = parseInt(weekKey.replace('week', ''));
-        return weekNumber === currentWeek;
-      });
+  const weeksToShow = Object.keys(groupedTasks)
+    .sort((a, b) => {
+      // Always put current week first
+      if (parseInt(a.replace('week', '')) === currentWeek) return -1;
+      if (parseInt(b.replace('week', '')) === currentWeek) return 1;
+      // Then sort the rest normally
+      const weekA = parseInt(a.replace('week', ''));
+      const weekB = parseInt(b.replace('week', ''));
+      return weekA - weekB;
+    })
+    .filter(weekKey => isOpen || parseInt(weekKey.replace('week', '')) === currentWeek);
 
   const toggleCompletedForWeek = (weekKey: string) => {
     setCompletedTasksVisibility(prev => ({
