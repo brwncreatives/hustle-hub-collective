@@ -1,25 +1,13 @@
 import { useState, useEffect } from "react";
-import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
 import { TaskListProps } from "@/types/task";
 import { useTaskManager } from "@/hooks/useTaskManager";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 export const TaskList = ({ goalId }: TaskListProps) => {
-  const [newTask, setNewTask] = useState("");
-  const [isRecurring, setIsRecurring] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<string>("1");
-  const [isOpen, setIsOpen] = useState(false);
   
   const {
     tasks,
-    addTask,
     editTask,
     toggleTaskCompletion,
     getTasksForWeek,
@@ -33,16 +21,8 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     setSelectedWeek(getCurrentWeek());
   }, []);
 
-  const handleAddTask = () => {
-    if (newTask.trim()) {
-      addTask(newTask, isRecurring, selectedWeek);
-      setNewTask("");
-      setIsOpen(false);
-    }
-  };
-
   const currentWeekTasks = getTasksForWeek(parseInt(selectedWeek));
-  console.log("Current week tasks:", currentWeekTasks); // Debug log
+  console.log("Current week tasks:", currentWeekTasks);
 
   return (
     <div className="space-y-4">
