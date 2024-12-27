@@ -18,17 +18,18 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
 
   // Group tasks by week
   const groupedTasks = tasks.reduce((acc, task) => {
-    // Always show recurring tasks
-    if (task.isRecurring) {
-      acc.recurring = acc.recurring || [];
-      if (showCompleted || !task.completed) {
-        acc.recurring.push(task);
-      }
-    } else {
-      // Group non-recurring tasks by week
-      const weekKey = `week${task.week}`;
-      acc[weekKey] = acc[weekKey] || [];
-      if (showCompleted || !task.completed) {
+    if (showCompleted || !task.completed) {
+      if (task.isRecurring) {
+        // Add recurring tasks to all weeks
+        for (let week = 1; week <= 12; week++) {
+          const weekKey = `week${week}`;
+          acc[weekKey] = acc[weekKey] || [];
+          acc[weekKey].push({ ...task, week });
+        }
+      } else {
+        // Add non-recurring tasks to their specific week
+        const weekKey = `week${task.week}`;
+        acc[weekKey] = acc[weekKey] || [];
         acc[weekKey].push(task);
       }
     }
@@ -37,14 +38,13 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
 
   // Sort weeks numerically
   const sortedWeeks = Object.keys(groupedTasks)
-    .filter(key => key !== 'recurring')
     .sort((a, b) => {
       const weekA = parseInt(a.replace('week', ''));
       const weekB = parseInt(b.replace('week', ''));
       return weekA - weekB;
     });
 
-  if (Object.keys(groupedTasks).length === 0) {
+  if (sortedWeeks.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-2">
         {showCompleted ? "No tasks available" : "No active tasks"}
@@ -54,25 +54,6 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Show recurring tasks first */}
-      {groupedTasks.recurring && groupedTasks.recurring.length > 0 && (
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground">Recurring Tasks</h4>
-          <div className="space-y-2">
-            {groupedTasks.recurring.map((task: any) => (
-              <TaskItem
-                key={task.id}
-                {...task}
-                onToggleComplete={toggleTaskCompletion}
-                onEditTask={editTask}
-                onDeleteTask={deleteTask}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Show weekly tasks */}
       {sortedWeeks.map((weekKey) => {
         if (groupedTasks[weekKey].length === 0) return null;
         
@@ -84,7 +65,7 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
             <div className="space-y-2">
               {groupedTasks[weekKey].map((task: any) => (
                 <TaskItem
-                  key={task.id}
+                  key={`${task.id}-${weekKey}`}
                   {...task}
                   onToggleComplete={toggleTaskCompletion}
                   onEditTask={editTask}
