@@ -2,16 +2,21 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
-import { Task, TaskListProps } from "@/types/task";
-import { useToast } from "@/hooks/use-toast";
+import { TaskListProps } from "@/types/task";
+import { useTaskManager } from "@/hooks/useTaskManager";
 
 export const TaskList = ({ goalId }: TaskListProps) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<string>("1");
   const [showForm, setShowForm] = useState(false);
-  const { toast } = useToast();
+  
+  const {
+    addTask,
+    editTask,
+    toggleTaskCompletion,
+    getTasksForWeek,
+  } = useTaskManager(goalId);
 
   const getCurrentWeek = () => {
     return "1";
@@ -22,43 +27,11 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   }, []);
 
   const handleAddTask = () => {
-    if (!newTask.trim()) return;
-
-    const task: Task = {
-      id: Math.random().toString(36).substr(2, 9),
-      title: newTask,
-      completed: false,
-      isRecurring,
-      week: parseInt(selectedWeek),
-    };
-
-    setTasks([...tasks, task]);
+    addTask(newTask, isRecurring, selectedWeek);
     setNewTask("");
-    console.log("Task added:", { goalId, task });
   };
 
-  const handleEditTask = (taskId: string, newTitle: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, title: newTitle } : task
-      )
-    );
-    toast({
-      description: "Task updated successfully",
-    });
-  };
-
-  const toggleTaskCompletion = (taskId: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  const currentWeekTasks = tasks.filter(
-    (task) => task.isRecurring || task.week === parseInt(selectedWeek)
-  );
+  const currentWeekTasks = getTasksForWeek(parseInt(selectedWeek));
 
   return (
     <div className="space-y-4">
@@ -89,7 +62,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             key={task.id}
             {...task}
             onToggleComplete={toggleTaskCompletion}
-            onEditTask={handleEditTask}
+            onEditTask={editTask}
           />
         ))}
         {currentWeekTasks.length === 0 && (
