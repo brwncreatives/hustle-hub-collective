@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
 import { TaskListProps } from "@/types/task";
@@ -9,9 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
 
 export const TaskList = ({ goalId }: TaskListProps) => {
   const [newTask, setNewTask] = useState("");
@@ -44,33 +41,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
   return (
     <div className="space-y-4">
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Task
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Task</DialogTitle>
-          </DialogHeader>
-          <TaskForm
-            newTask={newTask}
-            setNewTask={setNewTask}
-            selectedWeek={selectedWeek}
-            setSelectedWeek={setSelectedWeek}
-            isRecurring={isRecurring}
-            setIsRecurring={setIsRecurring}
-            onAddTask={handleAddTask}
-          />
-        </DialogContent>
-      </Dialog>
-
       <div className="space-y-2">
         {currentWeekTasks.map((task) => (
           <TaskItem
