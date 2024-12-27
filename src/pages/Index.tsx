@@ -7,6 +7,7 @@ import { MotivationalQuote } from "@/components/MotivationalQuote";
 import { ActiveGoals } from "@/components/ActiveGoals";
 import { AccountabilityGroups } from "@/components/AccountabilityGroups";
 import { WeeklyRecapSection } from "@/components/goal/WeeklyRecapSection";
+import { GoalBingoCard } from "@/components/goal/GoalBingoCard";
 
 const Index = () => {
   const { toast } = useToast();
@@ -33,6 +34,7 @@ const Index = () => {
       <div className="container mx-auto px-4 py-6 space-y-6 max-w-md md:max-w-2xl">
         <Header user={user} signOut={signOut} />
         <MotivationalQuote />
+        <GoalBingoCard />
         <ActiveGoals />
         <WeeklyRecapSection goalId="global" />
         <MemberFeed />
