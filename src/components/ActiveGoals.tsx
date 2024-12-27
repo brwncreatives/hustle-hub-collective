@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Target } from "lucide-react";
+import { Target, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TaskSection } from "./goal/TaskSection";
 import { useState, useEffect } from "react";
@@ -83,12 +83,12 @@ export const ActiveGoals = () => {
                   />
                 </div>
                 <Button
-                  variant="secondary"
-                  size="sm"
+                  variant="ghost"
+                  size="icon"
                   onClick={() => navigate(`/edit-goal/${goal.id}`)}
-                  className="px-4"
+                  className="h-8 w-8"
                 >
-                  Edit Goal
+                  <Pencil className="h-4 w-4" />
                 </Button>
               </div>
             </CardHeader>
