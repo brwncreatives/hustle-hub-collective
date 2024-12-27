@@ -8,4 +8,5 @@ export interface Task {
 
 export interface TaskListProps {
   goalId: string;
+  showCompleted?: boolean;
 }
