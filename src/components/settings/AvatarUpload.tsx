@@ -14,9 +14,53 @@ interface AvatarUploadProps {
   getInitials: () => string;
 }
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
+
 const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
+
+  const compressImage = async (file: File): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Calculate new dimensions while maintaining aspect ratio
+          if (width > 800) {
+            height = Math.round((height * 800) / width);
+            width = 800;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error('Failed to compress image'));
+              }
+            },
+            'image/jpeg',
+            0.8
+          );
+        };
+        img.onerror = () => reject(new Error('Failed to load image'));
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+    });
+  };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -29,6 +73,10 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
 
       const file = event.target.files[0];
       console.log('File selected:', { name: file.name, type: file.type, size: file.size });
+
+      if (file.size > MAX_FILE_SIZE) {
+        throw new Error('File size must be less than 2MB. Please choose a smaller file or compress it first.');
+      }
 
       const fileExt = file.name.split('.').pop()?.toLowerCase();
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
@@ -44,12 +92,21 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
 
       console.log('User ID:', user.id);
       const timestamp = new Date().getTime();
+      
+      // Compress image if it's not a GIF
+      let fileToUpload: File | Blob = file;
+      if (fileExt !== 'gif') {
+        console.log('Compressing image...');
+        fileToUpload = await compressImage(file);
+        console.log('Image compressed:', { size: fileToUpload.size });
+      }
+
       const filePath = `${user.id}/${timestamp}.${fileExt}`;
       console.log('Generated file path:', filePath);
 
       const { error: uploadError, data } = await supabase.storage
         .from('avatar')
-        .upload(filePath, file, {
+        .upload(filePath, fileToUpload, {
           cacheControl: '3600',
           upsert: true
         });
@@ -122,6 +179,9 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
           {uploading ? "Uploading..." : avatarUrl ? "Change Avatar" : "Upload Avatar"}
         </Button>
       </div>
+      <p className="text-sm text-muted-foreground mt-2">
+        Maximum file size: 2MB. Supported formats: JPG, PNG, GIF
+      </p>
     </div>
   );
 };
