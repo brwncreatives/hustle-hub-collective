@@ -17,18 +17,40 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
   const [showAllWeeks, setShowAllWeeks] = useState(false);
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState<Record<string, boolean>>({});
+  const [goalQuarter, setGoalQuarter] = useState<string>("");
+
+  useEffect(() => {
+    // Get the goal's quarter from localStorage
+    const storedGoals = localStorage.getItem('goals');
+    if (storedGoals) {
+      const goals = JSON.parse(storedGoals);
+      const currentGoal = goals.find((goal: any) => goal.id === goalId);
+      if (currentGoal?.quarter) {
+        setGoalQuarter(currentGoal.quarter);
+        console.log("Found goal quarter:", currentGoal.quarter);
+      }
+    }
+  }, [goalId]);
 
   const getCurrentWeek = () => {
+    if (!goalQuarter) return 1;
+
+    const [quarter, year] = goalQuarter.split('-');
+    const quarterNumber = parseInt(quarter.slice(1));
+    const startMonth = (quarterNumber - 1) * 3;
+    
     const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 1);
-    const diff = now.getTime() - start.getTime();
+    const quarterStart = new Date(parseInt(year), startMonth, 1);
+    const diff = now.getTime() - quarterStart.getTime();
     const oneWeek = 1000 * 60 * 60 * 24 * 7;
-    const currentWeek = Math.ceil(diff / oneWeek);
-    return (currentWeek % 12) || 12;
+    const weekInQuarter = Math.ceil(diff / oneWeek);
+    
+    return Math.min(Math.max(weekInQuarter, 1), 12);
   };
 
   const getQuarter = (weekNumber: number) => {
-    return Math.ceil(weekNumber / 13 * 4);
+    if (!goalQuarter) return 1;
+    return goalQuarter.split('-')[0];
   };
 
   useEffect(() => {
@@ -99,7 +121,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
       {sortedWeeks.map((weekKey) => {
         const weekNumber = parseInt(weekKey.replace('week', ''));
-        const isCurrentWeek = weekNumber === currentWeek;
+        const isCurrentWeek = weekNumber === getCurrentWeek();
         const tasksForWeek = groupedTasks[weekKey];
         const showCompletedForWeek = completedTasksVisibility[weekKey];
         
@@ -122,7 +144,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
                   <h4 className="text-sm font-semibold">
                     Week {weekNumber}
                     <span className="text-muted-foreground ml-1">
-                      (Q{getQuarter(weekNumber)})
+                      ({getQuarter(weekNumber)})
                     </span>
                   </h4>
                   {isCurrentWeek && (
