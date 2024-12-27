@@ -81,7 +81,15 @@ export const ActiveGoals = () => {
 
                 <TaskSection goalId={goal.id} />
 
-                <div className="flex justify-end gap-2 mt-4">
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => {/* Add task handler */}}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    Add Task
+                  </Button>
                   <WeeklyRecapSection goalId={goal.id} />
                 </div>
               </div>
