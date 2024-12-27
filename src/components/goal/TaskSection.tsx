@@ -11,6 +11,7 @@ import {
 import { TaskForm } from "../TaskForm";
 import { useState } from "react";
 import { useTaskManager } from "@/hooks/useTaskManager";
+import { WeeklyRecapSection } from "./WeeklyRecapSection";
 
 interface TaskSectionProps {
   goalId: string;
@@ -35,7 +36,7 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
   return (
     <div className="space-y-4">
       <TaskList goalId={goalId} />
-      <div className="flex justify-end">
+      <div className="flex justify-end items-center gap-2">
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button
@@ -62,6 +63,7 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
             />
           </DialogContent>
         </Dialog>
+        <WeeklyRecapSection goalId={goalId} />
       </div>
     </div>
   );
