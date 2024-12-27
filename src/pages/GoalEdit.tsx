@@ -35,7 +35,7 @@ const GoalEdit = () => {
         {goal && (
           <>
             <GoalForm
-              initialValues={goal}
+              initialData={goal}
               onSubmit={handleSubmit}
               title="Manage Goal"
             />
