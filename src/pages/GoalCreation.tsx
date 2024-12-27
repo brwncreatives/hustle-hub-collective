@@ -12,6 +12,7 @@ import { GoalDescriptionField } from "@/components/goal/GoalDescriptionField";
 import { GoalQuarterField } from "@/components/goal/GoalQuarterField";
 import { GoalStatusField } from "@/components/goal/GoalStatusField";
 import { goalFormSchema, GoalFormValues } from "@/components/goal/types";
+import { Separator } from "@/components/ui/separator";
 
 const getCurrentQuarter = () => {
   const currentMonth = new Date().getMonth();
@@ -50,21 +51,13 @@ const GoalCreation = () => {
             Create New Goal
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <GoalTitleField form={form} />
               <GoalDescriptionField form={form} />
               <GoalQuarterField form={form} />
               <GoalStatusField form={form} />
-
-              <div className="space-y-4">
-                <FormLabel>Weekly Tasks</FormLabel>
-                <FormDescription>
-                  Add tasks to help you achieve this goal. Tasks can be one-time or recurring weekly.
-                </FormDescription>
-                <TaskList goalId="new-goal" />
-              </div>
 
               <div className="flex justify-end space-x-2">
                 <Button
@@ -78,6 +71,18 @@ const GoalCreation = () => {
               </div>
             </form>
           </Form>
+
+          <Separator className="my-6" />
+          
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold">Weekly Tasks</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                You can add and manage tasks at any time, even after creating your goal. Tasks can be either one-time or recurring weekly.
+              </p>
+            </div>
+            <TaskList goalId="new-goal" />
+          </div>
         </CardContent>
       </Card>
     </div>
