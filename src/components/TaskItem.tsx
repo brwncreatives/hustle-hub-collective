@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { Pencil, Check } from "lucide-react";
+import { Pencil, Check, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface TaskItemProps {
   id: string;
@@ -11,6 +18,7 @@ interface TaskItemProps {
   week?: number;
   onToggleComplete: (taskId: string) => void;
   onEditTask: (taskId: string, newTitle: string) => void;
+  onDeleteTask: (taskId: string) => void;
 }
 
 export const TaskItem = ({
@@ -21,46 +29,32 @@ export const TaskItem = ({
   week,
   onToggleComplete,
   onEditTask,
+  onDeleteTask,
 }: TaskItemProps) => {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
 
   const handleSaveEdit = () => {
     if (editedTitle.trim()) {
       onEditTask(id, editedTitle);
-      setIsEditing(false);
+      setIsOpen(false);
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSaveEdit();
-    } else if (e.key === 'Escape') {
-      setEditedTitle(title);
-      setIsEditing(false);
-    }
+  const handleDelete = () => {
+    onDeleteTask(id);
+    setIsOpen(false);
   };
 
   return (
     <div className="flex items-center justify-between space-x-2 bg-white/5 p-2 rounded-md">
       <div className="flex-1">
-        {isEditing ? (
-          <Input
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
-            onBlur={handleSaveEdit}
-            onKeyDown={handleKeyPress}
-            className="flex-1"
-            autoFocus
-          />
-        ) : (
-          <label
-            htmlFor={id}
-            className={`${completed ? "line-through text-muted-foreground" : ""}`}
-          >
-            {title}
-          </label>
-        )}
+        <label
+          htmlFor={id}
+          className={`${completed ? "line-through text-muted-foreground" : ""}`}
+        >
+          {title}
+        </label>
       </div>
       <div className="flex items-center gap-2 ml-auto">
         {isRecurring ? (
@@ -72,15 +66,46 @@ export const TaskItem = ({
             Week {week}
           </span>
         )}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsEditing(!isEditing)}
-          className="h-8 px-3 bg-white/10 hover:bg-white/20"
-        >
-          <Pencil className="h-4 w-4 mr-1" />
-          Edit
-        </Button>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 px-3 bg-white/10 hover:bg-white/20"
+            >
+              <Pencil className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Task</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <Input
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  placeholder="Task title"
+                  className="w-full"
+                />
+              </div>
+              <div className="flex justify-between gap-2">
+                <Button
+                  variant="destructive"
+                  onClick={handleDelete}
+                  className="w-full"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Task
+                </Button>
+                <Button onClick={handleSaveEdit} className="w-full">
+                  Save Changes
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
         <Button
           variant={completed ? "default" : "outline"}
           size="sm"

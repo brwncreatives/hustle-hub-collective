@@ -9,6 +9,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   const {
     tasks,
     editTask,
+    deleteTask,
     toggleTaskCompletion,
     getTasksForWeek,
   } = useTaskManager(goalId);
@@ -39,6 +40,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
               {...task}
               onToggleComplete={toggleTaskCompletion}
               onEditTask={editTask}
+              onDeleteTask={deleteTask}
             />
           ))
         ) : (

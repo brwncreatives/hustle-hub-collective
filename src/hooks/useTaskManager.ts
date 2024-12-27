@@ -57,6 +57,18 @@ export const useTaskManager = (goalId: string) => {
     });
   }, [goalId, toast]);
 
+  const deleteTask = useCallback((taskId: string) => {
+    setTasks(prevTasks => {
+      const updatedTasks = prevTasks.filter(task => task.id !== taskId);
+      localStorage.setItem(`tasks-${goalId}`, JSON.stringify(updatedTasks));
+      return updatedTasks;
+    });
+    
+    toast({
+      description: "Task deleted successfully",
+    });
+  }, [goalId, toast]);
+
   const toggleTaskCompletion = useCallback((taskId: string) => {
     setTasks(prevTasks => {
       const updatedTasks = prevTasks.map((task) =>
@@ -78,6 +90,7 @@ export const useTaskManager = (goalId: string) => {
     tasks,
     addTask,
     editTask,
+    deleteTask,
     toggleTaskCompletion,
     getTasksForWeek,
   };
