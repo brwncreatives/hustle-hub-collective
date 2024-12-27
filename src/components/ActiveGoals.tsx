@@ -104,7 +104,6 @@ export const ActiveGoals = () => {
             <CardContent>
               <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                 <div className="p-4">
-                  <h3 className="text-sm font-medium mb-2">Tasks</h3>
                   <TaskSection goalId={goal.id} />
                 </div>
               </div>
