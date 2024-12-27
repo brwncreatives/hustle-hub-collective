@@ -24,6 +24,7 @@ const mockMembers: Member[] = [
     weeklyRecap: {
       content: "This week has been challenging but rewarding! I've made significant progress in understanding React hooks and context. Looking forward to diving into more advanced topics next week. 💪",
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+      weekNumber: 3,
       reactions: {
         heart: ["user1", "user2"]
       }

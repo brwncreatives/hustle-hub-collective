@@ -69,7 +69,7 @@ export const MemberFeedItem = ({
           <div className="mt-4 space-y-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MessageSquare className="h-4 w-4" />
-              <span>Weekly Reflection</span>
+              <span>Week {member.weeklyRecap.weekNumber} Reflection</span>
               <span className="text-xs">
                 {formatDistanceToNow(new Date(member.weeklyRecap.timestamp), { addSuffix: true })}
               </span>

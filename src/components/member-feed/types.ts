@@ -10,6 +10,7 @@ export interface Member {
   weeklyRecap?: {
     content: string;
     timestamp: string;
+    weekNumber: number;
     reactions?: {
       heart: string[]; // userId[]
     };
