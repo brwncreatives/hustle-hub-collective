@@ -5,7 +5,6 @@ import { MemberFeed } from "@/components/MemberFeed";
 import { Header } from "@/components/Header";
 import { MotivationalQuote } from "@/components/MotivationalQuote";
 import { ActiveGoals } from "@/components/ActiveGoals";
-import { AccountabilityGroups } from "@/components/AccountabilityGroups";
 import { WeeklyRecapSection } from "@/components/goal/WeeklyRecapSection";
 import { Onboarding } from "@/components/Onboarding";
 import { useEffect, useState } from "react";
@@ -100,7 +99,6 @@ const Index = () => {
         <ActiveGoals />
         <WeeklyRecapSection goalId="global" />
         <MemberFeed />
-        <AccountabilityGroups />
       </div>
     </div>
   );
