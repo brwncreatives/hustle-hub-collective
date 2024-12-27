@@ -1,6 +1,5 @@
-import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Pencil, Check } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 
@@ -64,18 +63,23 @@ export const TaskItem = ({
         </label>
       )}
       <div className="flex items-center gap-2">
-        <Checkbox
-          checked={completed}
-          onCheckedChange={() => onToggleComplete(id)}
-          id={id}
-        />
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setIsEditing(!isEditing)}
-          className="h-8 w-8 p-0"
+          className="h-8 px-3"
         >
-          <Pencil className="h-4 w-4" />
+          <Pencil className="h-4 w-4 mr-1" />
+          Edit
+        </Button>
+        <Button
+          variant={completed ? "secondary" : "ghost"}
+          size="sm"
+          onClick={() => onToggleComplete(id)}
+          className="h-8 px-3"
+        >
+          <Check className="h-4 w-4 mr-1" />
+          {completed ? "Done" : "Complete"}
         </Button>
         {isRecurring ? (
           <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
