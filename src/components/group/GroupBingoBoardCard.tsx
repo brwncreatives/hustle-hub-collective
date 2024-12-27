@@ -90,9 +90,7 @@ export const GroupBingoBoardCard = () => {
           {groupName} Q1 2024 Bingo Card
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-2">
-          Track your group's Q1 progress together! Each member can set up to 3 goals for the quarter. 
-          Complete goals as a team to create lines horizontally, vertically, or diagonally. 
-          When a member reaches 100% on their goal, it counts towards completing a line. Get three in a row for a BINGO! 🎉
+          Track your group's Q1 progress together! Each member can set up to three goals for the quarter. Once a goal is marked as complete, it automatically fills the corresponding square on the shared Bingo board. Complete three squares in a row—horizontally, vertically, or diagonally—for a BINGO! Celebrate each milestone and keep the momentum going.
         </p>
       </CardHeader>
       <CardContent>
