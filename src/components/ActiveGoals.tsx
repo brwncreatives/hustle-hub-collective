@@ -1,17 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Target, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TaskSection } from "./goal/TaskSection";
 import { useState, useEffect } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { GoalStatusBadge } from "./goal/GoalStatusBadge";
 
 interface Goal {
   id: string;
@@ -32,19 +25,6 @@ export const ActiveGoals = () => {
       console.log("Retrieved goals:", JSON.parse(storedGoals));
     }
   }, []);
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'not started':
-        return 'bg-gray-400 hover:bg-gray-500 text-white';
-      case 'in progress':
-        return 'bg-[#7E69AB] hover:bg-[#7E69AB]/80 text-white';
-      case 'completed':
-        return 'bg-[#9b87f5] hover:bg-[#9b87f5]/80 text-white';
-      default:
-        return 'bg-gray-500 hover:bg-gray-600 text-white';
-    }
-  };
 
   const startEditingStatus = (goalId: string, currentStatus: string) => {
     setEditingStatus(goalId);
@@ -104,44 +84,15 @@ export const ActiveGoals = () => {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div>
-                  {editingStatus === goal.id ? (
-                    <div className="flex items-center gap-2">
-                      <Select
-                        value={selectedStatus}
-                        onValueChange={setSelectedStatus}
-                      >
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Not Started">Not Started</SelectItem>
-                          <SelectItem value="In Progress">In Progress</SelectItem>
-                          <SelectItem value="Completed">Completed</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        size="sm"
-                        onClick={() => saveStatus(goal.id)}
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setEditingStatus(null)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  ) : (
-                    <Badge
-                      variant="default"
-                      className={`mb-2 cursor-pointer ${getStatusColor(goal.status)}`}
-                      onClick={() => startEditingStatus(goal.id, goal.status)}
-                    >
-                      {goal.status}
-                    </Badge>
-                  )}
+                  <GoalStatusBadge
+                    status={goal.status}
+                    isEditing={editingStatus === goal.id}
+                    selectedStatus={selectedStatus}
+                    onStatusChange={setSelectedStatus}
+                    onSave={() => saveStatus(goal.id)}
+                    onCancel={() => setEditingStatus(null)}
+                    onStartEditing={() => startEditingStatus(goal.id, goal.status)}
+                  />
                 </div>
                 <TaskSection goalId={goal.id} />
               </div>
