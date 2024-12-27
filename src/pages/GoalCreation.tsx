@@ -100,8 +100,11 @@ const GoalCreation = () => {
 };
 
 const getCurrentQuarter = () => {
-  const currentMonth = new Date().getMonth();
-  return `Q${Math.floor(currentMonth / 3) + 1}-2025`;
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const quarterNumber = Math.floor(currentMonth / 3) + 1;
+  return `Q${quarterNumber}-${currentYear}`;
 };
 
 export default GoalCreation;
