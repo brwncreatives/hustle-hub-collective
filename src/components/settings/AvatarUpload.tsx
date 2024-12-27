@@ -4,13 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  'https://zpbqzuazbmgyifhwphga.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwYnF6dWF6Ym1neWlmaHdwaGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMjI0MTgsImV4cCI6MjA0OTY5ODQxOH0.HVvzkkFpq4m_AecBfYHyyVYHoZgJRIi8uxMxvBOBLmA'
-);
 
 interface AvatarUploadProps {
   user: User | null;
@@ -39,18 +34,9 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
         throw new Error('File type not supported. Please upload an image (JPG, PNG, or GIF).');
       }
 
-      const filePath = `${user?.id}/${Math.random()}.${fileExt}`;
+      if (!user) throw new Error('No user found');
 
-      // First check if the bucket exists and is accessible
-      const { data: buckets } = await supabase
-        .storage
-        .listBuckets();
-
-      const avatarBucketExists = buckets?.some(bucket => bucket.name === 'avatar');
-
-      if (!avatarBucketExists) {
-        throw new Error('Storage is not properly configured. Please ensure the "avatar" bucket exists in Supabase.');
-      }
+      const filePath = `${user.id}/${Math.random()}.${fileExt}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from('avatar')
@@ -60,7 +46,8 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
         });
 
       if (uploadError) {
-        throw uploadError;
+        console.error('Upload error:', uploadError);
+        throw new Error('Error uploading file. Please try again.');
       }
 
       if (!data?.path) {
@@ -78,7 +65,8 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
       });
 
       if (updateError) {
-        throw updateError;
+        console.error('Update user error:', updateError);
+        throw new Error('Error updating profile. Please try again.');
       }
 
       toast({
