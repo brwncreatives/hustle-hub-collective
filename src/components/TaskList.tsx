@@ -4,7 +4,7 @@ import { useTaskManager } from "@/hooks/useTaskManager";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import { WeekCard } from "./task/WeekCard";
-import { getCurrentWeekInQuarter, getQuarterFromGoal } from "@/utils/dateUtils";
+import { getCurrentWeekInQuarter } from "@/utils/dateUtils";
 
 export const TaskList = ({ goalId }: TaskListProps) => {
   const {
@@ -108,7 +108,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             weekKey={weekKey}
             weekNumber={weekNumber}
             isCurrentWeek={isCurrentWeek}
-            quarter={getQuarterFromGoal(goalQuarter)}
             tasksForWeek={groupedTasks[weekKey]}
             showCompletedForWeek={completedTasksVisibility[weekKey]}
             toggleCompletedForWeek={toggleCompletedForWeek}

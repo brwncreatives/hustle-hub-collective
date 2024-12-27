@@ -15,7 +15,6 @@ interface WeekCardProps {
   weekKey: string;
   weekNumber: number;
   isCurrentWeek: boolean;
-  quarter: string;
   tasksForWeek: Task[];
   showCompletedForWeek: boolean;
   toggleCompletedForWeek: (weekKey: string) => void;
@@ -29,7 +28,6 @@ export const WeekCard = ({
   weekKey,
   weekNumber,
   isCurrentWeek,
-  quarter,
   tasksForWeek,
   showCompletedForWeek,
   toggleCompletedForWeek,
@@ -70,9 +68,6 @@ export const WeekCard = ({
                   Current Week
                 </Badge>
               )}
-              <Badge variant="outline" className="text-xs font-medium">
-                {quarter}
-              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">

@@ -13,8 +13,3 @@ export const getCurrentWeekInQuarter = (goalQuarter: string | null): number => {
   
   return Math.min(Math.max(weekInQuarter, 1), 12);
 };
-
-export const getQuarterFromGoal = (goalQuarter: string | null): string => {
-  if (!goalQuarter) return "Q1";
-  return goalQuarter.split('-')[0];
-};
