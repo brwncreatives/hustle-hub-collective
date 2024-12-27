@@ -14,14 +14,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const ActiveGoals = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [showRecapModal, setShowRecapModal] = useState(false);
   const [comment, setComment] = useState("");
+  const [selectedWeek, setSelectedWeek] = useState("1");
   const [hasTappedIn, setHasTappedIn] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
+
+  const weeks = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
   const handleTapIn = () => {
     if (hasTappedIn) {
@@ -35,6 +45,7 @@ export const ActiveGoals = () => {
     console.log("Weekly recap recorded:", {
       goalId: "learn-react-native",
       comment,
+      weekNumber: parseInt(selectedWeek),
       isPublic,
       timestamp: new Date().toISOString(),
     });
@@ -45,7 +56,7 @@ export const ActiveGoals = () => {
 
     toast({
       title: "Weekly Recap Submitted! 🎯",
-      description: `Your weekly reflection has been ${isPublic ? 'shared publicly' : 'saved privately'}. Keep pushing forward!`,
+      description: `Your week ${selectedWeek} reflection has been ${isPublic ? 'shared publicly' : 'saved privately'}. Keep pushing forward!`,
     });
   };
 
@@ -102,6 +113,21 @@ export const ActiveGoals = () => {
                   </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="week" className="text-sm text-muted-foreground">Select Week</label>
+                    <Select value={selectedWeek} onValueChange={setSelectedWeek}>
+                      <SelectTrigger id="week" className="w-full">
+                        <SelectValue placeholder="Select week" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {weeks.map((week) => (
+                          <SelectItem key={week} value={week}>
+                            Week {week}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <Textarea
                     placeholder="Reflect on your progress this week. How are you feeling about your goals? What challenges did you face? What victories did you achieve?"
                     value={comment}
