@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
+import { Users, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -30,9 +30,18 @@ export const AccountabilityGroups = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         {!group ? (
-          <p className="text-center text-muted-foreground">
-            You are not currently part of any group. Please contact an administrator to join.
-          </p>
+          <div className="text-center space-y-4 py-6">
+            <p className="text-muted-foreground">
+              Join an accountability group to stay motivated and track progress together.
+            </p>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={() => navigate('/join-group')}
+            >
+              <UserPlus className="mr-2 h-4 w-4" />
+              Join a Group
+            </Button>
+          </div>
         ) : (
           <Button
             className="w-full justify-between"
