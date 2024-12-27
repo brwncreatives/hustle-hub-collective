@@ -1,7 +1,7 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "../ui/card";
 import { Trophy, Target, Star } from "lucide-react";
 import { useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "../ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskManager } from "@/hooks/useTaskManager";
 
@@ -17,14 +17,30 @@ export const TaskBingoCard = ({ goalId }: TaskBingoCardProps) => {
   const totalCells = gridRows * gridCols;
 
   const checkForWeekCompletion = () => {
-    const completedTasks = tasks.filter(task => task.completed);
-    if (completedTasks.length > 0) {
-      const lastCompleted = completedTasks[completedTasks.length - 1];
-      toast({
-        title: "Week Complete! 🎉",
-        description: `You've completed all tasks for Week ${lastCompleted.week}!`,
-      });
-    }
+    // Group tasks by week
+    const tasksByWeek = tasks.reduce((acc, task) => {
+      const weekKey = task.week?.toString() || '1';
+      if (!acc[weekKey]) {
+        acc[weekKey] = [];
+      }
+      acc[weekKey].push(task);
+      return acc;
+    }, {} as Record<string, any[]>);
+
+    // Check each week's completion status
+    Object.entries(tasksByWeek).forEach(([week, weekTasks]) => {
+      const hasIncompleteTasks = weekTasks.some(task => !task.completed);
+      const hasCompletedTasks = weekTasks.some(task => task.completed);
+      
+      // Only show toast if ALL tasks for the week are completed
+      // and at least one task exists
+      if (weekTasks.length > 0 && !hasIncompleteTasks && hasCompletedTasks) {
+        toast({
+          title: "Week Complete! 🎉",
+          description: `You've completed all tasks for Week ${week}!`,
+        });
+      }
+    });
   };
 
   useEffect(() => {
