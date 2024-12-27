@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -147,7 +147,7 @@ export const TaskItem = ({
                 onClick={handleDelete}
                 className="w-full"
               >
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash className="h-4 w-4 mr-2" />
                 Delete Task
               </Button>
               <Button onClick={handleSaveEdit} className="w-full">
