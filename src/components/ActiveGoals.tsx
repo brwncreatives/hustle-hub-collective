@@ -81,16 +81,19 @@ export const ActiveGoals = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <Badge
-                  variant="default"
-                  className="mb-2 bg-green-500 hover:bg-green-600"
-                >
-                  In Progress
-                </Badge>
-                <p className="font-medium text-foreground">Learn React Native</p>
-              </div>
+            <div>
+              <Badge
+                variant="default"
+                className="mb-2 bg-green-500 hover:bg-green-600"
+              >
+                In Progress
+              </Badge>
+              <p className="font-medium text-foreground">Learn React Native</p>
+            </div>
+
+            <TaskList goalId="learn-react-native" />
+
+            <div className="flex justify-end mt-4">
               <Button
                 variant={hasTappedIn ? "secondary" : "default"}
                 size="sm"
@@ -101,8 +104,6 @@ export const ActiveGoals = () => {
                 Weekly Recap
               </Button>
             </div>
-
-            <TaskList goalId="learn-react-native" />
 
             <Dialog open={showRecapModal} onOpenChange={setShowRecapModal}>
               <DialogContent className="sm:max-w-[500px]">
