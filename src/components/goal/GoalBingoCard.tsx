@@ -17,22 +17,6 @@ export const GoalBingoCard = () => {
   const gridSize = 5;
   const totalCells = gridSize * gridSize;
 
-  useEffect(() => {
-    // Mock data with multiple completed goals for demonstration
-    const mockGoals = [
-      { id: '1', title: 'Complete React Course', status: 'completed', quarter: 'Q1-2024' },
-      { id: '2', title: 'Build Portfolio', status: 'completed', quarter: 'Q1-2024' },
-      { id: '3', title: 'Learn TypeScript', status: 'completed', quarter: 'Q1-2024' },
-      { id: '4', title: 'Write Documentation', status: 'in progress', quarter: 'Q1-2024' },
-      { id: '5', title: 'Deploy Apps', status: 'not started', quarter: 'Q1-2024' },
-      { id: '6', title: 'Create Portfolio', status: 'completed', quarter: 'Q1-2024' },
-      { id: '7', title: 'Learn Testing', status: 'completed', quarter: 'Q1-2024' },
-      { id: '8', title: 'Master Git', status: 'in progress', quarter: 'Q1-2024' },
-      { id: '9', title: 'Study Design', status: 'not started', quarter: 'Q1-2024' },
-    ];
-    setGoals(mockGoals);
-  }, []);
-
   const getCompletedGoalsCount = () => {
     return goals.filter(goal => goal.status.toLowerCase() === 'completed').length;
   };
