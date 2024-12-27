@@ -43,12 +43,7 @@ export const TaskItem = ({
   };
 
   return (
-    <div className="flex items-center space-x-2 bg-white/5 p-2 rounded-md">
-      <Checkbox
-        checked={completed}
-        onCheckedChange={() => onToggleComplete(id)}
-        id={id}
-      />
+    <div className="flex items-center justify-between space-x-2 bg-white/5 p-2 rounded-md">
       {isEditing ? (
         <Input
           value={editedTitle}
@@ -69,6 +64,11 @@ export const TaskItem = ({
         </label>
       )}
       <div className="flex items-center gap-2">
+        <Checkbox
+          checked={completed}
+          onCheckedChange={() => onToggleComplete(id)}
+          id={id}
+        />
         <Button
           variant="ghost"
           size="sm"
