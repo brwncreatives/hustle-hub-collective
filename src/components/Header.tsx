@@ -14,12 +14,15 @@ interface HeaderProps {
 
 export const Header = ({ user, signOut }: HeaderProps) => {
   const navigate = useNavigate();
-  const firstName = user.user_metadata?.first_name;
-  const lastName = user.user_metadata?.last_name;
   
-  let displayName = firstName || '';
-  if (!displayName) {
-    const emailName = user.email?.split('@')[0] || '';
+  // Safely access user metadata with null checks
+  const firstName = user?.user_metadata?.first_name || '';
+  const lastName = user?.user_metadata?.last_name || '';
+  const avatarUrl = user?.user_metadata?.avatar_url;
+  
+  let displayName = firstName;
+  if (!displayName && user?.email) {
+    const emailName = user.email.split('@')[0];
     const [firstPart] = emailName.split(/[._-]/).map(part => 
       part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
     );
@@ -40,7 +43,7 @@ export const Header = ({ user, signOut }: HeaderProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="border-2 border-primary cursor-pointer hover:opacity-80">
-            <AvatarImage src={user.user_metadata.avatar_url || "https://github.com/shadcn.png"} />
+            <AvatarImage src={avatarUrl || "https://github.com/shadcn.png"} />
             <AvatarFallback className="bg-primary">
               {initials}
             </AvatarFallback>
