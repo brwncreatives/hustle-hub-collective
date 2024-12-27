@@ -1,9 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, User, MessageSquare } from "lucide-react";
+import { TrendingUp, User, MessageSquare, Heart, SmilePlus } from "lucide-react";
 import { MemberFeedActions } from "./MemberFeedActions";
 import { Member } from "./types";
 import { formatDistanceToNow } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface MemberFeedItemProps {
   member: Member;
@@ -24,6 +26,16 @@ export const MemberFeedItem = ({
   showCommentField,
   onToggleComment,
 }: MemberFeedItemProps) => {
+  const { toast } = useToast();
+
+  const handleReaction = (type: string) => {
+    // In a real app, this would make an API call to store the reaction
+    console.log(`Reacting with ${type} to ${member.name}'s recap`);
+    toast({
+      description: `You showed support with ${type} for ${member.name}'s weekly reflection!`,
+    });
+  };
+
   return (
     <Card className="p-4">
       <div className="space-y-4">
@@ -64,6 +76,26 @@ export const MemberFeedItem = ({
             </div>
             <div className="bg-muted/30 p-4 rounded-lg">
               <p className="text-sm italic">{member.weeklyRecap.content}</p>
+              <div className="flex items-center gap-2 mt-4 border-t border-muted/20 pt-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-pink-500 hover:text-pink-600 hover:bg-pink-100/10"
+                  onClick={() => handleReaction('heart')}
+                >
+                  <Heart className="h-4 w-4 mr-1" />
+                  <span className="text-xs">{member.weeklyRecap.reactions?.heart?.length || 0}</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-yellow-500 hover:text-yellow-600 hover:bg-yellow-100/10"
+                  onClick={() => handleReaction('smile')}
+                >
+                  <SmilePlus className="h-4 w-4 mr-1" />
+                  <span className="text-xs">{member.weeklyRecap.reactions?.smile?.length || 0}</span>
+                </Button>
+              </div>
             </div>
           </div>
         )}

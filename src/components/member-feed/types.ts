@@ -10,5 +10,8 @@ export interface Member {
   weeklyRecap?: {
     content: string;
     timestamp: string;
+    reactions?: {
+      [key: string]: string[]; // userId[]
+    };
   };
 }
