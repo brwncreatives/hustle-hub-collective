@@ -18,7 +18,7 @@ export const ActiveGoals = () => {
   const handleTapIn = () => {
     if (hasTappedIn) {
       toast({
-        description: "You've already tapped in for your goal today!",
+        description: "You've already submitted your weekly recap!",
         variant: "destructive",
       });
       return;
@@ -35,10 +35,8 @@ export const ActiveGoals = () => {
     setShowCommentField(false);
 
     toast({
-      title: "Progress Updated! 🎯",
-      description: comment
-        ? "You've logged your progress with a comment!"
-        : "You've logged your progress!",
+      title: "Weekly Recap Submitted! 🎯",
+      description: "Your weekly reflection has been recorded. Keep pushing forward!",
     });
   };
 
@@ -77,10 +75,10 @@ export const ActiveGoals = () => {
                 variant={hasTappedIn ? "secondary" : "default"}
                 size="sm"
                 onClick={() => setShowCommentField(!showCommentField)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90"
               >
                 <Send className="h-4 w-4" />
-                Tap In
+                Weekly Recap
               </Button>
             </div>
 
@@ -89,7 +87,7 @@ export const ActiveGoals = () => {
             {showCommentField && (
               <div className="mt-4 space-y-2">
                 <Textarea
-                  placeholder="Add a quick update about your progress..."
+                  placeholder="Reflect on your progress this week. How are you feeling about your goals? What challenges did you face? What victories did you achieve?"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   className="min-h-[80px] bg-white/5 border-primary/20 focus:border-primary"
