@@ -5,17 +5,28 @@ import { GoalFormValues } from "@/components/goal/types";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { WeeklyRecapSection } from "@/components/goal/WeeklyRecapSection";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Lock, Globe } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 const GoalEdit = () => {
   const { goalId } = useParams();
   const [goal, setGoal] = useState<GoalFormValues & { id: string }>();
   const { user, signOut } = useAuth();
+  const [recaps, setRecaps] = useState<any[]>([]);
 
   useEffect(() => {
     const goals = JSON.parse(localStorage.getItem('goals') || '[]');
     const foundGoal = goals.find((g: any) => g.id === goalId);
     if (foundGoal) {
       setGoal(foundGoal);
+    }
+
+    // Load recaps for this specific goal
+    const storedRecaps = localStorage.getItem(`recaps-${goalId}`);
+    if (storedRecaps) {
+      setRecaps(JSON.parse(storedRecaps));
     }
   }, [goalId]);
 
@@ -38,6 +49,50 @@ const GoalEdit = () => {
               onSubmit={handleSubmit}
               title="Manage Goal"
             />
+            
+            <Card className="w-full">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Past Weekly Recaps</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {recaps.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-4">
+                    No recaps yet. Start reflecting on your progress!
+                  </p>
+                ) : (
+                  <div className="space-y-4">
+                    {recaps.map((recap) => (
+                      <Card key={recap.id} className="p-4 bg-muted/50">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Badge variant="secondary">Week {recap.weekNumber}</Badge>
+                              {!recap.isPublic && (
+                                <Badge variant="outline" className="text-xs">
+                                  <Lock className="h-3 w-3 mr-1" />
+                                  Private
+                                </Badge>
+                              )}
+                              {recap.isPublic && (
+                                <Badge variant="outline" className="text-xs">
+                                  <Globe className="h-3 w-3 mr-1" />
+                                  Public
+                                </Badge>
+                              )}
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(recap.timestamp), { addSuffix: true })}
+                            </span>
+                          </div>
+                          <p className="text-sm">{recap.comment}</p>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             <WeeklyRecapSection goalId={goal.id} />
           </>
         )}
