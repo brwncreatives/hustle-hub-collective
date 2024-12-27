@@ -7,7 +7,6 @@ import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import GoalCreation from "./pages/GoalCreation";
 import GoalEdit from "./pages/GoalEdit";
-import GroupCreation from "./pages/GroupCreation";
 import GroupLanding from "./pages/GroupLanding";
 import GroupManagement from "./pages/GroupManagement";
 import Settings from "./pages/Settings";
@@ -25,7 +24,6 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/create-goal" element={<GoalCreation />} />
             <Route path="/edit-goal/:goalId" element={<GoalEdit />} />
-            <Route path="/create-group" element={<GroupCreation />} />
             <Route path="/join-group" element={<GroupLanding />} />
             <Route path="/manage-group/:groupId" element={<GroupManagement />} />
             <Route path="/settings" element={<Settings />} />
