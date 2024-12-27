@@ -18,10 +18,13 @@ export const GoalBingoCard = () => {
   const totalCells = gridSize * gridSize;
 
   useEffect(() => {
-    const storedGoals = localStorage.getItem('goals');
-    if (storedGoals) {
-      setGoals(JSON.parse(storedGoals));
-    }
+    // Mock data with a completed goal for demonstration
+    const mockGoals = [
+      { id: '1', title: 'Complete React Course', status: 'completed', quarter: 'Q1-2024' },
+      { id: '2', title: 'Build Portfolio', status: 'in progress', quarter: 'Q1-2024' },
+      { id: '3', title: 'Learn TypeScript', status: 'not started', quarter: 'Q1-2024' },
+    ];
+    setGoals(mockGoals);
   }, []);
 
   const getCompletedGoalsCount = () => {
@@ -82,7 +85,7 @@ export const GoalBingoCard = () => {
   const getGoalColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return 'bg-[#9b87f5]/10 border-[#9b87f5]';
+        return 'bg-[#9b87f5]/10 border-[#9b87f5] shadow-md shadow-[#9b87f5]/20';
       case 'in progress':
         return 'bg-yellow-50 border-yellow-200';
       case 'not started':
