@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { TaskForm } from "../TaskForm";
 import { useState } from "react";
+import { useTaskManager } from "@/hooks/useTaskManager";
 
 interface TaskSectionProps {
   goalId: string;
@@ -20,9 +21,13 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
   const [newTask, setNewTask] = useState("");
   const [selectedWeek, setSelectedWeek] = useState("1");
   const [isRecurring, setIsRecurring] = useState(false);
+  
+  const { addTask } = useTaskManager(goalId);
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
+    
+    addTask(newTask, isRecurring, selectedWeek);
     setNewTask("");
     setIsOpen(false);
   };

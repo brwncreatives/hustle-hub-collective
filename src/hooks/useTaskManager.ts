@@ -1,10 +1,19 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Task } from "@/types/task";
 import { useToast } from "@/hooks/use-toast";
 
 export const useTaskManager = (goalId: string) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
+
+  // Load tasks from localStorage when the component mounts
+  useEffect(() => {
+    const storedTasks = localStorage.getItem(`tasks-${goalId}`);
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks));
+      console.log("Loaded tasks for goal:", goalId, JSON.parse(storedTasks));
+    }
+  }, [goalId]);
 
   const addTask = useCallback((newTaskTitle: string, isRecurring: boolean, selectedWeek: string) => {
     if (!newTaskTitle.trim()) return;
@@ -19,6 +28,8 @@ export const useTaskManager = (goalId: string) => {
 
     setTasks(prevTasks => {
       const updatedTasks = [...prevTasks, newTask];
+      // Save to localStorage
+      localStorage.setItem(`tasks-${goalId}`, JSON.stringify(updatedTasks));
       console.log("Tasks after adding:", updatedTasks);
       return updatedTasks;
     });
@@ -26,26 +37,31 @@ export const useTaskManager = (goalId: string) => {
     toast({
       description: "Task added successfully",
     });
-  }, [toast]);
+  }, [goalId, toast]);
 
   const editTask = useCallback((taskId: string, newTitle: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map((task) =>
+    setTasks(prevTasks => {
+      const updatedTasks = prevTasks.map((task) =>
         task.id === taskId ? { ...task, title: newTitle } : task
-      )
-    );
+      );
+      localStorage.setItem(`tasks-${goalId}`, JSON.stringify(updatedTasks));
+      return updatedTasks;
+    });
+    
     toast({
       description: "Task updated successfully",
     });
-  }, [toast]);
+  }, [goalId, toast]);
 
   const toggleTaskCompletion = useCallback((taskId: string) => {
-    setTasks(prevTasks =>
-      prevTasks.map((task) =>
+    setTasks(prevTasks => {
+      const updatedTasks = prevTasks.map((task) =>
         task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
-  }, []);
+      );
+      localStorage.setItem(`tasks-${goalId}`, JSON.stringify(updatedTasks));
+      return updatedTasks;
+    });
+  }, [goalId]);
 
   const getTasksForWeek = useCallback((weekNumber: number) => {
     return tasks.filter(
