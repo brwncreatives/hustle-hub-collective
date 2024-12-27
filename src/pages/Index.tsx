@@ -19,7 +19,6 @@ const Index = () => {
     const fetchOnboardingStatus = async () => {
       if (user) {
         try {
-          // First try to get the profile
           const { data: profile, error: fetchError } = await supabase
             .from('profiles')
             .select('onboarding_completed')
@@ -31,7 +30,6 @@ const Index = () => {
             throw fetchError;
           }
 
-          // If no profile exists, create one
           if (!profile) {
             const { error: insertError } = await supabase
               .from('profiles')
@@ -93,12 +91,18 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted text-foreground">
-      <div className="container mx-auto px-4 py-6 space-y-6 max-w-md md:max-w-2xl">
+      <div className="container mx-auto px-4 py-6 space-y-8">
         <Header user={user} signOut={signOut} />
-        <MotivationalQuote />
-        <ActiveGoals />
-        <WeeklyRecapSection goalId="global" />
-        <MemberFeed />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="md:col-span-2 space-y-8">
+            <MotivationalQuote />
+            <ActiveGoals />
+            <WeeklyRecapSection goalId="global" />
+          </div>
+          <div className="space-y-8">
+            <MemberFeed />
+          </div>
+        </div>
       </div>
     </div>
   );
