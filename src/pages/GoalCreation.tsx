@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Form, FormLabel, FormDescription } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,7 +32,16 @@ const GoalCreation = () => {
   });
 
   const onSubmit = (data: GoalFormValues) => {
-    console.log("Goal created:", data);
+    const newGoal = {
+      id: crypto.randomUUID(),
+      ...data,
+    };
+
+    // Save to localStorage
+    const existingGoals = JSON.parse(localStorage.getItem('goals') || '[]');
+    localStorage.setItem('goals', JSON.stringify([...existingGoals, newGoal]));
+    
+    console.log("Goal created:", newGoal);
     toast({
       title: "Goal Created",
       description: "Your goal has been successfully created!",
