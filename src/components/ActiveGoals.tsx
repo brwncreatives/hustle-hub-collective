@@ -43,7 +43,7 @@ export const ActiveGoals = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex justify-end">
         <Button
           onClick={() => navigate("/create-goal")}
@@ -55,7 +55,7 @@ export const ActiveGoals = () => {
       </div>
 
       {goals.length === 0 ? (
-        <Card className="border-none bg-white/5 backdrop-blur-sm">
+        <Card className="w-full mb-6">
           <CardContent className="pt-6">
             <p className="text-center text-muted-foreground">
               No active goals yet. Click 'Add Goal' to create your first goal!
@@ -64,7 +64,7 @@ export const ActiveGoals = () => {
         </Card>
       ) : (
         goals.map((goal) => (
-          <Card key={goal.id} className="border-none bg-white/5 backdrop-blur-sm">
+          <Card key={goal.id} className="w-full mb-6">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
