@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Target, Send } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
@@ -101,9 +100,6 @@ export const ActiveGoals = () => {
                 </Button>
               </div>
             )}
-            <Progress value={33} className="h-2">
-              <div className="h-full bg-gradient-to-r from-primary to-primary/60 rounded-full" />
-            </Progress>
           </div>
         </CardContent>
       </Card>

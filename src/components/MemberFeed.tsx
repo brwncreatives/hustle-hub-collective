@@ -191,13 +191,6 @@ export function MemberFeed() {
                       </Button>
                     </div>
                   )}
-
-                  <div className="mt-4 space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>{member.goal.progress}% Complete</span>
-                    </div>
-                    <Progress value={member.goal.progress} className="h-2" />
-                  </div>
                 </Card>
               );
             })}
