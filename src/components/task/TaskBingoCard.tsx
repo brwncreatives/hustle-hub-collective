@@ -15,12 +15,13 @@ export const TaskBingoCard = ({ tasks, onToggleComplete }: TaskBingoCardProps) =
   // Create a 3x4 grid of tasks (or empty cells if not enough tasks)
   const createTaskGrid = () => {
     const grid: (Task | null)[][] = Array(3).fill(null).map(() => Array(4).fill(null));
+    const weekTasks = tasks.filter(task => !task.isRecurring); // Only non-recurring tasks
     let taskIndex = 0;
 
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 4; col++) {
-        if (taskIndex < tasks.length) {
-          grid[row][col] = tasks[taskIndex];
+        if (taskIndex < weekTasks.length) {
+          grid[row][col] = weekTasks[taskIndex];
           taskIndex++;
         }
       }
