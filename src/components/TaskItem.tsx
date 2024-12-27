@@ -71,6 +71,11 @@ export const TaskItem = ({
         </div>
       </div>
       <div className="flex items-center space-x-2">
+        <Checkbox
+          checked={completed}
+          onCheckedChange={() => onToggleComplete(id)}
+          className={completed ? 'bg-[#9b87f5] border-[#9b87f5]' : ''}
+        />
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button
