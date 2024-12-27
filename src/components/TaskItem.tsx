@@ -92,9 +92,8 @@ export const TaskItem = ({
             </DialogHeader>
             <div className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="task">Task Description</Label>
+                <Label>Task Description</Label>
                 <Input
-                  id="task"
                   value={editedTitle}
                   onChange={(e) => setEditedTitle(e.target.value)}
                   placeholder="Task title"
