@@ -10,8 +10,11 @@ export const useTaskManager = (goalId: string) => {
   useEffect(() => {
     const storedTasks = localStorage.getItem(`tasks-${goalId}`);
     if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
-      console.log("Loaded tasks for goal:", goalId, JSON.parse(storedTasks));
+      const parsedTasks = JSON.parse(storedTasks);
+      setTasks(parsedTasks);
+      console.log("useTaskManager - Loaded tasks for goal:", goalId, parsedTasks);
+    } else {
+      console.log("useTaskManager - No stored tasks found for goal:", goalId);
     }
   }, [goalId]);
 
@@ -26,11 +29,12 @@ export const useTaskManager = (goalId: string) => {
       week: parseInt(selectedWeek),
     };
 
+    console.log("useTaskManager - Adding new task:", newTask);
+
     setTasks(prevTasks => {
       const updatedTasks = [...prevTasks, newTask];
-      // Save to localStorage
       localStorage.setItem(`tasks-${goalId}`, JSON.stringify(updatedTasks));
-      console.log("Tasks after adding:", updatedTasks);
+      console.log("useTaskManager - Tasks after adding:", updatedTasks);
       return updatedTasks;
     });
 
@@ -64,6 +68,7 @@ export const useTaskManager = (goalId: string) => {
   }, [goalId]);
 
   const getTasksForWeek = useCallback((weekNumber: number) => {
+    console.log("useTaskManager - Getting tasks for week:", weekNumber, "from tasks:", tasks);
     return tasks.filter(
       (task) => task.isRecurring || task.week === weekNumber
     );

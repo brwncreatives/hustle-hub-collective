@@ -13,6 +13,11 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     getTasksForWeek,
   } = useTaskManager(goalId);
 
+  useEffect(() => {
+    console.log("TaskList - All tasks:", tasks);
+    console.log("TaskList - goalId:", goalId);
+  }, [tasks, goalId]);
+
   const getCurrentWeek = () => {
     return "1";
   };
@@ -22,20 +27,21 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   }, []);
 
   const currentWeekTasks = getTasksForWeek(parseInt(selectedWeek));
-  console.log("Current week tasks:", currentWeekTasks);
+  console.log("TaskList - Current week tasks:", currentWeekTasks, "for week:", selectedWeek);
 
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        {currentWeekTasks.map((task) => (
-          <TaskItem
-            key={task.id}
-            {...task}
-            onToggleComplete={toggleTaskCompletion}
-            onEditTask={editTask}
-          />
-        ))}
-        {currentWeekTasks.length === 0 && (
+        {Array.isArray(currentWeekTasks) && currentWeekTasks.length > 0 ? (
+          currentWeekTasks.map((task) => (
+            <TaskItem
+              key={task.id}
+              {...task}
+              onToggleComplete={toggleTaskCompletion}
+              onEditTask={editTask}
+            />
+          ))
+        ) : (
           <p className="text-sm text-muted-foreground text-center py-2">
             No tasks for this week
           </p>
