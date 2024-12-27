@@ -29,20 +29,27 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
 
   // Group tasks by week
   const groupedTasks = tasks.reduce((acc, task) => {
+    // Initialize all weeks (1-12) in the accumulator
+    if (Object.keys(acc).length === 0) {
+      for (let i = 1; i <= 12; i++) {
+        acc[`week${i}`] = [];
+      }
+    }
+
     if (task.isRecurring) {
       if (!task.completed || (showCompleted && task.completed)) {
         const weeksToShow = task.completed ? [task.week || 1] : Array.from({ length: 12 }, (_, i) => i + 1);
         weeksToShow.forEach(week => {
           const weekKey = `week${week}`;
-          acc[weekKey] = acc[weekKey] || [];
           acc[weekKey].push({ ...task, week });
         });
       }
     } else {
       if (!task.completed || (showCompleted && task.completed)) {
         const weekKey = `week${task.week}`;
-        acc[weekKey] = acc[weekKey] || [];
-        acc[weekKey].push(task);
+        if (weekKey) {
+          acc[weekKey].push(task);
+        }
       }
     }
     return acc;
@@ -58,7 +65,7 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
 
   const currentWeek = getCurrentWeek();
 
-  if (sortedWeeks.length === 0) {
+  if (tasks.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-2">
         {showCompleted ? "No tasks available" : "No active tasks"}
@@ -69,10 +76,12 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
   return (
     <div className="space-y-6">
       {sortedWeeks.map((weekKey) => {
-        if (groupedTasks[weekKey].length === 0) return null;
-        
         const weekNumber = parseInt(weekKey.replace('week', ''));
         const isCurrentWeek = weekNumber === currentWeek;
+        const tasksForWeek = groupedTasks[weekKey];
+        
+        // Only show weeks that have tasks or are the current week
+        if (tasksForWeek.length === 0 && !isCurrentWeek) return null;
         
         return (
           <Card 
@@ -90,11 +99,11 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
                   )}
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  {groupedTasks[weekKey].length} {groupedTasks[weekKey].length === 1 ? 'task' : 'tasks'}
+                  {tasksForWeek.length} {tasksForWeek.length === 1 ? 'task' : 'tasks'}
                 </span>
               </div>
               <div className="space-y-2">
-                {groupedTasks[weekKey].map((task: any) => (
+                {tasksForWeek.map((task: any) => (
                   <TaskItem
                     key={`${task.id}-${weekKey}`}
                     {...task}
