@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Target, MessageSquare, Lock, Globe } from "lucide-react";
+import { Target, MessageSquare, Lock, Globe, Plus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +30,9 @@ export const ActiveGoals = () => {
   const [selectedWeek, setSelectedWeek] = useState("1");
   const [hasTappedIn, setHasTappedIn] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
+  const [newTask, setNewTask] = useState("");
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const weeks = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
@@ -58,6 +61,12 @@ export const ActiveGoals = () => {
       title: "Weekly Recap Submitted! 🎯",
       description: `Your week ${selectedWeek} reflection has been ${isPublic ? 'shared publicly' : 'saved privately'}. Keep pushing forward!`,
     });
+  };
+
+  const handleAddTask = () => {
+    // Add your task adding logic here
+    setNewTask("");
+    setIsOpen(false);
   };
 
   return (
@@ -93,7 +102,33 @@ export const ActiveGoals = () => {
 
             <TaskList goalId="learn-react-native" />
 
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end gap-2 mt-4">
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Task
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Task</DialogTitle>
+                  </DialogHeader>
+                  <TaskForm
+                    newTask={newTask}
+                    setNewTask={setNewTask}
+                    selectedWeek={selectedWeek}
+                    setSelectedWeek={setSelectedWeek}
+                    isRecurring={isRecurring}
+                    setIsRecurring={setIsRecurring}
+                    onAddTask={handleAddTask}
+                  />
+                </DialogContent>
+              </Dialog>
               <Button
                 variant={hasTappedIn ? "secondary" : "default"}
                 size="sm"
