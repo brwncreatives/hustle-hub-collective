@@ -27,7 +27,7 @@ const App = () => (
             <Route path="/edit-goal/:goalId" element={<GoalEdit />} />
             <Route path="/create-group" element={<GroupCreation />} />
             <Route path="/join-group" element={<GroupLanding />} />
-            <Route path="/manage-group" element={<GroupManagement />} />
+            <Route path="/manage-group/:groupId" element={<GroupManagement />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </BrowserRouter>
