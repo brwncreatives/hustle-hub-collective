@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
 import { Task, TaskListProps } from "@/types/task";
+import { useToast } from "@/hooks/use-toast";
 
 export const TaskList = ({ goalId }: TaskListProps) => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -10,10 +11,9 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<string>("1");
   const [showForm, setShowForm] = useState(false);
+  const { toast } = useToast();
 
-  // Get the current week number (1-12)
   const getCurrentWeek = () => {
-    // This is a simplified version. In a real app, you'd calculate this based on the goal's start date
     return "1";
   };
 
@@ -37,6 +37,17 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     console.log("Task added:", { goalId, task });
   };
 
+  const handleEditTask = (taskId: string, newTitle: string) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId ? { ...task, title: newTitle } : task
+      )
+    );
+    toast({
+      description: "Task updated successfully",
+    });
+  };
+
   const toggleTaskCompletion = (taskId: string) => {
     setTasks(
       tasks.map((task) =>
@@ -45,7 +56,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     );
   };
 
-  // Filter tasks for the current week or recurring tasks
   const currentWeekTasks = tasks.filter(
     (task) => task.isRecurring || task.week === parseInt(selectedWeek)
   );
@@ -79,6 +89,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             key={task.id}
             {...task}
             onToggleComplete={toggleTaskCompletion}
+            onEditTask={handleEditTask}
           />
         ))}
         {currentWeekTasks.length === 0 && (
