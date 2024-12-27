@@ -19,23 +19,51 @@ const Index = () => {
   useEffect(() => {
     const fetchOnboardingStatus = async () => {
       if (user) {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('onboarding_completed')
-          .eq('id', user.id)
-          .single();
+        try {
+          // First try to get the profile
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('onboarding_completed')
+            .eq('id', user.id)
+            .maybeSingle();
 
-        if (error) {
-          console.error('Error fetching onboarding status:', error);
-          return;
+          if (error) {
+            console.error('Error fetching onboarding status:', error);
+            return;
+          }
+
+          // If no profile exists, create one
+          if (!profile) {
+            const { error: insertError } = await supabase
+              .from('profiles')
+              .insert([
+                { 
+                  id: user.id,
+                  onboarding_completed: false,
+                }
+              ]);
+
+            if (insertError) {
+              console.error('Error creating profile:', insertError);
+              return;
+            }
+
+            setOnboardingCompleted(false);
+          } else {
+            setOnboardingCompleted(profile.onboarding_completed ?? false);
+          }
+        } catch (error) {
+          console.error('Error in fetchOnboardingStatus:', error);
+          toast({
+            variant: "destructive",
+            description: "Failed to fetch onboarding status. Please try refreshing the page.",
+          });
         }
-
-        setOnboardingCompleted(data?.onboarding_completed ?? false);
       }
     };
 
     fetchOnboardingStatus();
-  }, [user]);
+  }, [user, toast]);
 
   if (loading) {
     return (
