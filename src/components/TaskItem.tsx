@@ -43,26 +43,35 @@ export const TaskItem = ({
 
   return (
     <div className="flex items-center justify-between space-x-2 bg-white/5 p-2 rounded-md">
-      {isEditing ? (
-        <Input
-          value={editedTitle}
-          onChange={(e) => setEditedTitle(e.target.value)}
-          onBlur={handleSaveEdit}
-          onKeyDown={handleKeyPress}
-          className="flex-1"
-          autoFocus
-        />
-      ) : (
-        <label
-          htmlFor={id}
-          className={`flex-1 ${
-            completed ? "line-through text-muted-foreground" : ""
-          }`}
-        >
-          {title}
-        </label>
-      )}
-      <div className="flex items-center gap-2">
+      <div className="flex-1">
+        {isEditing ? (
+          <Input
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            onBlur={handleSaveEdit}
+            onKeyDown={handleKeyPress}
+            className="flex-1"
+            autoFocus
+          />
+        ) : (
+          <label
+            htmlFor={id}
+            className={`${completed ? "line-through text-muted-foreground" : ""}`}
+          >
+            {title}
+          </label>
+        )}
+      </div>
+      <div className="flex items-center gap-2 ml-auto">
+        {isRecurring ? (
+          <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
+            Weekly
+          </span>
+        ) : (
+          <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded">
+            Week {week}
+          </span>
+        )}
         <Button
           variant="outline"
           size="sm"
@@ -81,15 +90,6 @@ export const TaskItem = ({
           <Check className="h-4 w-4 mr-1" />
           {completed ? "Done" : "Complete"}
         </Button>
-        {isRecurring ? (
-          <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
-            Weekly
-          </span>
-        ) : (
-          <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded">
-            Week {week}
-          </span>
-        )}
       </div>
     </div>
   );
