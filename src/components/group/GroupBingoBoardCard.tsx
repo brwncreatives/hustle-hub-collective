@@ -3,7 +3,8 @@ import { Progress } from "@/components/ui/progress";
 import { Trophy, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Member } from "../member-feed/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface GroupGoal {
   id: string;
@@ -15,19 +16,9 @@ interface GroupGoal {
 
 export const GroupBingoBoardCard = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const [groupGoals, setGroupGoals] = useState<GroupGoal[]>([]);
   const [completedLines, setCompletedLines] = useState<number[][]>([]);
-  
-  // Mock data - replace with actual data from your backend
-  const groupName = "Tech Achievers";
-  const groupGoals: GroupGoal[] = [
-    { id: "1", memberId: "1", memberName: "Sarah Chen", title: "Complete React Course", progress: 65 },
-    { id: "2", memberId: "1", memberName: "Sarah Chen", title: "Build Portfolio", progress: 40 },
-    { id: "3", memberId: "1", memberName: "Sarah Chen", title: "Learn TypeScript", progress: 80 },
-    { id: "4", memberId: "2", memberName: "Mike Johnson", title: "Write Documentation", progress: 30 },
-    { id: "5", memberId: "2", memberName: "Mike Johnson", title: "Deploy Apps", progress: 90 },
-    { id: "6", memberId: "3", memberName: "Emma Wilson", title: "Create Portfolio", progress: 55 },
-    { id: "7", memberId: "3", memberName: "Emma Wilson", title: "Learn Testing", progress: 20 },
-  ];
 
   const checkForBingoLines = () => {
     const lines: number[][] = [];
@@ -87,7 +78,7 @@ export const GroupBingoBoardCard = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-primary" />
-          {groupName} Q1 2024 Bingo Card
+          Q1 2024 Bingo Card
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-2">
           Track your group's Q1 progress together! Each member can set up to three goals for the quarter. Once a goal is marked as complete, it automatically fills the corresponding square on the shared Bingo board. Complete three squares in a row—horizontally, vertically, or diagonally—for a BINGO! Celebrate each milestone and keep the momentum going.
