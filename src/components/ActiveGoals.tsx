@@ -40,16 +40,6 @@ export const ActiveGoals = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <Button
-          onClick={() => navigate("/create-goal")}
-          size="sm"
-          className="bg-primary hover:bg-primary/80 text-primary-foreground"
-        >
-          Add Goal
-        </Button>
-      </div>
-
       {goals.length === 0 ? (
         <Card className="border-none bg-white/5 backdrop-blur-sm">
           <CardContent className="pt-6">
