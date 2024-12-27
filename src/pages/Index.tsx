@@ -8,10 +8,21 @@ import { ActiveGoals } from "@/components/ActiveGoals";
 import { AccountabilityGroups } from "@/components/AccountabilityGroups";
 import { WeeklyRecapSection } from "@/components/goal/WeeklyRecapSection";
 import { GoalBingoCard } from "@/components/goal/GoalBingoCard";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
 
 const Index = () => {
   const { toast } = useToast();
   const { user, signOut, loading } = useAuth();
+  const [useBingoView, setUseBingoView] = useState(() => {
+    const stored = localStorage.getItem('preferredView');
+    return stored ? stored === 'bingo' : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('preferredView', useBingoView ? 'bingo' : 'list');
+  }, [useBingoView]);
 
   if (loading) {
     return (
@@ -34,8 +45,24 @@ const Index = () => {
       <div className="container mx-auto px-4 py-6 space-y-6 max-w-md md:max-w-2xl">
         <Header user={user} signOut={signOut} />
         <MotivationalQuote />
-        <GoalBingoCard />
-        <ActiveGoals />
+        
+        <div className="flex items-center space-x-2 bg-card p-4 rounded-lg shadow-sm">
+          <Switch
+            id="view-toggle"
+            checked={useBingoView}
+            onCheckedChange={setUseBingoView}
+          />
+          <Label htmlFor="view-toggle">
+            {useBingoView ? "Using Bingo Card View" : "Using Weekly Task List"}
+          </Label>
+        </div>
+
+        {useBingoView ? (
+          <GoalBingoCard />
+        ) : (
+          <ActiveGoals />
+        )}
+        
         <WeeklyRecapSection goalId="global" />
         <MemberFeed />
         <AccountabilityGroups />
