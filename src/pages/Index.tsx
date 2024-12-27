@@ -21,15 +21,15 @@ const Index = () => {
       if (user) {
         try {
           // First try to get the profile
-          const { data: profile, error } = await supabase
+          const { data: profile, error: fetchError } = await supabase
             .from('profiles')
             .select('onboarding_completed')
             .eq('id', user.id)
             .maybeSingle();
 
-          if (error) {
-            console.error('Error fetching onboarding status:', error);
-            return;
+          if (fetchError) {
+            console.error('Error fetching profile:', fetchError);
+            throw fetchError;
           }
 
           // If no profile exists, create one
@@ -45,14 +45,14 @@ const Index = () => {
 
             if (insertError) {
               console.error('Error creating profile:', insertError);
-              return;
+              throw insertError;
             }
 
             setOnboardingCompleted(false);
           } else {
             setOnboardingCompleted(profile.onboarding_completed ?? false);
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error in fetchOnboardingStatus:', error);
           toast({
             variant: "destructive",
