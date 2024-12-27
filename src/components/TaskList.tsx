@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { TaskItem } from "./TaskItem";
 import { TaskListProps } from "@/types/task";
 import { useTaskManager } from "@/hooks/useTaskManager";
-import { Card, CardContent } from "./ui/card";
-import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
+import { WeekCard } from "./task/WeekCard";
+import { getCurrentWeekInQuarter, getQuarterFromGoal } from "@/utils/dateUtils";
 
 export const TaskList = ({ goalId }: TaskListProps) => {
   const {
@@ -20,7 +19,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   const [goalQuarter, setGoalQuarter] = useState<string>("");
 
   useEffect(() => {
-    // Get the goal's quarter from localStorage
     const storedGoals = localStorage.getItem('goals');
     if (storedGoals) {
       const goals = JSON.parse(storedGoals);
@@ -31,27 +29,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
       }
     }
   }, [goalId]);
-
-  const getCurrentWeek = () => {
-    if (!goalQuarter) return 1;
-
-    const [quarter, year] = goalQuarter.split('-');
-    const quarterNumber = parseInt(quarter.slice(1));
-    const startMonth = (quarterNumber - 1) * 3;
-    
-    const now = new Date();
-    const quarterStart = new Date(parseInt(year), startMonth, 1);
-    const diff = now.getTime() - quarterStart.getTime();
-    const oneWeek = 1000 * 60 * 60 * 24 * 7;
-    const weekInQuarter = Math.ceil(diff / oneWeek);
-    
-    return Math.min(Math.max(weekInQuarter, 1), 12);
-  };
-
-  const getQuarter = (weekNumber: number) => {
-    if (!goalQuarter) return 1;
-    return goalQuarter.split('-')[0];
-  };
 
   useEffect(() => {
     console.log("TaskList - All tasks:", tasks);
@@ -81,9 +58,8 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     return acc;
   }, {} as Record<string, any>);
 
-  const currentWeek = getCurrentWeek();
+  const currentWeek = getCurrentWeekInQuarter(goalQuarter);
   
-  // Sort weeks in chronological order, but put current week first if not showing all weeks
   const sortedWeeks = Object.keys(groupedTasks)
     .sort((a, b) => {
       if (!showAllWeeks) {
@@ -93,6 +69,13 @@ export const TaskList = ({ goalId }: TaskListProps) => {
       return parseInt(a.replace('week', '')) - parseInt(b.replace('week', ''));
     });
 
+  const toggleCompletedForWeek = (weekKey: string) => {
+    setCompletedTasksVisibility(prev => ({
+      ...prev,
+      [weekKey]: !prev[weekKey]
+    }));
+  };
+
   if (tasks.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-2">
@@ -100,13 +83,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
       </p>
     );
   }
-
-  const toggleCompletedForWeek = (weekKey: string) => {
-    setCompletedTasksVisibility(prev => ({
-      ...prev,
-      [weekKey]: !prev[weekKey]
-    }));
-  };
 
   return (
     <div className="space-y-6">
@@ -121,69 +97,24 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
       {sortedWeeks.map((weekKey) => {
         const weekNumber = parseInt(weekKey.replace('week', ''));
-        const isCurrentWeek = weekNumber === getCurrentWeek();
-        const tasksForWeek = groupedTasks[weekKey];
-        const showCompletedForWeek = completedTasksVisibility[weekKey];
+        const isCurrentWeek = weekNumber === currentWeek;
         
-        // Show all weeks when showAllWeeks is true, otherwise only show current week
         if (!showAllWeeks && !isCurrentWeek) return null;
 
-        const hasCompletedTasks = tasksForWeek.some((task: any) => task.completed);
-        const filteredTasks = showCompletedForWeek 
-          ? tasksForWeek 
-          : tasksForWeek.filter((task: any) => !task.completed);
-        
         return (
-          <Card 
-            key={weekKey} 
-            className={`bg-background/50 ${isCurrentWeek ? 'ring-2 ring-primary' : ''}`}
-          >
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-semibold">
-                    Week {weekNumber}
-                    <span className="text-muted-foreground ml-1">
-                      ({getQuarter(weekNumber)})
-                    </span>
-                  </h4>
-                  {isCurrentWeek && (
-                    <Badge variant="secondary" className="text-xs">
-                      Current Week
-                    </Badge>
-                  )}
-                </div>
-                <div className="flex items-center gap-4">
-                  {hasCompletedTasks && (
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id={`show-completed-${weekKey}`}
-                        checked={showCompletedForWeek}
-                        onCheckedChange={() => toggleCompletedForWeek(weekKey)}
-                      />
-                      <Label htmlFor={`show-completed-${weekKey}`} className="text-xs">
-                        Show completed
-                      </Label>
-                    </div>
-                  )}
-                  <span className="text-xs text-muted-foreground">
-                    {filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                {filteredTasks.map((task: any) => (
-                  <TaskItem
-                    key={`${task.id}-${weekKey}`}
-                    {...task}
-                    onToggleComplete={toggleTaskCompletion}
-                    onEditTask={editTask}
-                    onDeleteTask={deleteTask}
-                  />
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <WeekCard
+            key={weekKey}
+            weekKey={weekKey}
+            weekNumber={weekNumber}
+            isCurrentWeek={isCurrentWeek}
+            quarter={getQuarterFromGoal(goalQuarter)}
+            tasksForWeek={groupedTasks[weekKey]}
+            showCompletedForWeek={completedTasksVisibility[weekKey]}
+            toggleCompletedForWeek={toggleCompletedForWeek}
+            toggleTaskCompletion={toggleTaskCompletion}
+            editTask={editTask}
+            deleteTask={deleteTask}
+          />
         );
       })}
     </div>
