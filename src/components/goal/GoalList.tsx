@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Target } from "lucide-react";
 import { GoalCard } from "./GoalCard";
 

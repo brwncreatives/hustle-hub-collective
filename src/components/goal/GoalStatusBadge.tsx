@@ -7,26 +7,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
 
 interface GoalStatusBadgeProps {
   status: string;
-  isEditing: boolean;
-  selectedStatus: string;
-  onStatusChange: (value: string) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  onStartEditing: () => void;
+  goalId: string;
+  onStatusChange: (goalId: string, status: string) => Promise<void>;
 }
 
 export const GoalStatusBadge = ({
   status,
-  isEditing,
-  selectedStatus,
+  goalId,
   onStatusChange,
-  onSave,
-  onCancel,
-  onStartEditing,
 }: GoalStatusBadgeProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(status);
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'not started':
@@ -40,12 +36,17 @@ export const GoalStatusBadge = ({
     }
   };
 
+  const handleSave = async () => {
+    await onStatusChange(goalId, selectedStatus);
+    setIsEditing(false);
+  };
+
   if (isEditing) {
     return (
       <div className="flex items-center gap-2">
         <Select
           value={selectedStatus}
-          onValueChange={onStatusChange}
+          onValueChange={setSelectedStatus}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select status" />
@@ -56,8 +57,8 @@ export const GoalStatusBadge = ({
             <SelectItem value="Completed">Completed</SelectItem>
           </SelectContent>
         </Select>
-        <Button size="sm" onClick={onSave}>Save</Button>
-        <Button size="sm" variant="outline" onClick={onCancel}>Cancel</Button>
+        <Button size="sm" onClick={handleSave}>Save</Button>
+        <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
       </div>
     );
   }
@@ -66,7 +67,7 @@ export const GoalStatusBadge = ({
     <Badge
       variant="default"
       className={`mb-2 cursor-pointer ${getStatusColor(status)}`}
-      onClick={onStartEditing}
+      onClick={() => setIsEditing(true)}
     >
       {status}
     </Badge>
