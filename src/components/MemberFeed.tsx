@@ -50,7 +50,7 @@ const mockActivities: FeedActivity[] = [
     userAvatar: "https://github.com/shadcn.png",
     timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     data: {
-      goalTitle: "Complete React Course",
+      weekNumber: 3,
       reflection: "This week has been challenging but rewarding! I've made significant progress in understanding React hooks and context. Looking forward to diving into more advanced topics next week. 💪"
     }
   }
@@ -84,7 +84,7 @@ const getActivityMessage = (activity: FeedActivity) => {
     case 'complete_goal':
       return `achieved their goal: ${activity.data.goalTitle}`;
     case 'weekly_reflection':
-      return `shared a reflection on ${activity.data.goalTitle}`;
+      return `shared a Week ${activity.data.weekNumber} reflection`;
     default:
       return 'performed an activity';
   }

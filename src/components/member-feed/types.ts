@@ -35,5 +35,6 @@ export interface FeedActivity {
     goalTitle?: string;
     taskTitle?: string;
     reflection?: string;
+    weekNumber?: number;
   };
 }

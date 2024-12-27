@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCurrentWeekInQuarter } from "@/utils/dateUtils";
 
 interface WeeklyRecapSectionProps {
   goalId: string;
@@ -20,7 +21,7 @@ interface WeeklyRecapSectionProps {
 export const WeeklyRecapSection = ({ goalId }: WeeklyRecapSectionProps) => {
   const { toast } = useToast();
   const [comment, setComment] = useState("");
-  const [selectedWeek, setSelectedWeek] = useState("1");
+  const [selectedWeek, setSelectedWeek] = useState(getCurrentWeekInQuarter().toString());
   const [hasTappedIn, setHasTappedIn] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
 
@@ -48,7 +49,7 @@ export const WeeklyRecapSection = ({ goalId }: WeeklyRecapSectionProps) => {
 
     toast({
       title: "Weekly Recap Submitted! 🎯",
-      description: `Your week ${selectedWeek} reflection has been ${
+      description: `Your Week ${selectedWeek} reflection has been ${
         isPublic ? "shared publicly" : "saved privately"
       }. Keep pushing forward!`,
     });
