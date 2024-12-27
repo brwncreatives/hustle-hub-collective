@@ -46,14 +46,14 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
         .storage
         .listBuckets();
 
-      const avatarsBucketExists = buckets?.some(bucket => bucket.name === 'avatars');
+      const avatarBucketExists = buckets?.some(bucket => bucket.name === 'avatar');
 
-      if (!avatarsBucketExists) {
-        throw new Error('Storage is not properly configured. Please ensure the "avatars" bucket exists in Supabase.');
+      if (!avatarBucketExists) {
+        throw new Error('Storage is not properly configured. Please ensure the "avatar" bucket exists in Supabase.');
       }
 
       const { error: uploadError, data } = await supabase.storage
-        .from('avatars')
+        .from('avatar')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: true
@@ -68,7 +68,7 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
       }
 
       const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
+        .from('avatar')
         .getPublicUrl(data.path);
 
       onAvatarChange(publicUrl);
