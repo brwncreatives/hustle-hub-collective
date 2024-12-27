@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { MotivationalQuote } from "@/components/MotivationalQuote";
 import { ActiveGoals } from "@/components/ActiveGoals";
 import { AccountabilityGroups } from "@/components/AccountabilityGroups";
+import { WeeklyRecapSection } from "@/components/goal/WeeklyRecapSection";
 
 const Index = () => {
   const { toast } = useToast();
@@ -33,6 +34,7 @@ const Index = () => {
         <Header user={user} signOut={signOut} />
         <MotivationalQuote />
         <ActiveGoals />
+        <WeeklyRecapSection goalId="global" />
         <MemberFeed />
         <AccountabilityGroups />
       </div>

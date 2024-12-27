@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TaskSection } from "./goal/TaskSection";
-import { WeeklyRecapSection } from "./goal/WeeklyRecapSection";
 import { useState, useEffect } from "react";
 
 interface Goal {
@@ -90,7 +89,6 @@ export const ActiveGoals = () => {
                   >
                     Add Task
                   </Button>
-                  <WeeklyRecapSection goalId={goal.id} />
                 </div>
               </div>
             </CardContent>
