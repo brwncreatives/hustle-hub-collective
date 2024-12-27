@@ -6,7 +6,6 @@ export const useTaskManager = (goalId: string) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { toast } = useToast();
 
-  // Load tasks from localStorage when the component mounts
   useEffect(() => {
     const storedTasks = localStorage.getItem(`tasks-${goalId}`);
     if (storedTasks) {
@@ -26,7 +25,7 @@ export const useTaskManager = (goalId: string) => {
       title: newTaskTitle,
       completed: false,
       isRecurring,
-      week: parseInt(selectedWeek),
+      week: isRecurring ? undefined : parseInt(selectedWeek),
     };
 
     console.log("useTaskManager - Adding new task:", newTask);
@@ -43,10 +42,17 @@ export const useTaskManager = (goalId: string) => {
     });
   }, [goalId, toast]);
 
-  const editTask = useCallback((taskId: string, newTitle: string) => {
+  const editTask = useCallback((taskId: string, newTitle: string, isRecurring: boolean, week?: number) => {
     setTasks(prevTasks => {
       const updatedTasks = prevTasks.map((task) =>
-        task.id === taskId ? { ...task, title: newTitle } : task
+        task.id === taskId 
+          ? { 
+              ...task, 
+              title: newTitle,
+              isRecurring,
+              week: isRecurring ? undefined : week
+            } 
+          : task
       );
       localStorage.setItem(`tasks-${goalId}`, JSON.stringify(updatedTasks));
       return updatedTasks;
