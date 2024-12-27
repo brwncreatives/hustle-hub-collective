@@ -10,53 +10,6 @@ import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 
-const mockActivities: FeedActivity[] = [
-  {
-    id: "1",
-    type: "join_group",
-    userId: "1",
-    userName: "Sarah Chen",
-    userAvatar: "https://github.com/shadcn.png",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    data: {}
-  },
-  {
-    id: "2",
-    type: "add_goal",
-    userId: "1",
-    userName: "Sarah Chen",
-    userAvatar: "https://github.com/shadcn.png",
-    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-    data: {
-      goalTitle: "Complete React Course"
-    }
-  },
-  {
-    id: "3",
-    type: "complete_task",
-    userId: "2",
-    userName: "Mike Johnson",
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-    data: {
-      goalTitle: "Build 5 Projects",
-      taskTitle: "Set up project repository"
-    }
-  },
-  {
-    id: "4",
-    type: "weekly_reflection",
-    userId: "1",
-    userName: "Sarah Chen",
-    userAvatar: "https://github.com/shadcn.png",
-    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-    data: {
-      weekNumber: 3,
-      reflection: "This week has been challenging but rewarding! I've made significant progress in understanding React hooks and context. Looking forward to diving into more advanced topics next week. 💪",
-      isPublic: true // Only public reflections should be shown in the feed
-    }
-  }
-];
-
 const getActivityIcon = (type: FeedActivity['type']) => {
   switch (type) {
     case 'join_group':
@@ -95,6 +48,7 @@ export function MemberFeed() {
   const { user } = useAuth();
   const [likedActivities, setLikedActivities] = useState<Set<string>>(new Set());
   const groupName = "Tech Achievers";
+  const [activities, setActivities] = useState<FeedActivity[]>([]);
 
   const handleLike = (activityId: string) => {
     setLikedActivities(prev => {
@@ -109,7 +63,7 @@ export function MemberFeed() {
   };
 
   // Filter activities to only show public weekly reflections or the user's own private reflections
-  const filteredActivities = mockActivities.filter(activity => {
+  const filteredActivities = activities.filter(activity => {
     if (activity.type === 'weekly_reflection') {
       return activity.data.isPublic || activity.userId === user?.id;
     }
@@ -130,53 +84,63 @@ export function MemberFeed() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">
-            <div className="space-y-4">
-              {filteredActivities.map((activity) => (
-                <Card key={activity.id} className="p-4 bg-card/50">
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={activity.userAvatar} />
-                      <AvatarFallback>{activity.userName[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{activity.userName}</span>
-                        <span className="text-muted-foreground text-sm">
-                          {getActivityMessage(activity)}
-                        </span>
-                      </div>
-                      {activity.type === 'weekly_reflection' && activity.data.reflection && (
-                        <div className="mt-2 p-3 rounded-lg bg-muted/50">
-                          <p className="text-sm italic">{activity.data.reflection}</p>
+            {filteredActivities.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-[300px] text-center">
+                <Users className="h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-lg font-medium">No activities yet</p>
+                <p className="text-sm text-muted-foreground">
+                  Activities will appear here as members interact with the group
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredActivities.map((activity) => (
+                  <Card key={activity.id} className="p-4 bg-card/50">
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={activity.userAvatar} />
+                        <AvatarFallback>{activity.userName[0]}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{activity.userName}</span>
+                          <span className="text-muted-foreground text-sm">
+                            {getActivityMessage(activity)}
+                          </span>
                         </div>
-                      )}
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs">
-                          {getActivityIcon(activity.type)}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
-                        </span>
-                        {activity.type === 'weekly_reflection' && !activity.data.isPublic && activity.userId === user?.id && (
-                          <Badge variant="secondary" className="text-xs">
-                            Private
-                          </Badge>
+                        {activity.type === 'weekly_reflection' && activity.data.reflection && (
+                          <div className="mt-2 p-3 rounded-lg bg-muted/50">
+                            <p className="text-sm italic">{activity.data.reflection}</p>
+                          </div>
                         )}
-                        <button
-                          onClick={() => handleLike(activity.id)}
-                          className={`flex items-center gap-1 text-xs ${
-                            likedActivities.has(activity.id) ? 'text-pink-500' : 'text-muted-foreground'
-                          } hover:text-pink-500 transition-colors`}
-                        >
-                          <Heart className="h-3.5 w-3.5" fill={likedActivities.has(activity.id) ? "currentColor" : "none"} />
-                          <span>{likedActivities.has(activity.id) ? 'Liked' : 'Like'}</span>
-                        </button>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">
+                            {getActivityIcon(activity.type)}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
+                          </span>
+                          {activity.type === 'weekly_reflection' && !activity.data.isPublic && activity.userId === user?.id && (
+                            <Badge variant="secondary" className="text-xs">
+                              Private
+                            </Badge>
+                          )}
+                          <button
+                            onClick={() => handleLike(activity.id)}
+                            className={`flex items-center gap-1 text-xs ${
+                              likedActivities.has(activity.id) ? 'text-pink-500' : 'text-muted-foreground'
+                            } hover:text-pink-500 transition-colors`}
+                          >
+                            <Heart className="h-3.5 w-3.5" fill={likedActivities.has(activity.id) ? "currentColor" : "none"} />
+                            <span>{likedActivities.has(activity.id) ? 'Liked' : 'Like'}</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+                  </Card>
+                ))}
+              </div>
+            )}
           </ScrollArea>
         </CardContent>
       </Card>
