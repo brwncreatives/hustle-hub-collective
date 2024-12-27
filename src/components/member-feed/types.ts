@@ -7,4 +7,8 @@ export interface Member {
     progress: number;
     target: number;
   };
+  weeklyRecap?: {
+    content: string;
+    timestamp: string;
+  };
 }
