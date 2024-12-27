@@ -132,7 +132,7 @@ export const WeeklyRecapSection = ({ goalId, showPastRecaps = false }: WeeklyRec
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">New Weekly Progress Recap</CardTitle>
+          <CardTitle className="text-lg font-semibold">New Weekly Recap</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
