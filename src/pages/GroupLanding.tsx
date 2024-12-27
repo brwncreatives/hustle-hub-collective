@@ -38,7 +38,7 @@ const GroupLanding = () => {
         .from('groups')
         .select('name')
         .eq('id', groupId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching group:', error);
@@ -53,6 +53,13 @@ const GroupLanding = () => {
 
       if (group) {
         setGroupName(group.name);
+      } else {
+        toast({
+          title: "Error",
+          description: "Group not found",
+          variant: "destructive",
+        });
+        navigate('/');
       }
     };
 
