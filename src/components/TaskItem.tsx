@@ -18,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 
 interface TaskItemProps {
   id: string;
@@ -66,24 +67,15 @@ export const TaskItem = ({
 
   return (
     <div className="flex items-center justify-between space-x-2 bg-white/5 p-2 rounded-md">
-      <div className="flex-1">
-        <label
-          htmlFor={id}
-          className={`${completed ? "line-through text-muted-foreground" : ""}`}
-        >
+      <div className="flex items-center space-x-2 flex-1">
+        <div className={`${completed ? "line-through text-muted-foreground" : ""}`}>
           {title}
-        </label>
+        </div>
+        <Badge variant={isRecurring ? "secondary" : "outline"} className="text-xs">
+          {isRecurring ? "Weekly" : `Week ${week}`}
+        </Badge>
       </div>
       <div className="flex items-center gap-2 ml-auto">
-        {isRecurring ? (
-          <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
-            Weekly
-          </span>
-        ) : (
-          <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded">
-            Week {week}
-          </span>
-        )}
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button
