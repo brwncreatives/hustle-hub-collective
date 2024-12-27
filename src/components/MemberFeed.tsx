@@ -51,7 +51,8 @@ const mockActivities: FeedActivity[] = [
     timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     data: {
       weekNumber: 3,
-      reflection: "This week has been challenging but rewarding! I've made significant progress in understanding React hooks and context. Looking forward to diving into more advanced topics next week. 💪"
+      reflection: "This week has been challenging but rewarding! I've made significant progress in understanding React hooks and context. Looking forward to diving into more advanced topics next week. 💪",
+      isPublic: true // Only public reflections should be shown in the feed
     }
   }
 ];
@@ -93,7 +94,7 @@ const getActivityMessage = (activity: FeedActivity) => {
 export function MemberFeed() {
   const { user } = useAuth();
   const [likedActivities, setLikedActivities] = useState<Set<string>>(new Set());
-  const groupName = "Tech Achievers"; // This should match the group name from AccountabilityGroups
+  const groupName = "Tech Achievers";
 
   const handleLike = (activityId: string) => {
     setLikedActivities(prev => {
@@ -106,6 +107,14 @@ export function MemberFeed() {
       return newLiked;
     });
   };
+
+  // Filter activities to only show public weekly reflections or the user's own private reflections
+  const filteredActivities = mockActivities.filter(activity => {
+    if (activity.type === 'weekly_reflection') {
+      return activity.data.isPublic || activity.userId === user?.id;
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-6">
@@ -122,7 +131,7 @@ export function MemberFeed() {
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-4">
-              {mockActivities.map((activity) => (
+              {filteredActivities.map((activity) => (
                 <Card key={activity.id} className="p-4 bg-card/50">
                   <div className="flex items-start gap-3">
                     <Avatar className="h-8 w-8">
@@ -148,6 +157,11 @@ export function MemberFeed() {
                         <span className="text-xs text-muted-foreground">
                           {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                         </span>
+                        {activity.type === 'weekly_reflection' && !activity.data.isPublic && activity.userId === user?.id && (
+                          <Badge variant="secondary" className="text-xs">
+                            Private
+                          </Badge>
+                        )}
                         <button
                           onClick={() => handleLike(activity.id)}
                           className={`flex items-center gap-1 text-xs ${
