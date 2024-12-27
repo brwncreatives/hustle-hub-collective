@@ -18,7 +18,7 @@ interface GoalCategoriesFieldProps {
 export const GoalCategoriesField = ({ form }: GoalCategoriesFieldProps) => {
   const selectedCategories = form.watch("categories") || [];
 
-  const toggleCategory = (category: string) => {
+  const toggleCategory = (category: typeof goalCategories[number]) => {
     const current = form.getValues("categories") || [];
     const updated = current.includes(category)
       ? current.filter((c) => c !== category)

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskManager } from "@/hooks/useTaskManager";
-import { getCurrentWeekInQuarter, getQuarterFromGoal } from "@/utils/dateUtils";
+import { getCurrentWeekInQuarter } from "@/utils/dateUtils";
 
 interface TaskBingoCardProps {
   goalId: string;
