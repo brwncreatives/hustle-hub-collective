@@ -34,8 +34,8 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
 
   return (
     <div className="space-y-4">
-      <TaskList goalId={goalId} />
-      <div className="flex justify-end items-center gap-2">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-foreground">Tasks</h3>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button
@@ -63,6 +63,7 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
           </DialogContent>
         </Dialog>
       </div>
+      <TaskList goalId={goalId} />
     </div>
   );
 };
