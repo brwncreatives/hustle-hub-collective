@@ -1,66 +1,26 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Goal, Target } from "lucide-react";
+import { Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { TaskList } from "@/components/TaskList";
-
-const goalFormSchema = z.object({
-  title: z.string().min(1, "Title is required").max(100),
-  description: z.string().max(500, "Description must be less than 500 characters"),
-  quarter: z.string().min(1, "Quarter is required"),
-});
-
-type GoalFormValues = z.infer<typeof goalFormSchema>;
+import { GoalTitleField } from "@/components/goal/GoalTitleField";
+import { GoalDescriptionField } from "@/components/goal/GoalDescriptionField";
+import { GoalQuarterField } from "@/components/goal/GoalQuarterField";
+import { GoalStatusField } from "@/components/goal/GoalStatusField";
+import { goalFormSchema, GoalFormValues } from "@/components/goal/types";
 
 const getCurrentQuarter = () => {
   const currentMonth = new Date().getMonth();
   return `Q${Math.floor(currentMonth / 3) + 1}-2025`;
 };
 
-const getQuarterDateRange = (quarter: string) => {
-  const [q, year] = quarter.split("-");
-  const quarterNum = parseInt(q.slice(1)) - 1;
-  const startMonth = quarterNum * 3;
-  const endMonth = startMonth + 2;
-  
-  const startDate = new Date(parseInt(year), startMonth, 1);
-  const endDate = new Date(parseInt(year), endMonth + 1, 0);
-  
-  return `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
-};
-
 const GoalCreation = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  const quarters = [
-    "Q1-2025",
-    "Q2-2025",
-    "Q3-2025",
-    "Q4-2025",
-  ];
 
   const form = useForm<GoalFormValues>({
     resolver: zodResolver(goalFormSchema),
@@ -68,6 +28,7 @@ const GoalCreation = () => {
       title: "",
       description: "",
       quarter: getCurrentQuarter(),
+      status: "Not Started",
     },
   });
 
@@ -92,79 +53,10 @@ const GoalCreation = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Goal Title</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center space-x-2">
-                        <Goal className="h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="Enter your goal title" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormDescription>
-                      What do you want to achieve?
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Describe your goal in detail..."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Add any additional details about your goal
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="quarter"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Quarter</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a quarter" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {quarters.map((q) => (
-                              <SelectItem key={q} value={q}>
-                                {q} ({getQuarterDateRange(q)})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </FormControl>
-                    <FormDescription>
-                      Select which quarter this goal is for. It's recommended to have no more than 2-3 goals per quarter for better focus and achievement.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <GoalTitleField form={form} />
+              <GoalDescriptionField form={form} />
+              <GoalQuarterField form={form} />
+              <GoalStatusField form={form} />
 
               <div className="space-y-4">
                 <FormLabel>Weekly Tasks</FormLabel>
