@@ -89,11 +89,6 @@ export const ActiveGoals = () => {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  {goal.status === "In Progress" && (
-                    <div className="inline-block px-2 py-1 text-xs font-medium bg-[#FEF7CD] text-yellow-800 rounded">
-                      In Progress
-                    </div>
-                  )}
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
                     {goal.title}

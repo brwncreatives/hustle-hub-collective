@@ -32,7 +32,7 @@ export const GoalStatusBadge = ({
       case 'not started':
         return 'bg-gray-400 hover:bg-gray-500 text-white';
       case 'in progress':
-        return 'bg-[#7E69AB] hover:bg-[#7E69AB]/80 text-white';
+        return 'bg-[#FEF7CD] hover:bg-[#FEF7CD]/80 text-yellow-800';
       case 'completed':
         return 'bg-[#9b87f5] hover:bg-[#9b87f5]/80 text-white';
       default:
