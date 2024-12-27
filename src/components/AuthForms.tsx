@@ -28,7 +28,7 @@ export function AuthForms() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>{isSignUp ? "Create Account" : "Welcome Back!"}</CardTitle>
+        <CardTitle>{isSignUp ? "Create Account" : "Welcome to Hustle Saturday"}</CardTitle>
         <CardDescription>
           {isSignUp
             ? "Sign up to start tracking your goals"
