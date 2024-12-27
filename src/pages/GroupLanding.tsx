@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,24 +8,56 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { AuthForms } from "@/components/AuthForms";
 import { Shield, Users } from "lucide-react";
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  'https://zpbqzuazbmgyifhwphga.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwYnF6dWF6Ym1neWlmaHdwaGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMjI0MTgsImV4cCI6MjA0OTY5ODQxOH0.HVvzkkFpq4m_AecBfYHyyVYHoZgJRIi8uxMxvBOBLmA'
-);
+import { supabase } from "@/integrations/supabase/client";
 
 const GroupLanding = () => {
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [groupName, setGroupName] = useState("Loading...");
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const groupId = searchParams.get('id');
 
-  // TODO: Replace with actual group title from your data
-  const groupTitle = "Study Group"; // This should be fetched from your database
+  useEffect(() => {
+    const fetchGroupDetails = async () => {
+      if (!groupId) {
+        toast({
+          title: "Error",
+          description: "No group ID provided",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
+
+      const { data: group, error } = await supabase
+        .from('groups')
+        .select('name')
+        .eq('id', groupId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching group:', error);
+        toast({
+          title: "Error",
+          description: "Unable to load group details",
+          variant: "destructive",
+        });
+        navigate('/');
+        return;
+      }
+
+      if (group) {
+        setGroupName(group.name);
+      }
+    };
+
+    fetchGroupDetails();
+  }, [groupId, navigate, toast]);
 
   const handleJoinRequest = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,20 +81,12 @@ const GroupLanding = () => {
     }
 
     try {
-      console.log('Submitting join request:', {
-        user_id: user.id,
-        email,
-        firstName,
-        lastName,
-        message
-      });
-
       const { error } = await supabase
         .from('group_join_requests')
         .insert([
           {
             user_id: user.id,
-            group_id: '1', // This should be dynamic based on the actual group
+            group_id: groupId,
             message,
             email,
             first_name: firstName,
@@ -105,7 +129,7 @@ const GroupLanding = () => {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Users className="h-6 w-6" />
-            <CardTitle>Join {groupTitle}</CardTitle>
+            <CardTitle>Join {groupName}</CardTitle>
           </div>
           <CardDescription>
             Submit a request to join this group. The group admin will review your request.
