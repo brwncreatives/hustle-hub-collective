@@ -65,7 +65,7 @@ export const ActiveGoals = () => {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2 text-primary">
                 <Target className="h-5 w-5" />
-                Active Goals
+                {goal.title}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -77,7 +77,6 @@ export const ActiveGoals = () => {
                   >
                     {goal.status}
                   </Badge>
-                  <p className="font-medium text-foreground">{goal.title}</p>
                 </div>
 
                 <TaskSection goalId={goal.id} />
