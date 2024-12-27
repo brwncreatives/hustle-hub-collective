@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, User, MessageSquare, Heart, SmilePlus } from "lucide-react";
+import { TrendingUp, User, MessageSquare, Heart } from "lucide-react";
 import { MemberFeedActions } from "./MemberFeedActions";
 import { Member } from "./types";
 import { formatDistanceToNow } from "date-fns";
@@ -28,11 +28,11 @@ export const MemberFeedItem = ({
 }: MemberFeedItemProps) => {
   const { toast } = useToast();
 
-  const handleReaction = (type: string) => {
+  const handleReaction = () => {
     // In a real app, this would make an API call to store the reaction
-    console.log(`Reacting with ${type} to ${member.name}'s recap`);
+    console.log(`Reacting with heart to ${member.name}'s recap`);
     toast({
-      description: `You showed support with ${type} for ${member.name}'s weekly reflection!`,
+      description: `You showed support for ${member.name}'s weekly reflection! ❤️`,
     });
   };
 
@@ -81,19 +81,10 @@ export const MemberFeedItem = ({
                   variant="ghost"
                   size="sm"
                   className="text-pink-500 hover:text-pink-600 hover:bg-pink-100/10"
-                  onClick={() => handleReaction('heart')}
+                  onClick={handleReaction}
                 >
                   <Heart className="h-4 w-4 mr-1" />
                   <span className="text-xs">{member.weeklyRecap.reactions?.heart?.length || 0}</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-yellow-500 hover:text-yellow-600 hover:bg-yellow-100/10"
-                  onClick={() => handleReaction('smile')}
-                >
-                  <SmilePlus className="h-4 w-4 mr-1" />
-                  <span className="text-xs">{member.weeklyRecap.reactions?.smile?.length || 0}</span>
                 </Button>
               </div>
             </div>

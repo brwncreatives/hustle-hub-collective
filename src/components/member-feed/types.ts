@@ -11,7 +11,7 @@ export interface Member {
     content: string;
     timestamp: string;
     reactions?: {
-      [key: string]: string[]; // userId[]
+      heart: string[]; // userId[]
     };
   };
 }
