@@ -5,7 +5,6 @@ import { Target, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TaskSection } from "./goal/TaskSection";
 import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,9 +22,8 @@ interface Goal {
 export const ActiveGoals = () => {
   const navigate = useNavigate();
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
-  const [editedTitle, setEditedTitle] = useState("");
-  const [editedStatus, setEditedStatus] = useState("");
+  const [editingStatus, setEditingStatus] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   useEffect(() => {
     const storedGoals = localStorage.getItem('goals');
@@ -48,27 +46,20 @@ export const ActiveGoals = () => {
     }
   };
 
-  const startEditing = (goal: Goal) => {
-    setEditingGoalId(goal.id);
-    setEditedTitle(goal.title);
-    setEditedStatus(goal.status);
+  const startEditingStatus = (goalId: string, currentStatus: string) => {
+    setEditingStatus(goalId);
+    setSelectedStatus(currentStatus);
   };
 
-  const saveEdit = (goalId: string) => {
+  const saveStatus = (goalId: string) => {
     const updatedGoals = goals.map(goal =>
       goal.id === goalId
-        ? { ...goal, title: editedTitle, status: editedStatus }
+        ? { ...goal, status: selectedStatus }
         : goal
     );
     setGoals(updatedGoals);
     localStorage.setItem('goals', JSON.stringify(updatedGoals));
-    setEditingGoalId(null);
-  };
-
-  const cancelEdit = () => {
-    setEditingGoalId(null);
-    setEditedTitle("");
-    setEditedStatus("");
+    setEditingStatus(null);
   };
 
   return (
@@ -96,73 +87,62 @@ export const ActiveGoals = () => {
           <Card key={goal.id} className="border-none bg-white/5 backdrop-blur-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
-                {editingGoalId === goal.id ? (
-                  <div className="flex-1 space-y-4">
-                    <Input
-                      value={editedTitle}
-                      onChange={(e) => setEditedTitle(e.target.value)}
-                      className="text-lg"
-                    />
-                    <Select
-                      value={editedStatus}
-                      onValueChange={setEditedStatus}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Not Started">Not Started</SelectItem>
-                        <SelectItem value="In Progress">In Progress</SelectItem>
-                        <SelectItem value="Completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <div className="flex gap-2">
+                <CardTitle className="text-lg flex items-center gap-2 text-primary">
+                  <Target className="h-5 w-5" />
+                  {goal.title}
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate(`/edit-goal/${goal.id}`)}
+                  className="ml-2"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div>
+                  {editingStatus === goal.id ? (
+                    <div className="flex items-center gap-2">
+                      <Select
+                        value={selectedStatus}
+                        onValueChange={setSelectedStatus}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Not Started">Not Started</SelectItem>
+                          <SelectItem value="In Progress">In Progress</SelectItem>
+                          <SelectItem value="Completed">Completed</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <Button
                         size="sm"
-                        onClick={() => saveEdit(goal.id)}
-                        className="bg-primary hover:bg-primary/80"
+                        onClick={() => saveStatus(goal.id)}
                       >
                         Save
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={cancelEdit}
+                        onClick={() => setEditingStatus(null)}
                       >
                         Cancel
                       </Button>
                     </div>
-                  </div>
-                ) : (
-                  <>
-                    <CardTitle className="text-lg flex items-center gap-2 text-primary">
-                      <Target className="h-5 w-5" />
-                      {goal.title}
-                    </CardTitle>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => startEditing(goal)}
-                      className="ml-2"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                {!editingGoalId && (
-                  <div>
+                  ) : (
                     <Badge
                       variant="default"
-                      className={`mb-2 ${getStatusColor(goal.status)}`}
+                      className={`mb-2 cursor-pointer ${getStatusColor(goal.status)}`}
+                      onClick={() => startEditingStatus(goal.id, goal.status)}
                     >
                       {goal.status}
                     </Badge>
-                  </div>
-                )}
+                  )}
+                </div>
                 <TaskSection goalId={goal.id} />
               </div>
             </CardContent>

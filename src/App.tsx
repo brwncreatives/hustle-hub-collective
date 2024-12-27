@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
 import GoalCreation from "./pages/GoalCreation";
+import GoalEdit from "./pages/GoalEdit";
 import GroupCreation from "./pages/GroupCreation";
 import GroupLanding from "./pages/GroupLanding";
 import Settings from "./pages/Settings";
@@ -22,6 +23,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/create-goal" element={<GoalCreation />} />
+            <Route path="/edit-goal/:goalId" element={<GoalEdit />} />
             <Route path="/create-group" element={<GroupCreation />} />
             <Route path="/join-group" element={<GroupLanding />} />
             <Route path="/settings" element={<Settings />} />
