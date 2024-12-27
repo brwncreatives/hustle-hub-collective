@@ -14,7 +14,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     toggleTaskCompletion,
   } = useTaskManager(goalId);
 
-  const [showAllWeeks, setShowAllWeeks] = useState(false);
+  const [showAllWeeks, setShowAllWeeks] = useState(true); // Changed to true by default
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState<Record<string, boolean>>({});
   const [goalQuarter, setGoalQuarter] = useState<string>("");
 
@@ -62,11 +62,15 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   
   const sortedWeeks = Object.keys(groupedTasks)
     .sort((a, b) => {
-      if (!showAllWeeks) {
-        if (parseInt(a.replace('week', '')) === currentWeek) return -1;
-        if (parseInt(b.replace('week', '')) === currentWeek) return 1;
-      }
-      return parseInt(a.replace('week', '')) - parseInt(b.replace('week', ''));
+      const weekA = parseInt(a.replace('week', ''));
+      const weekB = parseInt(b.replace('week', ''));
+      
+      // Always put current week first
+      if (weekA === currentWeek) return -1;
+      if (weekB === currentWeek) return 1;
+      
+      // Then sort by week number
+      return weekA - weekB;
     });
 
   const toggleCompletedForWeek = (weekKey: string) => {
@@ -84,6 +88,13 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     );
   }
 
+  // Only show weeks that have tasks or if showAllWeeks is true
+  const weeksToShow = sortedWeeks.filter(weekKey => {
+    const hasTasksInWeek = groupedTasks[weekKey].length > 0;
+    const weekNumber = parseInt(weekKey.replace('week', ''));
+    return showAllWeeks || hasTasksInWeek || weekNumber === currentWeek;
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-2">
@@ -95,12 +106,10 @@ export const TaskList = ({ goalId }: TaskListProps) => {
         <Label htmlFor="show-all-weeks">Show all weeks</Label>
       </div>
 
-      {sortedWeeks.map((weekKey) => {
+      {weeksToShow.map((weekKey) => {
         const weekNumber = parseInt(weekKey.replace('week', ''));
         const isCurrentWeek = weekNumber === currentWeek;
         
-        if (!showAllWeeks && !isCurrentWeek) return null;
-
         return (
           <WeekCard
             key={weekKey}
