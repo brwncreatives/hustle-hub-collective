@@ -118,7 +118,7 @@ export function MemberFeed() {
                             {getActivityIcon(activity.type)}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
+                            {formatDistanceToNow(new Date(activity.timestamp))}
                           </span>
                           {activity.type === 'weekly_reflection' && !activity.data.isPublic && activity.userId === user?.id && (
                             <Badge variant="secondary" className="text-xs">
