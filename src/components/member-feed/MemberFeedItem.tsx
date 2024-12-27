@@ -9,7 +9,7 @@ interface MemberFeedItemProps {
   isOwnGoal: boolean;
   hasNudged: boolean;
   onNudge: (memberId: string, memberName: string) => void;
-  onTapIn: (memberId: string) => void;
+  onTapIn: (memberId: string, memberName: string) => void;
   showCommentField: boolean;
   onToggleComment: () => void;
 }
@@ -47,7 +47,7 @@ export const MemberFeedItem = ({
           isOwnGoal={isOwnGoal}
           hasNudged={hasNudged}
           onNudge={onNudge}
-          onTapIn={() => onToggleComment()}
+          onTapIn={() => onTapIn(member.id, member.name)}
         />
       </div>
     </Card>
