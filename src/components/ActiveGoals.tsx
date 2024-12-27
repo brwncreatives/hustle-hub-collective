@@ -26,6 +26,19 @@ export const ActiveGoals = () => {
     }
   }, []);
 
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'not started':
+        return 'bg-[#D6BCFA] hover:bg-[#D6BCFA]/80 text-gray-800';
+      case 'in progress':
+        return 'bg-[#7E69AB] hover:bg-[#7E69AB]/80 text-white';
+      case 'completed':
+        return 'bg-[#9b87f5] hover:bg-[#9b87f5]/80 text-white';
+      default:
+        return 'bg-gray-500 hover:bg-gray-600 text-white';
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
@@ -60,7 +73,7 @@ export const ActiveGoals = () => {
                 <div>
                   <Badge
                     variant="default"
-                    className="mb-2 bg-green-500 hover:bg-green-600"
+                    className={`mb-2 ${getStatusColor(goal.status)}`}
                   >
                     {goal.status}
                   </Badge>
