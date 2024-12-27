@@ -4,6 +4,12 @@ import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 import { TaskItem } from "../TaskItem";
 import { Task } from "@/types/task";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { TaskForm } from "../TaskForm";
+import { useState } from "react";
+import { useTaskManager } from "@/hooks/useTaskManager";
 
 interface WeekCardProps {
   weekKey: string;
@@ -30,6 +36,21 @@ export const WeekCard = ({
   editTask,
   deleteTask,
 }: WeekCardProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [newTask, setNewTask] = useState("");
+  const [selectedWeek, setSelectedWeek] = useState(weekNumber.toString());
+  const [isRecurring, setIsRecurring] = useState(false);
+  
+  const { addTask } = useTaskManager("global");
+
+  const handleAddTask = () => {
+    if (!newTask.trim()) return;
+    
+    addTask(newTask, isRecurring, selectedWeek);
+    setNewTask("");
+    setIsOpen(false);
+  };
+
   const hasCompletedTasks = tasksForWeek.some((task) => task.completed);
   const filteredTasks = showCompletedForWeek 
     ? tasksForWeek 
@@ -67,6 +88,31 @@ export const WeekCard = ({
                 </Label>
               </div>
             )}
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Task</DialogTitle>
+                </DialogHeader>
+                <TaskForm
+                  newTask={newTask}
+                  setNewTask={setNewTask}
+                  selectedWeek={selectedWeek}
+                  setSelectedWeek={setSelectedWeek}
+                  isRecurring={isRecurring}
+                  setIsRecurring={setIsRecurring}
+                  onAddTask={handleAddTask}
+                />
+              </DialogContent>
+            </Dialog>
             <span className="text-xs text-muted-foreground">
               {filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}
             </span>
