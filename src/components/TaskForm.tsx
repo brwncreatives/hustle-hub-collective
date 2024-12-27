@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -33,51 +32,59 @@ export const TaskForm = ({
   const weeks = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
 
   return (
-    <div className="flex flex-col space-y-2">
-      <div className="flex items-center space-x-2">
-        <Input
-          placeholder="Add a new task..."
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          className="flex-1"
-        />
-        {!isRecurring && (
-          <Select value={selectedWeek} onValueChange={setSelectedWeek}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Select week" />
-            </SelectTrigger>
-            <SelectContent>
-              {weeks.map((week) => (
-                <SelectItem key={week} value={week}>
-                  Week {week}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-        <Button
-          size="sm"
-          onClick={onAddTask}
-          className="flex items-center gap-2"
+    <div className="flex flex-col space-y-4">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="task">Task Description</Label>
+          <Input
+            id="task"
+            placeholder="Add a new task..."
+            value={newTask}
+            onChange={(e) => setNewTask(e.target.value)}
+          />
+        </div>
+
+        <RadioGroup
+          defaultValue="one-time"
+          onValueChange={(value) => setIsRecurring(value === "recurring")}
+          className="flex items-center space-x-4"
         >
-          <Plus className="h-4 w-4" />
-          Add
-        </Button>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="one-time" id="one-time" />
+            <Label htmlFor="one-time">One-time task</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="recurring" id="recurring" />
+            <Label htmlFor="recurring">Weekly recurring</Label>
+          </div>
+        </RadioGroup>
+
+        {!isRecurring && (
+          <div className="space-y-2">
+            <Label htmlFor="week">Select Week</Label>
+            <Select value={selectedWeek} onValueChange={setSelectedWeek}>
+              <SelectTrigger id="week" className="w-full">
+                <SelectValue placeholder="Select week" />
+              </SelectTrigger>
+              <SelectContent>
+                {weeks.map((week) => (
+                  <SelectItem key={week} value={week}>
+                    Week {week}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
-      <RadioGroup
-        defaultValue="one-time"
-        onValueChange={(value) => setIsRecurring(value === "recurring")}
-        className="flex items-center space-x-4"
+
+      <Button
+        type="button"
+        onClick={onAddTask}
+        className="w-full"
       >
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="one-time" id="one-time" />
-          <Label htmlFor="one-time">One-time task</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="recurring" id="recurring" />
-          <Label htmlFor="recurring">Weekly recurring</Label>
-        </div>
-      </RadioGroup>
+        Add Task
+      </Button>
     </div>
   );
 };

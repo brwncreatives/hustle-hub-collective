@@ -4,12 +4,20 @@ import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
 import { TaskListProps } from "@/types/task";
 import { useTaskManager } from "@/hooks/useTaskManager";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus } from "lucide-react";
 
 export const TaskList = ({ goalId }: TaskListProps) => {
   const [newTask, setNewTask] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<string>("1");
-  const [showForm, setShowForm] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   
   const {
     addTask,
@@ -29,32 +37,39 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   const handleAddTask = () => {
     addTask(newTask, isRecurring, selectedWeek);
     setNewTask("");
+    setIsOpen(false);
   };
 
   const currentWeekTasks = getTasksForWeek(parseInt(selectedWeek));
 
   return (
     <div className="space-y-4">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setShowForm(!showForm)}
-        className="w-full"
-      >
-        {showForm ? "Hide Task Form" : "Add New Task"}
-      </Button>
-
-      {showForm && (
-        <TaskForm
-          newTask={newTask}
-          setNewTask={setNewTask}
-          selectedWeek={selectedWeek}
-          setSelectedWeek={setSelectedWeek}
-          isRecurring={isRecurring}
-          setIsRecurring={setIsRecurring}
-          onAddTask={handleAddTask}
-        />
-      )}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Task
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Task</DialogTitle>
+          </DialogHeader>
+          <TaskForm
+            newTask={newTask}
+            setNewTask={setNewTask}
+            selectedWeek={selectedWeek}
+            setSelectedWeek={setSelectedWeek}
+            isRecurring={isRecurring}
+            setIsRecurring={setIsRecurring}
+            onAddTask={handleAddTask}
+          />
+        </DialogContent>
+      </Dialog>
 
       <div className="space-y-2">
         {currentWeekTasks.map((task) => (
