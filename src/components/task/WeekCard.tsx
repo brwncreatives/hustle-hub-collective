@@ -22,6 +22,7 @@ interface WeekCardProps {
   toggleTaskCompletion: (taskId: string) => void;
   editTask: (taskId: string, newTitle: string, isRecurring: boolean, week?: number) => void;
   deleteTask: (taskId: string) => void;
+  goalId: string;
 }
 
 export const WeekCard = ({
@@ -35,13 +36,14 @@ export const WeekCard = ({
   toggleTaskCompletion,
   editTask,
   deleteTask,
+  goalId,
 }: WeekCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newTask, setNewTask] = useState("");
   const [selectedWeek, setSelectedWeek] = useState(weekNumber.toString());
   const [isRecurring, setIsRecurring] = useState(false);
   
-  const { addTask } = useTaskManager("global");
+  const { addTask } = useTaskManager(goalId);
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;

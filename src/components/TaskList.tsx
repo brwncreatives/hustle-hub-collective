@@ -114,6 +114,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             toggleTaskCompletion={toggleTaskCompletion}
             editTask={editTask}
             deleteTask={deleteTask}
+            goalId={goalId}
           />
         );
       })}
