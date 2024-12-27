@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { TaskForm } from "../TaskForm";
-import { TaskBingoCard } from "./TaskBingoCard";
 
 interface TaskSectionProps {
   goalId: string;
@@ -63,8 +62,6 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
           </DialogContent>
         </Dialog>
       </div>
-
-      <TaskBingoCard goalId={goalId} />
     </div>
   );
 };
