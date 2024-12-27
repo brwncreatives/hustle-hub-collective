@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { User, createClient } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +17,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     // Check active sessions and sets the user
@@ -30,12 +31,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('Auth state changed:', event, session);
       setUser(session?.user ?? null);
       
-      if (event === 'SIGNED_IN') {
-        toast({ description: "Successfully signed in!" });
-      } else if (event === 'SIGNED_OUT') {
-        toast({ description: "Successfully signed out!" });
-      } else if (event === 'USER_UPDATED') {
-        toast({ description: "Profile updated successfully!" });
+      // Only show toasts after initial mount and for actual auth state changes
+      if (!isInitialMount.current) {
+        if (event === 'SIGNED_IN') {
+          toast({ description: "Successfully signed in!" });
+        } else if (event === 'SIGNED_OUT') {
+          toast({ description: "Successfully signed out!" });
+        } else if (event === 'USER_UPDATED') {
+          toast({ description: "Profile updated successfully!" });
+        }
+      } else {
+        isInitialMount.current = false;
       }
     });
 
