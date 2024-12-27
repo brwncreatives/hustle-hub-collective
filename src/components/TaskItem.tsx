@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import { Trash, Pencil } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -80,10 +80,10 @@ export const TaskItem = ({
           <DialogTrigger asChild>
             <Button
               variant="ghost"
-              size="sm"
-              className="h-8"
+              size="icon"
+              className="h-8 w-8"
             >
-              Edit Task
+              <Pencil className="h-4 w-4" />
             </Button>
           </DialogTrigger>
           <DialogContent>
