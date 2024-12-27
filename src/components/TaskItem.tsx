@@ -78,12 +78,11 @@ export const TaskItem = ({
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button
-              variant="outline"
-              size="sm"
-              className="h-8 px-3 bg-white/10 hover:bg-white/20"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
             >
-              <Pencil className="h-4 w-4 mr-1" />
-              Edit
+              <Pencil className="h-4 w-4" />
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -152,13 +151,12 @@ export const TaskItem = ({
           </DialogContent>
         </Dialog>
         <Button
-          variant={completed ? "default" : "outline"}
-          size="sm"
+          variant={completed ? "default" : "ghost"}
+          size="icon"
           onClick={() => onToggleComplete(id)}
-          className={`h-8 px-3 ${completed ? 'bg-[#9b87f5] hover:bg-[#9b87f5]/80' : 'bg-white/10 hover:bg-white/20'}`}
+          className={`h-8 w-8 ${completed ? 'bg-[#9b87f5] hover:bg-[#9b87f5]/80' : ''}`}
         >
-          <Check className="h-4 w-4 mr-1" />
-          {completed ? "Done" : "Complete"}
+          <Check className="h-4 w-4" />
         </Button>
       </div>
     </div>
