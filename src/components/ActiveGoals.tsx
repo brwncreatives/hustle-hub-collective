@@ -6,6 +6,9 @@ import { TaskList } from "./TaskList";
 import { useState, useEffect } from "react";
 import { GoalStatusBadge } from "./goal/GoalStatusBadge";
 import { Badge } from "./ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { Progress } from "./ui/progress";
 
 interface Goal {
   id: string;
@@ -13,6 +16,7 @@ interface Goal {
   status: string;
   quarter?: string;
   categories?: string[];
+  progress?: number;
 }
 
 export const ActiveGoals = () => {
@@ -20,42 +24,80 @@ export const ActiveGoals = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [editingStatus, setEditingStatus] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const { user } = useAuth();
 
   useEffect(() => {
-    const storedGoals = localStorage.getItem('goals');
-    if (storedGoals) {
-      const parsedGoals = JSON.parse(storedGoals);
-      const goalsWithQuarter = parsedGoals.map((goal: Goal) => ({
-        ...goal,
-        quarter: goal.quarter || getCurrentQuarter()
-      }));
-      setGoals(goalsWithQuarter);
-      console.log("Retrieved goals:", goalsWithQuarter);
-    }
-  }, []);
+    const fetchGoalsAndTasks = async () => {
+      if (!user) return;
 
-  const getCurrentQuarter = () => {
-    const now = new Date();
-    const month = now.getMonth();
-    const year = now.getFullYear();
-    const quarter = Math.ceil((month + 1) / 3);
-    return `Q${quarter}-${year}`;
-  };
+      try {
+        // Fetch goals
+        const { data: goalsData, error: goalsError } = await supabase
+          .from('goals')
+          .select('*')
+          .eq('user_id', user.id);
+
+        if (goalsError) throw goalsError;
+
+        // For each goal, fetch its tasks
+        const goalsWithProgress = await Promise.all(
+          goalsData.map(async (goal) => {
+            const { data: tasks, error: tasksError } = await supabase
+              .from('tasks')
+              .select('*')
+              .eq('goal_id', goal.id);
+
+            if (tasksError) throw tasksError;
+
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(task => task.completed).length;
+            const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+            return {
+              ...goal,
+              progress
+            };
+          })
+        );
+
+        setGoals(goalsWithProgress);
+        console.log("Retrieved goals with progress:", goalsWithProgress);
+      } catch (error) {
+        console.error('Error fetching goals and tasks:', error);
+      }
+    };
+
+    fetchGoalsAndTasks();
+  }, [user]);
 
   const startEditingStatus = (goalId: string, currentStatus: string) => {
     setEditingStatus(goalId);
     setSelectedStatus(currentStatus);
   };
 
-  const saveStatus = (goalId: string) => {
-    const updatedGoals = goals.map(goal =>
-      goal.id === goalId
-        ? { ...goal, status: selectedStatus }
-        : goal
-    );
-    setGoals(updatedGoals);
-    localStorage.setItem('goals', JSON.stringify(updatedGoals));
-    setEditingStatus(null);
+  const saveStatus = async (goalId: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .update({ status: selectedStatus })
+        .eq('id', goalId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setGoals(prevGoals =>
+        prevGoals.map(goal =>
+          goal.id === goalId
+            ? { ...goal, status: selectedStatus }
+            : goal
+        )
+      );
+      setEditingStatus(null);
+    } catch (error) {
+      console.error('Error updating goal status:', error);
+    }
   };
 
   return (
@@ -104,33 +146,42 @@ export const ActiveGoals = () => {
                       Manage Goal
                     </Button>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    <GoalStatusBadge
-                      status={goal.status}
-                      isEditing={editingStatus === goal.id}
-                      selectedStatus={selectedStatus}
-                      onStatusChange={setSelectedStatus}
-                      onSave={() => saveStatus(goal.id)}
-                      onCancel={() => setEditingStatus(null)}
-                      onStartEditing={() => startEditingStatus(goal.id, goal.status)}
-                    />
-                    {goal.quarter && (
-                      <Badge
-                        variant="secondary"
-                        className="bg-primary/10 text-primary text-xs h-[22px] px-2 hover:bg-primary/20"
-                      >
-                        {goal.quarter?.split('-')[0]}
-                      </Badge>
-                    )}
-                    {goal.categories?.map((category) => (
-                      <Badge
-                        key={category}
-                        variant="outline"
-                        className="text-xs h-[22px] px-2 bg-accent/50 border-accent/20"
-                      >
-                        {category}
-                      </Badge>
-                    ))}
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                      <GoalStatusBadge
+                        status={goal.status}
+                        isEditing={editingStatus === goal.id}
+                        selectedStatus={selectedStatus}
+                        onStatusChange={setSelectedStatus}
+                        onSave={() => saveStatus(goal.id)}
+                        onCancel={() => setEditingStatus(null)}
+                        onStartEditing={() => startEditingStatus(goal.id, goal.status)}
+                      />
+                      {goal.quarter && (
+                        <Badge
+                          variant="secondary"
+                          className="bg-primary/10 text-primary text-xs h-[22px] px-2 hover:bg-primary/20"
+                        >
+                          {goal.quarter?.split('-')[0]}
+                        </Badge>
+                      )}
+                      {goal.categories?.map((category) => (
+                        <Badge
+                          key={category}
+                          variant="outline"
+                          className="text-xs h-[22px] px-2 bg-accent/50 border-accent/20"
+                        >
+                          {category}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Progress</span>
+                        <span className="font-medium">{goal.progress}%</span>
+                      </div>
+                      <Progress value={goal.progress} className="h-2" />
+                    </div>
                   </div>
                 </div>
               </CardHeader>
