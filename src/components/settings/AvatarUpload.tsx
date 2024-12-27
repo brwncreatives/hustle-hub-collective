@@ -21,12 +21,15 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
+      console.log('Starting avatar upload process...');
       
       if (!event.target.files || event.target.files.length === 0) {
         throw new Error('You must select an image to upload.');
       }
 
       const file = event.target.files[0];
+      console.log('File selected:', { name: file.name, type: file.type, size: file.size });
+
       const fileExt = file.name.split('.').pop()?.toLowerCase();
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
       
@@ -34,9 +37,15 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
         throw new Error('File type not supported. Please upload an image (JPG, PNG, or GIF).');
       }
 
-      if (!user) throw new Error('No user found');
+      if (!user) {
+        console.error('No user found');
+        throw new Error('No user found');
+      }
 
-      const filePath = `${user.id}/${Math.random()}.${fileExt}`;
+      console.log('User ID:', user.id);
+      const timestamp = new Date().getTime();
+      const filePath = `${user.id}/${timestamp}.${fileExt}`;
+      console.log('Generated file path:', filePath);
 
       const { error: uploadError, data } = await supabase.storage
         .from('avatar')
@@ -50,15 +59,13 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
         throw new Error('Error uploading file. Please try again.');
       }
 
-      if (!data?.path) {
-        throw new Error('Upload failed. Please try again.');
-      }
+      console.log('File uploaded successfully:', data);
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatar')
         .getPublicUrl(data.path);
 
-      onAvatarChange(publicUrl);
+      console.log('Generated public URL:', publicUrl);
       
       const { error: updateError } = await supabase.auth.updateUser({
         data: { avatar_url: publicUrl }
@@ -68,6 +75,9 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
         console.error('Update user error:', updateError);
         throw new Error('Error updating profile. Please try again.');
       }
+
+      console.log('User profile updated with new avatar URL');
+      onAvatarChange(publicUrl);
 
       toast({
         description: "Avatar updated successfully!",
