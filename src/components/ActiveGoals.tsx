@@ -84,11 +84,11 @@ export const ActiveGoals = () => {
                 </div>
                 <Button
                   variant="ghost"
-                  size="icon"
+                  size="sm"
                   onClick={() => navigate(`/edit-goal/${goal.id}`)}
-                  className="h-8 w-8"
+                  className="h-8"
                 >
-                  <Pencil className="h-4 w-4" />
+                  Edit Goal
                 </Button>
               </div>
             </CardHeader>
