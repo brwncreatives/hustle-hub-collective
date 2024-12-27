@@ -14,7 +14,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     toggleTaskCompletion,
   } = useTaskManager(goalId);
 
-  const [showAllWeeks, setShowAllWeeks] = useState(false); // Changed back to false
+  const [showAllWeeks, setShowAllWeeks] = useState(false);
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState<Record<string, boolean>>({});
   const [goalQuarter, setGoalQuarter] = useState<string>("");
 
@@ -59,23 +59,18 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   }, {} as Record<string, any>);
 
   const currentWeek = getCurrentWeekInQuarter(goalQuarter);
-  
-  // Filter weeks to only show those with tasks or the current week
-  const weeksWithContent = Object.keys(groupedTasks).filter(weekKey => {
-    const hasTasksInWeek = groupedTasks[weekKey].length > 0;
-    const weekNumber = parseInt(weekKey.replace('week', ''));
-    return hasTasksInWeek || weekNumber === currentWeek;
-  });
 
-  // Sort weeks with current week first, then by week number
-  const sortedWeeks = weeksWithContent.sort((a, b) => {
-    const weekA = parseInt(a.replace('week', ''));
-    const weekB = parseInt(b.replace('week', ''));
-    
-    if (weekA === currentWeek) return -1;
-    if (weekB === currentWeek) return 1;
-    return weekA - weekB;
-  });
+  // Get weeks to show based on showAllWeeks toggle
+  const weeksToShow = showAllWeeks
+    ? Object.keys(groupedTasks).sort((a, b) => {
+        const weekA = parseInt(a.replace('week', ''));
+        const weekB = parseInt(b.replace('week', ''));
+        return weekA - weekB;
+      })
+    : Object.keys(groupedTasks).filter(weekKey => {
+        const weekNumber = parseInt(weekKey.replace('week', ''));
+        return weekNumber === currentWeek;
+      });
 
   const toggleCompletedForWeek = (weekKey: string) => {
     setCompletedTasksVisibility(prev => ({
@@ -91,15 +86,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
       </p>
     );
   }
-
-  // Get all weeks if showAllWeeks is true, otherwise use filtered weeks
-  const weeksToShow = showAllWeeks 
-    ? Object.keys(groupedTasks).sort((a, b) => {
-        const weekA = parseInt(a.replace('week', ''));
-        const weekB = parseInt(b.replace('week', ''));
-        return weekA - weekB;
-      })
-    : sortedWeeks;
 
   return (
     <div className="space-y-6">
