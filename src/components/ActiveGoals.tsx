@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Target, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { TaskSection } from "./goal/TaskSection";
+import { TaskList } from "./TaskList";
 import { useState, useEffect } from "react";
 import { GoalStatusBadge } from "./goal/GoalStatusBadge";
 
@@ -121,7 +121,7 @@ export const ActiveGoals = () => {
             <CardContent>
               <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                 <div className="p-4">
-                  <TaskSection goalId={goal.id} />
+                  <TaskList goalId={goal.id} />
                 </div>
               </div>
             </CardContent>
