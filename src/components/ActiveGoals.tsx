@@ -12,6 +12,7 @@ interface Goal {
   title: string;
   status: string;
   quarter?: string;
+  categories?: string[];
 }
 
 export const ActiveGoals = () => {
@@ -102,10 +103,19 @@ export const ActiveGoals = () => {
                     />
                     <Badge
                       variant="default"
-                      className="bg-[#FEF7CD] hover:bg-[#FEF7CD]/80 text-yellow-800 text-[0.75rem] leading-[1.25]"
+                      className="bg-[#FEF7CD] hover:bg-[#FEF7CD]/80 text-yellow-800 text-xs"
                     >
                       {goal.quarter?.split('-')[0]}
                     </Badge>
+                    {goal.categories?.map((category) => (
+                      <Badge
+                        key={category}
+                        variant="outline"
+                        className="text-xs bg-primary/10 border-primary/20"
+                      >
+                        {category}
+                      </Badge>
+                    ))}
                   </div>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />

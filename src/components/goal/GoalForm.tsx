@@ -8,6 +8,7 @@ import { GoalTitleField } from "@/components/goal/GoalTitleField";
 import { GoalDescriptionField } from "@/components/goal/GoalDescriptionField";
 import { GoalQuarterField } from "@/components/goal/GoalQuarterField";
 import { GoalStatusField } from "@/components/goal/GoalStatusField";
+import { GoalCategoriesField } from "@/components/goal/GoalCategoriesField";
 import { goalFormSchema, GoalFormValues } from "@/components/goal/types";
 import { Separator } from "@/components/ui/separator";
 import { Target } from "lucide-react";
@@ -31,6 +32,7 @@ export const GoalForm = ({ initialData, onSubmit, title }: GoalFormProps) => {
       description: "",
       quarter: getCurrentQuarter(),
       status: "Not Started",
+      categories: [],
     },
   });
 
@@ -56,6 +58,7 @@ export const GoalForm = ({ initialData, onSubmit, title }: GoalFormProps) => {
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <GoalTitleField form={form} />
             <GoalDescriptionField form={form} />
+            <GoalCategoriesField form={form} />
             <GoalQuarterField form={form} />
             <GoalStatusField form={form} />
 
