@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload } from "lucide-react";
+import { Upload, UserCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -86,8 +86,13 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
   return (
     <div className="flex flex-col items-center mb-6">
       <Avatar className="h-24 w-24 mb-4">
-        <AvatarImage src={avatarUrl} alt="Profile" />
-        <AvatarFallback>{getInitials()}</AvatarFallback>
+        {avatarUrl ? (
+          <AvatarImage src={avatarUrl} alt="Profile" />
+        ) : (
+          <AvatarFallback className="bg-muted">
+            <UserCircle className="h-12 w-12 text-muted-foreground" />
+          </AvatarFallback>
+        )}
       </Avatar>
       <div className="flex items-center gap-2">
         <Input
@@ -104,7 +109,7 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
           disabled={uploading}
         >
           <Upload className="h-4 w-4 mr-2" />
-          {uploading ? "Uploading..." : "Change Avatar"}
+          {uploading ? "Uploading..." : avatarUrl ? "Change Avatar" : "Upload Avatar"}
         </Button>
       </div>
     </div>
