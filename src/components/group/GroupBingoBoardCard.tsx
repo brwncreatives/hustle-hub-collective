@@ -21,14 +21,12 @@ export const GroupBingoBoardCard = () => {
   const groupName = "Tech Achievers";
   const groupGoals: GroupGoal[] = [
     { id: "1", memberId: "1", memberName: "Sarah Chen", title: "Complete React Course", progress: 65 },
-    { id: "2", memberId: "2", memberName: "Mike Johnson", title: "Build 5 Projects", progress: 40 },
-    { id: "3", memberId: "3", memberName: "Emma Wilson", title: "Learn TypeScript", progress: 80 },
-    { id: "4", memberId: "1", memberName: "Sarah Chen", title: "Write Documentation", progress: 30 },
+    { id: "2", memberId: "1", memberName: "Sarah Chen", title: "Build Portfolio", progress: 40 },
+    { id: "3", memberId: "1", memberName: "Sarah Chen", title: "Learn TypeScript", progress: 80 },
+    { id: "4", memberId: "2", memberName: "Mike Johnson", title: "Write Documentation", progress: 30 },
     { id: "5", memberId: "2", memberName: "Mike Johnson", title: "Deploy Apps", progress: 90 },
     { id: "6", memberId: "3", memberName: "Emma Wilson", title: "Create Portfolio", progress: 55 },
-    { id: "7", memberId: "1", memberName: "Sarah Chen", title: "Learn Testing", progress: 20 },
-    { id: "8", memberId: "2", memberName: "Mike Johnson", title: "Master Git", progress: 70 },
-    { id: "9", memberId: "3", memberName: "Emma Wilson", title: "Study Design", progress: 45 },
+    { id: "7", memberId: "3", memberName: "Emma Wilson", title: "Learn Testing", progress: 20 },
   ];
 
   const checkForBingoLines = () => {
@@ -89,39 +87,52 @@ export const GroupBingoBoardCard = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-primary" />
-          {groupName} Bingo Card
+          {groupName} Q1 2024 Bingo Card
         </CardTitle>
         <p className="text-sm text-muted-foreground mt-2">
-          Track your group's progress together! Complete goals as a team to create lines horizontally, vertically, or diagonally. 
+          Track your group's Q1 progress together! Each member can set up to 3 goals for the quarter. 
+          Complete goals as a team to create lines horizontally, vertically, or diagonally. 
           When a member reaches 100% on their goal, it counts towards completing a line. Get three in a row for a BINGO! 🎉
         </p>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4">
-          {groupGoals.map((goal, index) => (
-            <div
-              key={goal.id}
-              className={`
-                aspect-square p-4 border rounded-lg
-                ${goal.progress === 100 ? 'bg-primary/10 border-primary' : 'bg-card'}
-                ${completedLines.some(line => line.includes(index)) ? 'ring-2 ring-primary ring-offset-2' : ''}
-                flex flex-col items-center justify-center text-center
-                transition-all duration-200
-              `}
-            >
-              <Target className="h-5 w-5 text-primary mb-2" />
-              <div className="text-sm font-medium mb-1 line-clamp-2">
-                {goal.title}
+          {Array.from({ length: 9 }).map((_, index) => {
+            const goal = groupGoals[index];
+            const isEmptyCell = !goal;
+            
+            return (
+              <div
+                key={goal?.id || `empty-${index}`}
+                className={`
+                  aspect-square p-4 border rounded-lg
+                  flex flex-col items-center justify-center text-center
+                  transition-all duration-200
+                  ${goal?.progress === 100 ? 'bg-primary/10 border-primary' : 'bg-card'}
+                  ${completedLines.some(line => line.includes(index)) ? 'ring-2 ring-primary ring-offset-2' : ''}
+                  ${isEmptyCell ? 'bg-gray-50/50 border-dashed border-gray-200' : ''}
+                `}
+              >
+                {!isEmptyCell ? (
+                  <>
+                    <Target className="h-5 w-5 text-primary mb-2" />
+                    <div className="text-sm font-medium mb-1 line-clamp-2">
+                      {goal.title}
+                    </div>
+                    <div className="text-xs text-muted-foreground mb-2">
+                      {goal.memberName}
+                    </div>
+                    <Progress value={goal.progress} className="h-2 w-full" />
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {goal.progress}%
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-xs text-muted-foreground">Empty Goal Slot</span>
+                )}
               </div>
-              <div className="text-xs text-muted-foreground mb-2">
-                {goal.memberName}
-              </div>
-              <Progress value={goal.progress} className="h-2 w-full" />
-              <div className="text-xs text-muted-foreground mt-1">
-                {goal.progress}%
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>
