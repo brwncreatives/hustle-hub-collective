@@ -21,7 +21,7 @@ interface WeeklyRecapSectionProps {
 export const WeeklyRecapSection = ({ goalId }: WeeklyRecapSectionProps) => {
   const { toast } = useToast();
   const [comment, setComment] = useState("");
-  const [selectedWeek, setSelectedWeek] = useState(getCurrentWeekInQuarter().toString());
+  const [selectedWeek, setSelectedWeek] = useState(getCurrentWeekInQuarter(new Date()).toString());
   const [hasTappedIn, setHasTappedIn] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
 

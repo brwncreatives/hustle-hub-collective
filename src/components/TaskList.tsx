@@ -45,7 +45,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     return acc;
   }, {} as Record<string, any>);
 
-  const currentWeek = getCurrentWeekInQuarter();
+  const currentWeek = getCurrentWeekInQuarter(new Date());
 
   const weeksToShow = showAllWeeks
     ? Object.keys(groupedTasks).sort((a, b) => {
