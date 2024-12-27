@@ -27,6 +27,10 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     return (currentWeek % 12) || 12;
   };
 
+  const getQuarter = (weekNumber: number) => {
+    return Math.ceil(weekNumber / 13 * 4);
+  };
+
   useEffect(() => {
     console.log("TaskList - All tasks:", tasks);
     console.log("TaskList - goalId:", goalId);
@@ -57,11 +61,13 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
   const currentWeek = getCurrentWeek();
   
-  // Sort weeks in chronological order, but put current week first
+  // Sort weeks in chronological order, but put current week first if not showing all weeks
   const sortedWeeks = Object.keys(groupedTasks)
     .sort((a, b) => {
-      if (parseInt(a.replace('week', '')) === currentWeek) return -1;
-      if (parseInt(b.replace('week', '')) === currentWeek) return 1;
+      if (!showAllWeeks) {
+        if (parseInt(a.replace('week', '')) === currentWeek) return -1;
+        if (parseInt(b.replace('week', '')) === currentWeek) return 1;
+      }
       return parseInt(a.replace('week', '')) - parseInt(b.replace('week', ''));
     });
 
@@ -97,10 +103,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
         const tasksForWeek = groupedTasks[weekKey];
         const showCompletedForWeek = completedTasksVisibility[weekKey];
         
-        // Only show weeks that have tasks or are the current week
-        if (tasksForWeek.length === 0 && !isCurrentWeek) return null;
-        
-        // Hide non-current weeks if showAllWeeks is false
+        // Show all weeks when showAllWeeks is true, otherwise only show current week
         if (!showAllWeeks && !isCurrentWeek) return null;
 
         const hasCompletedTasks = tasksForWeek.some((task: any) => task.completed);
@@ -116,7 +119,12 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-semibold">Week {weekNumber}</h4>
+                  <h4 className="text-sm font-semibold">
+                    Week {weekNumber}
+                    <span className="text-muted-foreground ml-1">
+                      (Q{getQuarter(weekNumber)})
+                    </span>
+                  </h4>
                   {isCurrentWeek && (
                     <Badge variant="secondary" className="text-xs">
                       Current Week
