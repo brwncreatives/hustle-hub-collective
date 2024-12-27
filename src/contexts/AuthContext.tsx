@@ -1,12 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { User, createClient } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
-
-// Initialize Supabase client
-const supabase = createClient(
-  'https://zpbqzuazbmgyifhwphga.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwYnF6dWF6Ym1neWlmaHdwaGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMjI0MTgsImV4cCI6MjA0OTY5ODQxOH0.HVvzkkFpq4m_AecBfYHyyVYHoZgJRIi8uxMxvBOBLmA'
-);
+import { supabase } from '@/integrations/supabase/client';
 
 type AuthContextType = {
   user: User | null;
@@ -31,16 +26,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     // Listen for changes on auth state
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
       setUser(session?.user ?? null);
+      
+      if (event === 'SIGNED_IN') {
+        toast({ description: "Successfully signed in!" });
+      } else if (event === 'SIGNED_OUT') {
+        toast({ description: "Successfully signed out!" });
+      } else if (event === 'USER_UPDATED') {
+        toast({ description: "Profile updated successfully!" });
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [toast]);
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password,
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      
       if (error) {
         if (error.message === 'Invalid login credentials') {
           toast({ 
@@ -52,7 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         throw error;
       }
-      toast({ description: "Successfully signed in!" });
     } catch (error: any) {
       console.error('Sign in error:', error);
       throw error;
@@ -108,7 +118,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         toast({ description: error.message, variant: "destructive" });
         throw error;
       }
-      toast({ description: "Successfully signed out!" });
     } catch (error: any) {
       console.error('Sign out error:', error);
       throw error;
