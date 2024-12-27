@@ -18,6 +18,7 @@ export const GroupBingoBoardCard = () => {
   const [completedLines, setCompletedLines] = useState<number[][]>([]);
   
   // Mock data - replace with actual data from your backend
+  const groupName = "Tech Achievers";
   const groupGoals: GroupGoal[] = [
     { id: "1", memberId: "1", memberName: "Sarah Chen", title: "Complete React Course", progress: 65 },
     { id: "2", memberId: "2", memberName: "Mike Johnson", title: "Build 5 Projects", progress: 40 },
@@ -88,7 +89,7 @@ export const GroupBingoBoardCard = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-primary" />
-          Group Goals Bingo
+          {groupName} - Group Goals Bingo
         </CardTitle>
       </CardHeader>
       <CardContent>
