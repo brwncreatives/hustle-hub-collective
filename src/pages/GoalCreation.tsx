@@ -167,7 +167,7 @@ const GoalCreation = () => {
               />
 
               <div className="space-y-4">
-                <FormLabel>Tasks</FormLabel>
+                <FormLabel>Weekly Tasks</FormLabel>
                 <FormDescription>
                   Add tasks to help you achieve this goal. Tasks can be one-time or recurring weekly.
                 </FormDescription>
