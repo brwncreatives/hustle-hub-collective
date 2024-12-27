@@ -24,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TaskList } from "@/components/TaskList";
 
 const goalFormSchema = z.object({
   title: z.string().min(1, "Title is required").max(100),
@@ -164,6 +165,14 @@ const GoalCreation = () => {
                   </FormItem>
                 )}
               />
+
+              <div className="space-y-4">
+                <FormLabel>Tasks</FormLabel>
+                <FormDescription>
+                  Add tasks to help you achieve this goal. Tasks can be one-time or recurring weekly.
+                </FormDescription>
+                <TaskList goalId="new-goal" />
+              </div>
 
               <div className="flex justify-end space-x-2">
                 <Button

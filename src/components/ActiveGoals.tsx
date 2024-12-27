@@ -74,9 +74,6 @@ export const ActiveGoals = () => {
                   In Progress
                 </Badge>
                 <p className="font-medium text-foreground">Learn React Native</p>
-                <p className="text-sm text-muted-foreground">
-                  Complete 3 tutorials this week
-                </p>
               </div>
               <div className="flex gap-2">
                 <Button
