@@ -59,77 +59,90 @@ export const WeekCard = ({
     : tasksForWeek.filter((task) => !task.completed);
 
   return (
-    <Card 
-      className={`bg-background/50 ${isCurrentWeek ? 'ring-2 ring-primary' : ''}`}
-    >
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex flex-col gap-2">
+    <Card className={`bg-card shadow-sm transition-all duration-200 ${isCurrentWeek ? 'ring-2 ring-primary' : ''}`}>
+      <CardContent className="p-4">
+        <div className="space-y-4">
+          {/* Header Section */}
+          <div className="flex flex-col space-y-2">
             {isCurrentWeek && (
-              <Badge variant="secondary" className="text-xs w-fit">
+              <Badge variant="secondary" className="w-fit text-xs font-medium">
                 Current Week
               </Badge>
             )}
-            <h4 className="text-sm font-semibold">
-              Week {weekNumber}
-              <span className="text-muted-foreground ml-1">
-                ({quarter})
-              </span>
-            </h4>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <h4 className="font-medium">
+                  Week {weekNumber}
+                  <span className="text-muted-foreground text-sm ml-1">
+                    ({quarter})
+                  </span>
+                </h4>
+              </div>
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:bg-accent"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add New Task</DialogTitle>
+                  </DialogHeader>
+                  <TaskForm
+                    newTask={newTask}
+                    setNewTask={setNewTask}
+                    selectedWeek={selectedWeek}
+                    setSelectedWeek={setSelectedWeek}
+                    isRecurring={isRecurring}
+                    setIsRecurring={setIsRecurring}
+                    onAddTask={handleAddTask}
+                  />
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
-          <div className="flex items-center gap-4">
+
+          {/* Tasks Section */}
+          <div className="space-y-3">
             {hasCompletedTasks && (
               <div className="flex items-center space-x-2">
                 <Switch
                   id={`show-completed-${weekKey}`}
                   checked={showCompletedForWeek}
                   onCheckedChange={() => toggleCompletedForWeek(weekKey)}
+                  className="h-4 w-7"
                 />
-                <Label htmlFor={`show-completed-${weekKey}`} className="text-xs">
+                <Label 
+                  htmlFor={`show-completed-${weekKey}`} 
+                  className="text-xs text-muted-foreground"
+                >
                   Show completed
                 </Label>
               </div>
             )}
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add New Task</DialogTitle>
-                </DialogHeader>
-                <TaskForm
-                  newTask={newTask}
-                  setNewTask={setNewTask}
-                  selectedWeek={selectedWeek}
-                  setSelectedWeek={setSelectedWeek}
-                  isRecurring={isRecurring}
-                  setIsRecurring={setIsRecurring}
-                  onAddTask={handleAddTask}
-                />
-              </DialogContent>
-            </Dialog>
-            <span className="text-xs text-muted-foreground">
-              {filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}
-            </span>
+            
+            <div className="space-y-2">
+              {filteredTasks.length > 0 ? (
+                filteredTasks.map((task) => (
+                  <TaskItem
+                    key={`${task.id}-${weekKey}`}
+                    {...task}
+                    onToggleComplete={toggleTaskCompletion}
+                    onEditTask={editTask}
+                    onDeleteTask={deleteTask}
+                  />
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-2">
+                  No tasks for this week
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="space-y-2">
-          {filteredTasks.map((task) => (
-            <TaskItem
-              key={`${task.id}-${weekKey}`}
-              {...task}
-              onToggleComplete={toggleTaskCompletion}
-              onEditTask={editTask}
-              onDeleteTask={deleteTask}
-            />
-          ))}
         </div>
       </CardContent>
     </Card>
