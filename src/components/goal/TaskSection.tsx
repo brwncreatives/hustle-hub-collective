@@ -1,8 +1,7 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TaskList } from "../TaskList";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { useState } from "react";
+import { useTaskManager } from "@/hooks/useTaskManager";
 import {
   Dialog,
   DialogContent,
@@ -11,8 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { TaskForm } from "../TaskForm";
-import { useState, useEffect } from "react";
-import { useTaskManager } from "@/hooks/useTaskManager";
 import { TaskBingoCard } from "./TaskBingoCard";
 
 interface TaskSectionProps {
@@ -24,16 +21,8 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
   const [newTask, setNewTask] = useState("");
   const [selectedWeek, setSelectedWeek] = useState("1");
   const [isRecurring, setIsRecurring] = useState(false);
-  const [useBingoView, setUseBingoView] = useState(() => {
-    const stored = localStorage.getItem(`taskView-${goalId}`);
-    return stored ? stored === 'bingo' : false;
-  });
   
   const { addTask } = useTaskManager(goalId);
-
-  useEffect(() => {
-    localStorage.setItem(`taskView-${goalId}`, useBingoView ? 'bingo' : 'list');
-  }, [useBingoView, goalId]);
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
@@ -75,22 +64,7 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
         </Dialog>
       </div>
 
-      <div className="flex items-center space-x-2 bg-card p-4 rounded-lg shadow-sm">
-        <Switch
-          id={`view-toggle-${goalId}`}
-          checked={useBingoView}
-          onCheckedChange={setUseBingoView}
-        />
-        <Label htmlFor={`view-toggle-${goalId}`}>
-          {useBingoView ? "Using Bingo Card View" : "Using Weekly Task List"}
-        </Label>
-      </div>
-
-      {useBingoView ? (
-        <TaskBingoCard goalId={goalId} />
-      ) : (
-        <TaskList goalId={goalId} />
-      )}
+      <TaskBingoCard goalId={goalId} />
     </div>
   );
 };
