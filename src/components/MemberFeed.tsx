@@ -93,6 +93,7 @@ const getActivityMessage = (activity: FeedActivity) => {
 export function MemberFeed() {
   const { user } = useAuth();
   const [likedActivities, setLikedActivities] = useState<Set<string>>(new Set());
+  const groupName = "Tech Achievers"; // This should match the group name from AccountabilityGroups
 
   const handleLike = (activityId: string) => {
     setLikedActivities(prev => {
@@ -114,7 +115,7 @@ export function MemberFeed() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Group Activity Feed
+            {groupName} Activity Feed
           </CardTitle>
           <NotificationsPopover />
         </CardHeader>
