@@ -89,8 +89,12 @@ export const GroupBingoBoardCard = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5 text-primary" />
-          {groupName} - Group Goals Bingo
+          {groupName} Bingo Card
         </CardTitle>
+        <p className="text-sm text-muted-foreground mt-2">
+          Track your group's progress together! Complete goals as a team to create lines horizontally, vertically, or diagonally. 
+          When a member reaches 100% on their goal, it counts towards completing a line. Get three in a row for a BINGO! 🎉
+        </p>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4">
