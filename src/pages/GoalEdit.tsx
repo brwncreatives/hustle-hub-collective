@@ -4,6 +4,7 @@ import { GoalForm } from "@/components/goal/GoalForm";
 import { GoalFormValues } from "@/components/goal/types";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
+import { WeeklyRecapSection } from "@/components/goal/WeeklyRecapSection";
 
 const GoalEdit = () => {
   const { goalId } = useParams();
@@ -31,11 +32,14 @@ const GoalEdit = () => {
       <div className="container mx-auto px-4 py-6 space-y-6 max-w-2xl">
         <Header user={user} signOut={signOut} />
         {goal && (
-          <GoalForm
-            initialData={goal}
-            onSubmit={handleSubmit}
-            title="Edit Goal"
-          />
+          <>
+            <GoalForm
+              initialData={goal}
+              onSubmit={handleSubmit}
+              title="Manage Goal"
+            />
+            <WeeklyRecapSection goalId={goal.id} />
+          </>
         )}
       </div>
     </div>

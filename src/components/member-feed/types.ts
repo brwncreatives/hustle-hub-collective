@@ -36,5 +36,6 @@ export interface FeedActivity {
     taskTitle?: string;
     reflection?: string;
     weekNumber?: number;
+    isPublic?: boolean;
   };
 }

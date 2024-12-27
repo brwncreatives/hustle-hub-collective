@@ -98,10 +98,10 @@ export const ActiveGoals = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => navigate(`/edit-goal/${goal.id}`)}
+                      onClick={() => navigate(`/manage-goal/${goal.id}`)}
                       className="h-8"
                     >
-                      Edit Goal
+                      Manage Goal
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-2">
