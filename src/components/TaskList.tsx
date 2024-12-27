@@ -103,7 +103,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             </Button>
           </CollapsibleTrigger>
         </div>
-        <div className="pt-4">
+        <div className="space-y-4 pt-4">
           {weeksToShow.map((weekKey) => {
             const weekNumber = parseInt(weekKey.replace('week', ''));
             const isCurrentWeek = weekNumber === currentWeek;
