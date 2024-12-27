@@ -98,7 +98,7 @@ const Index = () => {
         <Header user={user} signOut={signOut} />
         <MotivationalQuote />
         <ActiveGoals />
-        <WeeklyRecapSection goalId="global" />
+        <WeeklyRecapSection goalId="global" showPastRecaps={false} />
         <MemberFeed />
         <AccountabilityGroups />
       </div>
