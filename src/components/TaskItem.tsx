@@ -83,7 +83,7 @@ export const TaskItem = ({
               size="sm"
               className="h-8"
             >
-              Edit Goal
+              Edit Task
             </Button>
           </DialogTrigger>
           <DialogContent>
