@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TaskForm } from "./TaskForm";
 import { TaskItem } from "./TaskItem";
 import { Task, TaskListProps } from "@/types/task";
@@ -8,6 +8,17 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   const [newTask, setNewTask] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<string>("1");
+  const [showForm, setShowForm] = useState(false);
+
+  // Get the current week number (1-12)
+  const getCurrentWeek = () => {
+    // This is a simplified version. In a real app, you'd calculate this based on the goal's start date
+    return "1";
+  };
+
+  useEffect(() => {
+    setSelectedWeek(getCurrentWeek());
+  }, []);
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
@@ -33,26 +44,47 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     );
   };
 
+  // Filter tasks for the current week or recurring tasks
+  const currentWeekTasks = tasks.filter(
+    (task) => task.isRecurring || task.week === parseInt(selectedWeek)
+  );
+
   return (
-    <div className="space-y-4 mt-4">
-      <TaskForm
-        newTask={newTask}
-        setNewTask={setNewTask}
-        selectedWeek={selectedWeek}
-        setSelectedWeek={setSelectedWeek}
-        isRecurring={isRecurring}
-        setIsRecurring={setIsRecurring}
-        onAddTask={handleAddTask}
-      />
+    <div className="space-y-4">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setShowForm(!showForm)}
+        className="w-full"
+      >
+        {showForm ? "Hide Task Form" : "Add New Task"}
+      </Button>
+
+      {showForm && (
+        <TaskForm
+          newTask={newTask}
+          setNewTask={setNewTask}
+          selectedWeek={selectedWeek}
+          setSelectedWeek={setSelectedWeek}
+          isRecurring={isRecurring}
+          setIsRecurring={setIsRecurring}
+          onAddTask={handleAddTask}
+        />
+      )}
 
       <div className="space-y-2">
-        {tasks.map((task) => (
+        {currentWeekTasks.map((task) => (
           <TaskItem
             key={task.id}
             {...task}
             onToggleComplete={toggleTaskCompletion}
           />
         ))}
+        {currentWeekTasks.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-2">
+            No tasks for this week
+          </p>
+        )}
       </div>
     </div>
   );

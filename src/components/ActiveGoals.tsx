@@ -15,7 +15,6 @@ export const ActiveGoals = () => {
   const [showCommentField, setShowCommentField] = useState(false);
   const [comment, setComment] = useState("");
   const [hasTappedIn, setHasTappedIn] = useState(false);
-  const [showTasks, setShowTasks] = useState(false);
 
   const handleTapIn = () => {
     if (hasTappedIn) {
@@ -75,27 +74,18 @@ export const ActiveGoals = () => {
                 </Badge>
                 <p className="font-medium text-foreground">Learn React Native</p>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowTasks(!showTasks)}
-                >
-                  {showTasks ? "Hide Tasks" : "Show Tasks"}
-                </Button>
-                <Button
-                  variant={hasTappedIn ? "secondary" : "default"}
-                  size="sm"
-                  onClick={() => setShowCommentField(!showCommentField)}
-                  className="flex items-center gap-2"
-                >
-                  <Send className="h-4 w-4" />
-                  Tap In
-                </Button>
-              </div>
+              <Button
+                variant={hasTappedIn ? "secondary" : "default"}
+                size="sm"
+                onClick={() => setShowCommentField(!showCommentField)}
+                className="flex items-center gap-2"
+              >
+                <Send className="h-4 w-4" />
+                Tap In
+              </Button>
             </div>
 
-            {showTasks && <TaskList goalId="learn-react-native" />}
+            <TaskList goalId="learn-react-native" />
 
             {showCommentField && (
               <div className="mt-4 space-y-2">
