@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { TaskItem } from "./TaskItem";
 import { TaskListProps } from "@/types/task";
 import { useTaskManager } from "@/hooks/useTaskManager";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 
 export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
   const {
@@ -37,7 +35,7 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
           ))
         ) : (
           <p className="text-sm text-muted-foreground text-center py-2">
-            No tasks available
+            {showCompleted ? "No tasks available" : "No active tasks"}
           </p>
         )}
       </div>

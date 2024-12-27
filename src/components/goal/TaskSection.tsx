@@ -1,6 +1,8 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TaskList } from "../TaskList";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +23,7 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
   const [newTask, setNewTask] = useState("");
   const [selectedWeek, setSelectedWeek] = useState("1");
   const [isRecurring, setIsRecurring] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(false);
   
   const { addTask } = useTaskManager(goalId);
 
@@ -63,7 +66,17 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
           </DialogContent>
         </Dialog>
       </div>
-      <TaskList goalId={goalId} />
+
+      <div className="flex items-center space-x-2 mb-4">
+        <Switch
+          id="show-completed"
+          checked={showCompleted}
+          onCheckedChange={setShowCompleted}
+        />
+        <Label htmlFor="show-completed">Show completed tasks</Label>
+      </div>
+
+      <TaskList goalId={goalId} showCompleted={showCompleted} />
     </div>
   );
 };
