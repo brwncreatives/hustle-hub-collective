@@ -60,26 +60,14 @@ export const TaskItem = ({
     }
   };
 
-  const handleDelete = () => {
-    onDeleteTask(id);
-    setIsOpen(false);
-  };
-
   return (
     <div className="flex items-center justify-between space-x-2 bg-white/5 p-2 rounded-md">
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          checked={completed}
-          onCheckedChange={() => onToggleComplete(id)}
-          className={completed ? 'bg-[#9b87f5] border-[#9b87f5]' : ''}
-        />
-        <div>
-          <div className="text-xs text-muted-foreground">
-            {isRecurring ? "Recurring Weekly" : `Week ${week}`}
-          </div>
-          <div className={`${completed ? "line-through text-muted-foreground" : ""}`}>
-            {title}
-          </div>
+      <div>
+        <div className="text-xs text-muted-foreground">
+          {isRecurring ? "Recurring Weekly" : `Week ${week}`}
+        </div>
+        <div className={`${completed ? "line-through text-muted-foreground" : ""}`}>
+          {title}
         </div>
       </div>
       <div className="flex items-center space-x-2">
@@ -93,14 +81,6 @@ export const TaskItem = ({
               <Pencil className="h-4 w-4" />
             </Button>
           </DialogTrigger>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={handleDelete}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit Task</DialogTitle>
@@ -150,9 +130,22 @@ export const TaskItem = ({
                 </div>
               )}
 
-              <Button onClick={handleSaveEdit} className="w-full">
-                Save Changes
-              </Button>
+              <div className="flex space-x-2">
+                <Button onClick={handleSaveEdit} className="flex-1">
+                  Save Changes
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    onDeleteTask(id);
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <Trash className="h-4 w-4" />
+                  Delete
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
