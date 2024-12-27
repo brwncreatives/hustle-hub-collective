@@ -100,8 +100,11 @@ export const ActiveGoals = () => {
                       onCancel={() => setEditingStatus(null)}
                       onStartEditing={() => startEditingStatus(goal.id, goal.status)}
                     />
-                    <Badge variant="outline" className="text-xs font-medium">
-                      {goal.quarter}
+                    <Badge
+                      variant="default"
+                      className="bg-[#FEF7CD] hover:bg-[#FEF7CD]/80 text-yellow-800 text-xs font-medium"
+                    >
+                      {goal.quarter?.split('-')[0]}
                     </Badge>
                   </div>
                   <CardTitle className="text-lg flex items-center gap-2">
