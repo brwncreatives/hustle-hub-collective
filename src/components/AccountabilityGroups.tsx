@@ -18,13 +18,22 @@ export const AccountabilityGroups = () => {
         <p className="text-center text-muted-foreground">
           Create an accountability group to stay motivated!
         </p>
-        <Button 
-          className="w-full border-2 border-primary bg-transparent hover:bg-primary text-primary hover:text-primary-foreground transition-all" 
-          variant="outline" 
-          onClick={() => navigate("/create-group")}
-        >
-          Create a Group
-        </Button>
+        <div className="space-y-2">
+          <Button 
+            className="w-full border-2 border-primary bg-transparent hover:bg-primary text-primary hover:text-primary-foreground transition-all" 
+            variant="outline" 
+            onClick={() => navigate("/create-group")}
+          >
+            Create a Group
+          </Button>
+          <Button 
+            className="w-full" 
+            variant="outline" 
+            onClick={() => navigate("/manage-group")}
+          >
+            Manage Your Group
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

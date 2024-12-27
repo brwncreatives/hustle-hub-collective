@@ -9,6 +9,7 @@ import GoalCreation from "./pages/GoalCreation";
 import GoalEdit from "./pages/GoalEdit";
 import GroupCreation from "./pages/GroupCreation";
 import GroupLanding from "./pages/GroupLanding";
+import GroupManagement from "./pages/GroupManagement";
 import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/edit-goal/:goalId" element={<GoalEdit />} />
             <Route path="/create-group" element={<GroupCreation />} />
             <Route path="/join-group" element={<GroupLanding />} />
+            <Route path="/manage-group" element={<GroupManagement />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </BrowserRouter>
