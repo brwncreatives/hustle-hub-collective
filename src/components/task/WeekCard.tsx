@@ -62,18 +62,18 @@ export const WeekCard = ({
     >
       <CardContent className="pt-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2">
+            {isCurrentWeek && (
+              <Badge variant="secondary" className="text-xs w-fit">
+                Current Week
+              </Badge>
+            )}
             <h4 className="text-sm font-semibold">
               Week {weekNumber}
               <span className="text-muted-foreground ml-1">
                 ({quarter})
               </span>
             </h4>
-            {isCurrentWeek && (
-              <Badge variant="secondary" className="text-xs">
-                Current Week
-              </Badge>
-            )}
           </div>
           <div className="flex items-center gap-4">
             {hasCompletedTasks && (
