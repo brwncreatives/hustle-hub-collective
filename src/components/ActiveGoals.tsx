@@ -117,7 +117,7 @@ export const ActiveGoals = () => {
                     {goal.quarter && (
                       <Badge
                         variant="secondary"
-                        className="bg-primary/10 text-primary text-xs"
+                        className="bg-primary/10 text-primary text-xs h-[22px] px-2 hover:bg-primary/20"
                       >
                         {goal.quarter?.split('-')[0]}
                       </Badge>
@@ -126,7 +126,7 @@ export const ActiveGoals = () => {
                       <Badge
                         key={category}
                         variant="outline"
-                        className="text-xs bg-accent/50 border-accent/20"
+                        className="text-xs h-[22px] px-2 bg-accent/50 border-accent/20"
                       >
                         {category}
                       </Badge>
