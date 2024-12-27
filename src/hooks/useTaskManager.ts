@@ -19,6 +19,7 @@ export const useTaskManager = (goalId: string) => {
 
     setTasks(prevTasks => [...prevTasks, task]);
     console.log("Task added:", { goalId, task });
+    console.log("Current tasks after adding:", tasks); // Debug log
     
     toast({
       description: "Task added successfully",

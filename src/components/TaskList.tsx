@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 
 export const TaskList = ({ goalId }: TaskListProps) => {
@@ -17,6 +18,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
   const {
+    tasks,
     addTask,
     editTask,
     toggleTaskCompletion,
@@ -40,6 +42,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   };
 
   const currentWeekTasks = getTasksForWeek(parseInt(selectedWeek));
+  console.log("Current week tasks:", currentWeekTasks); // Debug log
 
   return (
     <div className="space-y-4">

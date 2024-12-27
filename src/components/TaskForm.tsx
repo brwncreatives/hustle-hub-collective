@@ -82,6 +82,7 @@ export const TaskForm = ({
         type="button"
         onClick={onAddTask}
         className="w-full"
+        disabled={!newTask.trim()}
       >
         Add Task
       </Button>
