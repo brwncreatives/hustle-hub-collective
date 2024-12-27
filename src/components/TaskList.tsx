@@ -55,12 +55,12 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
     return acc;
   }, {} as Record<string, any>);
 
-  // Sort weeks in reverse order (most recent first)
+  // Sort weeks in chronological order (week 1 to 12)
   const sortedWeeks = Object.keys(groupedTasks)
     .sort((a, b) => {
       const weekA = parseInt(a.replace('week', ''));
       const weekB = parseInt(b.replace('week', ''));
-      return weekB - weekA; // Reverse order
+      return weekA - weekB; // Changed to chronological order
     });
 
   const currentWeek = getCurrentWeek();
