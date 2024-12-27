@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { GoalForm, GoalFormValues } from "@/components/goal/GoalForm";
+import { GoalForm } from "@/components/goal/GoalForm";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/contexts/AuthContext";
 import { WeeklyRecapSection } from "@/components/goal/WeeklyRecapSection";
+import { GoalFormValues } from "@/components/goal/types";
 
 const GoalEdit = () => {
   const { goalId } = useParams();
@@ -34,7 +35,7 @@ const GoalEdit = () => {
         {goal && (
           <>
             <GoalForm
-              defaultValues={goal}
+              initialValues={goal}
               onSubmit={handleSubmit}
               title="Manage Goal"
             />
