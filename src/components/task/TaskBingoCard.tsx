@@ -102,7 +102,7 @@ export const TaskBingoCard = ({ tasks, onToggleComplete }: TaskBingoCardProps) =
                 />
               </>
             ) : (
-              <div className="text-muted-foreground text-sm">Empty</div>
+              <div className="text-muted-foreground text-sm">Add a task</div>
             )}
           </div>
         ))}
