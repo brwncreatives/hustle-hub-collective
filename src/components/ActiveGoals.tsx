@@ -59,13 +59,13 @@ export const ActiveGoals = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold tracking-tight">Your Goals</h2>
         <Button
           onClick={() => navigate("/create-goal")}
           size="sm"
-          className="bg-primary hover:bg-primary/80 text-primary-foreground"
+          className="bg-primary hover:bg-primary/90"
         >
           <Plus className="h-4 w-4 mr-2" />
           New Goal
@@ -73,12 +73,11 @@ export const ActiveGoals = () => {
       </div>
 
       {goals.length === 0 ? (
-        <Card className="w-full mb-6">
+        <Card className="w-full">
           <CardContent className="pt-6">
             <div className="text-center space-y-2">
-              <p className="text-muted-foreground">
-                You haven't set any goals yet
-              </p>
+              <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg font-medium">No goals yet</p>
               <p className="text-sm text-muted-foreground">
                 Click 'New Goal' to start tracking your progress
               </p>
@@ -86,12 +85,26 @@ export const ActiveGoals = () => {
           </CardContent>
         </Card>
       ) : (
-        goals.map((goal) => (
-          <Card key={goal.id} className="w-full mb-6">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="flex flex-wrap gap-2 mb-2">
+        <div className="grid gap-6">
+          {goals.map((goal) => (
+            <Card key={goal.id} className="w-full overflow-hidden">
+              <CardHeader className="pb-3">
+                <div className="flex flex-col space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Target className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">{goal.title}</CardTitle>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/edit-goal/${goal.id}`)}
+                      className="h-8"
+                    >
+                      Edit Goal
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
                     <GoalStatusBadge
                       status={goal.status}
                       isEditing={editingStatus === goal.id}
@@ -101,46 +114,32 @@ export const ActiveGoals = () => {
                       onCancel={() => setEditingStatus(null)}
                       onStartEditing={() => startEditingStatus(goal.id, goal.status)}
                     />
-                    <Badge
-                      variant="default"
-                      className="bg-[#FEF7CD] hover:bg-[#FEF7CD]/80 text-yellow-800 text-xs"
-                    >
-                      {goal.quarter?.split('-')[0]}
-                    </Badge>
+                    {goal.quarter && (
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary text-xs"
+                      >
+                        {goal.quarter?.split('-')[0]}
+                      </Badge>
+                    )}
                     {goal.categories?.map((category) => (
                       <Badge
                         key={category}
                         variant="outline"
-                        className="text-xs bg-primary/10 border-primary/20"
+                        className="text-xs bg-accent/50 border-accent/20"
                       >
                         {category}
                       </Badge>
                     ))}
                   </div>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    {goal.title}
-                  </CardTitle>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate(`/edit-goal/${goal.id}`)}
-                  className="h-8"
-                >
-                  Edit Goal
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-                <div className="p-4">
-                  <TaskList goalId={goal.id} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))
+              </CardHeader>
+              <CardContent>
+                <TaskList goalId={goal.id} />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );

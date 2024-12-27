@@ -16,19 +16,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
   const [showAllWeeks, setShowAllWeeks] = useState(false);
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState<Record<string, boolean>>({});
-  const [goalQuarter, setGoalQuarter] = useState<string>("");
-
-  useEffect(() => {
-    const storedGoals = localStorage.getItem('goals');
-    if (storedGoals) {
-      const goals = JSON.parse(storedGoals);
-      const currentGoal = goals.find((goal: any) => goal.id === goalId);
-      if (currentGoal?.quarter) {
-        setGoalQuarter(currentGoal.quarter);
-        console.log("Found goal quarter:", currentGoal.quarter);
-      }
-    }
-  }, [goalId]);
 
   useEffect(() => {
     console.log("TaskList - All tasks:", tasks);
@@ -58,9 +45,8 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     return acc;
   }, {} as Record<string, any>);
 
-  const currentWeek = getCurrentWeekInQuarter(goalQuarter);
+  const currentWeek = getCurrentWeekInQuarter();
 
-  // Get weeks to show based on showAllWeeks toggle
   const weeksToShow = showAllWeeks
     ? Object.keys(groupedTasks).sort((a, b) => {
         const weekA = parseInt(a.replace('week', ''));
@@ -81,43 +67,47 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
   if (tasks.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground text-center py-2">
-        No active tasks
+      <p className="text-sm text-muted-foreground text-center py-4">
+        No tasks yet
       </p>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-2 pb-2 border-b">
         <Switch
           id="show-all-weeks"
           checked={showAllWeeks}
           onCheckedChange={setShowAllWeeks}
         />
-        <Label htmlFor="show-all-weeks">Show all weeks</Label>
+        <Label htmlFor="show-all-weeks" className="text-sm text-muted-foreground">
+          Show all weeks
+        </Label>
       </div>
 
-      {weeksToShow.map((weekKey) => {
-        const weekNumber = parseInt(weekKey.replace('week', ''));
-        const isCurrentWeek = weekNumber === currentWeek;
-        
-        return (
-          <WeekCard
-            key={weekKey}
-            weekKey={weekKey}
-            weekNumber={weekNumber}
-            isCurrentWeek={isCurrentWeek}
-            tasksForWeek={groupedTasks[weekKey]}
-            showCompletedForWeek={completedTasksVisibility[weekKey]}
-            toggleCompletedForWeek={toggleCompletedForWeek}
-            toggleTaskCompletion={toggleTaskCompletion}
-            editTask={editTask}
-            deleteTask={deleteTask}
-            goalId={goalId}
-          />
-        );
-      })}
+      <div className="grid gap-4">
+        {weeksToShow.map((weekKey) => {
+          const weekNumber = parseInt(weekKey.replace('week', ''));
+          const isCurrentWeek = weekNumber === currentWeek;
+          
+          return (
+            <WeekCard
+              key={weekKey}
+              weekKey={weekKey}
+              weekNumber={weekNumber}
+              isCurrentWeek={isCurrentWeek}
+              tasksForWeek={groupedTasks[weekKey]}
+              showCompletedForWeek={completedTasksVisibility[weekKey]}
+              toggleCompletedForWeek={toggleCompletedForWeek}
+              toggleTaskCompletion={toggleTaskCompletion}
+              editTask={editTask}
+              deleteTask={deleteTask}
+              goalId={goalId}
+            />
+          );
+        })}
+      </div>
     </div>
   );
 };
