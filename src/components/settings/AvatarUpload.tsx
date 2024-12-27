@@ -41,7 +41,21 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
 
       const filePath = `${user?.id}/${Math.random()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      // First check if we can access the storage bucket
+      try {
+        const { data: bucketExists } = await supabase
+          .storage
+          .getBucket('avatars');
+
+        if (!bucketExists) {
+          throw new Error('Storage bucket not configured. Please contact support.');
+        }
+      } catch (error: any) {
+        console.error('Storage bucket check error:', error);
+        throw new Error('Unable to access storage. Please try again later.');
+      }
+
+      const { error: uploadError, data } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -52,9 +66,13 @@ const AvatarUpload = ({ user, avatarUrl, onAvatarChange, getInitials }: AvatarUp
         throw uploadError;
       }
 
+      if (!data?.path) {
+        throw new Error('Upload failed. Please try again.');
+      }
+
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(data.path);
 
       onAvatarChange(publicUrl);
       
