@@ -11,7 +11,6 @@ import {
 import { TaskForm } from "../TaskForm";
 import { useState } from "react";
 import { useTaskManager } from "@/hooks/useTaskManager";
-import { WeeklyRecapSection } from "./WeeklyRecapSection";
 
 interface TaskSectionProps {
   goalId: string;
@@ -63,7 +62,6 @@ export const TaskSection = ({ goalId }: TaskSectionProps) => {
             />
           </DialogContent>
         </Dialog>
-        <WeeklyRecapSection goalId={goalId} />
       </div>
     </div>
   );
