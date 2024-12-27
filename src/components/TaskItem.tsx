@@ -82,81 +82,81 @@ export const TaskItem = ({
           </div>
         </div>
       </div>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
+      <div className="flex items-center space-x-2">
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
           <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8"
+            onClick={handleDelete}
           >
-            <Pencil className="h-4 w-4" />
+            <Trash className="h-4 w-4" />
           </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Task</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="task">Task Description</Label>
-              <Input
-                id="task"
-                value={editedTitle}
-                onChange={(e) => setEditedTitle(e.target.value)}
-                placeholder="Task title"
-                className="w-full"
-              />
-            </div>
-
-            <RadioGroup
-              value={editedIsRecurring ? "recurring" : "one-time"}
-              onValueChange={(value) => setEditedIsRecurring(value === "recurring")}
-              className="flex items-center space-x-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="one-time" id="one-time" />
-                <Label htmlFor="one-time">One-time task</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="recurring" id="recurring" />
-                <Label htmlFor="recurring">Weekly recurring</Label>
-              </div>
-            </RadioGroup>
-
-            {!editedIsRecurring && (
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Task</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="week">Select Week</Label>
-                <Select value={editedWeek} onValueChange={setEditedWeek}>
-                  <SelectTrigger id="week" className="w-full">
-                    <SelectValue placeholder="Select week" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {weeks.map((week) => (
-                      <SelectItem key={week} value={week}>
-                        Week {week}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="task">Task Description</Label>
+                <Input
+                  id="task"
+                  value={editedTitle}
+                  onChange={(e) => setEditedTitle(e.target.value)}
+                  placeholder="Task title"
+                  className="w-full"
+                />
               </div>
-            )}
 
-            <div className="flex justify-between gap-2">
-              <Button
-                variant="destructive"
-                onClick={handleDelete}
-                className="w-full"
+              <RadioGroup
+                value={editedIsRecurring ? "recurring" : "one-time"}
+                onValueChange={(value) => setEditedIsRecurring(value === "recurring")}
+                className="flex items-center space-x-4"
               >
-                <Trash className="h-4 w-4 mr-2" />
-                Delete Task
-              </Button>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="one-time" id="one-time" />
+                  <Label htmlFor="one-time">One-time task</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="recurring" id="recurring" />
+                  <Label htmlFor="recurring">Weekly recurring</Label>
+                </div>
+              </RadioGroup>
+
+              {!editedIsRecurring && (
+                <div className="space-y-2">
+                  <Label htmlFor="week">Select Week</Label>
+                  <Select value={editedWeek} onValueChange={setEditedWeek}>
+                    <SelectTrigger id="week" className="w-full">
+                      <SelectValue placeholder="Select week" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {weeks.map((week) => (
+                        <SelectItem key={week} value={week}>
+                          Week {week}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <Button onClick={handleSaveEdit} className="w-full">
                 Save Changes
               </Button>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };
