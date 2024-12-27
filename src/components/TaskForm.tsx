@@ -41,18 +41,20 @@ export const TaskForm = ({
           onChange={(e) => setNewTask(e.target.value)}
           className="flex-1"
         />
-        <Select value={selectedWeek} onValueChange={setSelectedWeek}>
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Select week" />
-          </SelectTrigger>
-          <SelectContent>
-            {weeks.map((week) => (
-              <SelectItem key={week} value={week}>
-                Week {week}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {!isRecurring && (
+          <Select value={selectedWeek} onValueChange={setSelectedWeek}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Select week" />
+            </SelectTrigger>
+            <SelectContent>
+              {weeks.map((week) => (
+                <SelectItem key={week} value={week}>
+                  Week {week}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <Button
           size="sm"
           onClick={onAddTask}
