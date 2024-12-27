@@ -1,109 +1,97 @@
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Users, Send } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { MemberFeedItem } from "./member-feed/MemberFeedItem";
 import { NotificationsPopover } from "./notifications/NotificationsPopover";
-import { Member } from "./member-feed/types";
+import { FeedActivity } from "./member-feed/types";
 import { GroupBingoBoardCard } from "./group/GroupBingoBoardCard";
+import { formatDistanceToNow } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
 
-const mockMembers: Member[] = [
+const mockActivities: FeedActivity[] = [
   {
     id: "1",
-    name: "Sarah Chen",
-    avatar: "https://github.com/shadcn.png",
-    goal: {
-      title: "Complete React Course",
-      progress: 65,
-      target: 100,
-    },
-    weeklyRecap: {
-      content: "This week has been challenging but rewarding! I've made significant progress in understanding React hooks and context. Looking forward to diving into more advanced topics next week. 💪",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-      weekNumber: 3,
-      reactions: {
-        heart: ["user1", "user2"]
-      }
-    },
+    type: "join_group",
+    userId: "1",
+    userName: "Sarah Chen",
+    userAvatar: "https://github.com/shadcn.png",
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    data: {}
   },
   {
     id: "2",
-    name: "Mike Johnson",
-    goal: {
-      title: "Build 5 Projects",
-      progress: 40,
-      target: 100,
-    },
+    type: "add_goal",
+    userId: "1",
+    userName: "Sarah Chen",
+    userAvatar: "https://github.com/shadcn.png",
+    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    data: {
+      goalTitle: "Complete React Course"
+    }
   },
   {
     id: "3",
-    name: "Emma Wilson",
-    avatar: "https://github.com/emma.png",
-    goal: {
-      title: "Learn TypeScript",
-      progress: 80,
-      target: 100,
-    },
+    type: "complete_task",
+    userId: "2",
+    userName: "Mike Johnson",
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    data: {
+      goalTitle: "Build 5 Projects",
+      taskTitle: "Set up project repository"
+    }
   },
+  {
+    id: "4",
+    type: "weekly_reflection",
+    userId: "1",
+    userName: "Sarah Chen",
+    userAvatar: "https://github.com/shadcn.png",
+    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    data: {
+      goalTitle: "Complete React Course",
+      reflection: "This week has been challenging but rewarding! I've made significant progress in understanding React hooks and context. Looking forward to diving into more advanced topics next week. 💪"
+    }
+  }
 ];
 
+const getActivityIcon = (type: FeedActivity['type']) => {
+  switch (type) {
+    case 'join_group':
+      return '👋';
+    case 'add_goal':
+      return '🎯';
+    case 'complete_task':
+      return '✅';
+    case 'complete_goal':
+      return '🏆';
+    case 'weekly_reflection':
+      return '📝';
+    default:
+      return '📣';
+  }
+};
+
+const getActivityMessage = (activity: FeedActivity) => {
+  switch (activity.type) {
+    case 'join_group':
+      return 'joined the group';
+    case 'add_goal':
+      return `set a new goal: ${activity.data.goalTitle}`;
+    case 'complete_task':
+      return `completed "${activity.data.taskTitle}" in ${activity.data.goalTitle}`;
+    case 'complete_goal':
+      return `achieved their goal: ${activity.data.goalTitle}`;
+    case 'weekly_reflection':
+      return `shared a reflection on ${activity.data.goalTitle}`;
+    default:
+      return 'performed an activity';
+  }
+};
+
 export function MemberFeed() {
-  const { toast } = useToast();
   const { user } = useAuth();
-  const [nudgedMembers, setNudgedMembers] = useState<Set<string>>(new Set());
-  const [comments, setComments] = useState<{ [key: string]: string }>({});
-  const [showCommentField, setShowCommentField] = useState<{
-    [key: string]: boolean;
-  }>({});
-
-  const handleTapIn = (memberId: string, memberName: string) => {
-    if (nudgedMembers.has(memberId)) {
-      toast({
-        description: `You've already tapped in for your goal today!`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const comment = comments[memberId]?.trim() || "";
-
-    console.log("Tap in recorded:", {
-      memberId,
-      memberName,
-      comment,
-      timestamp: new Date().toISOString(),
-    });
-
-    setNudgedMembers(new Set([...nudgedMembers, memberId]));
-    setComments({ ...comments, [memberId]: "" });
-    setShowCommentField({ ...showCommentField, [memberId]: false });
-
-    toast({
-      title: "Progress Updated! 🎯",
-      description: comment
-        ? `You've logged your progress with a comment!`
-        : `You've logged your progress!`,
-    });
-  };
-
-  const handleNudge = (memberId: string, memberName: string) => {
-    setNudgedMembers(new Set([...nudgedMembers, memberId]));
-    toast({
-      title: "Encouragement sent! 🎉",
-      description: `You've sent encouragement to ${memberName}!`,
-    });
-  };
-
-  const toggleCommentField = (memberId: string) => {
-    setShowCommentField((prev) => ({
-      ...prev,
-      [memberId]: !prev[memberId],
-    }));
-  };
 
   return (
     <div className="space-y-6">
@@ -113,48 +101,43 @@ export function MemberFeed() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Group Progress Feed
+            Group Activity Feed
           </CardTitle>
           <NotificationsPopover />
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-4">
-              {mockMembers.map((member) => (
-                <div key={member.id} className="space-y-2">
-                  <MemberFeedItem
-                    member={member}
-                    isOwnGoal={member.id === user?.id}
-                    hasNudged={nudgedMembers.has(member.id)}
-                    onNudge={handleNudge}
-                    onTapIn={handleTapIn}
-                    showCommentField={showCommentField[member.id]}
-                    onToggleComment={() => toggleCommentField(member.id)}
-                  />
-
-                  {member.id === user?.id && showCommentField[member.id] && (
-                    <div className="mt-4 space-y-2">
-                      <Textarea
-                        placeholder="Add a quick update about your progress..."
-                        value={comments[member.id] || ""}
-                        onChange={(e) =>
-                          setComments((prev) => ({
-                            ...prev,
-                            [member.id]: e.target.value,
-                          }))
-                        }
-                        className="min-h-[80px]"
-                      />
-                      <Button
-                        onClick={() => handleTapIn(member.id, member.name)}
-                        className="w-full"
-                      >
-                        <Send className="h-4 w-4 mr-2" />
-                        Submit Update
-                      </Button>
+              {mockActivities.map((activity) => (
+                <Card key={activity.id} className="p-4 bg-card/50">
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={activity.userAvatar} />
+                      <AvatarFallback>{activity.userName[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{activity.userName}</span>
+                        <span className="text-muted-foreground text-sm">
+                          {getActivityMessage(activity)}
+                        </span>
+                      </div>
+                      {activity.type === 'weekly_reflection' && activity.data.reflection && (
+                        <div className="mt-2 p-3 rounded-lg bg-muted/50">
+                          <p className="text-sm italic">{activity.data.reflection}</p>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          {getActivityIcon(activity.type)}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
+                        </span>
+                      </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                </Card>
               ))}
             </div>
           </ScrollArea>
