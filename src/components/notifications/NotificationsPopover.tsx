@@ -10,6 +10,8 @@ import { NotificationItem } from "./NotificationItem";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Notification {
   id: string;
@@ -21,16 +23,22 @@ interface Notification {
 export const NotificationsPopover = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
-    fetchNotifications();
-    subscribeToNotifications();
-  }, []);
+    if (user) {
+      fetchNotifications();
+      subscribeToNotifications();
+    }
+  }, [user]);
 
   const fetchNotifications = async () => {
+    if (!user) return;
+
     const { data, error } = await supabase
       .from('notifications')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -39,19 +47,24 @@ export const NotificationsPopover = () => {
     }
 
     setNotifications(data.map(n => ({
-      ...n,
+      id: n.id,
+      message: n.message,
       timestamp: new Date(n.created_at).toLocaleString(),
+      is_read: n.is_read,
     })));
   };
 
   const subscribeToNotifications = () => {
+    if (!user) return;
+
     const channel = supabase
       .channel('public:notifications')
       .on('postgres_changes', 
         { 
           event: '*', 
           schema: 'public', 
-          table: 'notifications' 
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
         }, 
         () => {
           fetchNotifications();
@@ -65,10 +78,13 @@ export const NotificationsPopover = () => {
   };
 
   const markAsRead = async (notificationId: string) => {
+    if (!user) return;
+
     const { error } = await supabase
       .from('notifications')
       .update({ is_read: true })
-      .eq('id', notificationId);
+      .eq('id', notificationId)
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Error marking notification as read:', error);
