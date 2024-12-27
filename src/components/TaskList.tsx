@@ -7,7 +7,7 @@ import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 
-export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
+export const TaskList = ({ goalId }: TaskListProps) => {
   const {
     tasks,
     editTask,
@@ -68,7 +68,7 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
   if (tasks.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-2">
-        {showCompleted ? "No tasks available" : "No active tasks"}
+        No active tasks
       </p>
     );
   }
@@ -103,6 +103,7 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
         // Hide non-current weeks if showAllWeeks is false
         if (!showAllWeeks && !isCurrentWeek) return null;
 
+        const hasCompletedTasks = tasksForWeek.some((task: any) => task.completed);
         const filteredTasks = showCompletedForWeek 
           ? tasksForWeek 
           : tasksForWeek.filter((task: any) => !task.completed);
@@ -123,16 +124,18 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
                   )}
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id={`show-completed-${weekKey}`}
-                      checked={showCompletedForWeek}
-                      onCheckedChange={() => toggleCompletedForWeek(weekKey)}
-                    />
-                    <Label htmlFor={`show-completed-${weekKey}`} className="text-xs">
-                      Show completed
-                    </Label>
-                  </div>
+                  {hasCompletedTasks && (
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id={`show-completed-${weekKey}`}
+                        checked={showCompletedForWeek}
+                        onCheckedChange={() => toggleCompletedForWeek(weekKey)}
+                      />
+                      <Label htmlFor={`show-completed-${weekKey}`} className="text-xs">
+                        Show completed
+                      </Label>
+                    </div>
+                  )}
                   <span className="text-xs text-muted-foreground">
                     {filteredTasks.length} {filteredTasks.length === 1 ? 'task' : 'tasks'}
                   </span>
