@@ -7,10 +7,35 @@ import { MotivationalQuote } from "@/components/MotivationalQuote";
 import { ActiveGoals } from "@/components/ActiveGoals";
 import { AccountabilityGroups } from "@/components/AccountabilityGroups";
 import { WeeklyRecapSection } from "@/components/goal/WeeklyRecapSection";
+import { Onboarding } from "@/components/Onboarding";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const { toast } = useToast();
   const { user, signOut, loading } = useAuth();
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const fetchOnboardingStatus = async () => {
+      if (user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching onboarding status:', error);
+          return;
+        }
+
+        setOnboardingCompleted(data?.onboarding_completed ?? false);
+      }
+    };
+
+    fetchOnboardingStatus();
+  }, [user]);
 
   if (loading) {
     return (
@@ -24,6 +49,17 @@ const Index = () => {
     return (
       <div className="container mx-auto px-4 py-6 min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
         <AuthForms />
+      </div>
+    );
+  }
+
+  if (onboardingCompleted === false) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted text-foreground">
+        <div className="container mx-auto px-4 py-6 space-y-6">
+          <Header user={user} signOut={signOut} />
+          <Onboarding />
+        </div>
       </div>
     );
   }
