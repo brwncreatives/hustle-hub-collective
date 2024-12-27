@@ -16,13 +16,19 @@ export const NotificationItem = ({
     <div
       className={cn(
         "flex items-start gap-3 p-3 rounded-lg transition-colors",
-        !isRead && "bg-primary/5 hover:bg-primary/10",
+        !isRead && "bg-[#F0EAFE] hover:bg-[#E9E3FD]",
         isRead && "hover:bg-muted"
       )}
     >
-      <Bell className="h-5 w-5 text-primary mt-0.5" />
+      <Bell className={cn(
+        "h-5 w-5 mt-0.5",
+        !isRead ? "text-[#8B5CF6]" : "text-muted-foreground"
+      )} />
       <div className="space-y-1">
-        <p className="text-sm text-foreground">{message}</p>
+        <p className={cn(
+          "text-sm",
+          !isRead && "font-medium text-[#8B5CF6]"
+        )}>{message}</p>
         <p className="text-xs text-muted-foreground">{timestamp}</p>
       </div>
     </div>
