@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users } from "lucide-react";
+import { Users, Heart } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { NotificationsPopover } from "./notifications/NotificationsPopover";
 import { FeedActivity } from "./member-feed/types";
@@ -92,6 +92,19 @@ const getActivityMessage = (activity: FeedActivity) => {
 
 export function MemberFeed() {
   const { user } = useAuth();
+  const [likedActivities, setLikedActivities] = useState<Set<string>>(new Set());
+
+  const handleLike = (activityId: string) => {
+    setLikedActivities(prev => {
+      const newLiked = new Set(prev);
+      if (newLiked.has(activityId)) {
+        newLiked.delete(activityId);
+      } else {
+        newLiked.add(activityId);
+      }
+      return newLiked;
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -134,6 +147,15 @@ export function MemberFeed() {
                         <span className="text-xs text-muted-foreground">
                           {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                         </span>
+                        <button
+                          onClick={() => handleLike(activity.id)}
+                          className={`flex items-center gap-1 text-xs ${
+                            likedActivities.has(activity.id) ? 'text-pink-500' : 'text-muted-foreground'
+                          } hover:text-pink-500 transition-colors`}
+                        >
+                          <Heart className="h-3.5 w-3.5" fill={likedActivities.has(activity.id) ? "currentColor" : "none"} />
+                          <span>{likedActivities.has(activity.id) ? 'Liked' : 'Like'}</span>
+                        </button>
                       </div>
                     </div>
                   </div>
