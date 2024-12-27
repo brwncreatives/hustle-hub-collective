@@ -67,10 +67,21 @@ export const ActiveGoals = () => {
           <Card key={goal.id} className="border-none bg-white/5 backdrop-blur-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2 text-primary">
-                  <Target className="h-5 w-5" />
-                  {goal.title}
-                </CardTitle>
+                <div className="flex items-center gap-4">
+                  <CardTitle className="text-lg flex items-center gap-2 text-primary">
+                    <Target className="h-5 w-5" />
+                    {goal.title}
+                  </CardTitle>
+                  <GoalStatusBadge
+                    status={goal.status}
+                    isEditing={editingStatus === goal.id}
+                    selectedStatus={selectedStatus}
+                    onStatusChange={setSelectedStatus}
+                    onSave={() => saveStatus(goal.id)}
+                    onCancel={() => setEditingStatus(null)}
+                    onStartEditing={() => startEditingStatus(goal.id, goal.status)}
+                  />
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -82,20 +93,7 @@ export const ActiveGoals = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div>
-                  <GoalStatusBadge
-                    status={goal.status}
-                    isEditing={editingStatus === goal.id}
-                    selectedStatus={selectedStatus}
-                    onStatusChange={setSelectedStatus}
-                    onSave={() => saveStatus(goal.id)}
-                    onCancel={() => setEditingStatus(null)}
-                    onStartEditing={() => startEditingStatus(goal.id, goal.status)}
-                  />
-                </div>
-                <TaskSection goalId={goal.id} />
-              </div>
+              <TaskSection goalId={goal.id} />
             </CardContent>
           </Card>
         ))
