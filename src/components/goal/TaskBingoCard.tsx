@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../ui/card";
 import { Trophy, Target, Star } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "../ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useTaskManager } from "@/hooks/useTaskManager";
@@ -15,6 +15,7 @@ export const TaskBingoCard = ({ goalId }: TaskBingoCardProps) => {
   const gridRows = 3;
   const gridCols = 4;
   const totalCells = gridRows * gridCols;
+  const [shownNotifications, setShownNotifications] = useState<Set<string>>(new Set());
 
   const checkForWeekCompletion = () => {
     // Group tasks by week
@@ -29,16 +30,18 @@ export const TaskBingoCard = ({ goalId }: TaskBingoCardProps) => {
 
     // Check each week's completion status
     Object.entries(tasksByWeek).forEach(([week, weekTasks]) => {
+      const notificationKey = `week-${week}-complete`;
       const hasIncompleteTasks = weekTasks.some(task => !task.completed);
       const hasCompletedTasks = weekTasks.some(task => task.completed);
       
-      // Only show toast if ALL tasks for the week are completed
-      // and at least one task exists
-      if (weekTasks.length > 0 && !hasIncompleteTasks && hasCompletedTasks) {
+      // Only show toast if ALL tasks for the week are completed,
+      // at least one task exists, and we haven't shown this notification yet
+      if (weekTasks.length > 0 && !hasIncompleteTasks && hasCompletedTasks && !shownNotifications.has(notificationKey)) {
         toast({
           title: "Week Complete! 🎉",
           description: `You've completed all tasks for Week ${week}!`,
         });
+        setShownNotifications(prev => new Set([...prev, notificationKey]));
       }
     });
   };
