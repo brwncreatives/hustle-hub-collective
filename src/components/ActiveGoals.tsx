@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { TaskList } from "./TaskList";
 import { useState, useEffect } from "react";
 import { GoalStatusBadge } from "./goal/GoalStatusBadge";
+import { Badge } from "./ui/badge";
 
 interface Goal {
   id: string;
@@ -89,7 +90,7 @@ export const ActiveGoals = () => {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <div className="mb-2">
+                  <div className="flex flex-wrap gap-2 mb-2">
                     <GoalStatusBadge
                       status={goal.status}
                       isEditing={editingStatus === goal.id}
@@ -99,13 +100,13 @@ export const ActiveGoals = () => {
                       onCancel={() => setEditingStatus(null)}
                       onStartEditing={() => startEditingStatus(goal.id, goal.status)}
                     />
+                    <Badge variant="outline" className="text-xs font-medium">
+                      {goal.quarter}
+                    </Badge>
                   </div>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
                     {goal.title}
-                    <span className="text-sm text-muted-foreground">
-                      ({goal.quarter})
-                    </span>
                   </CardTitle>
                 </div>
                 <Button
