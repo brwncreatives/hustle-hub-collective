@@ -32,9 +32,11 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   }, []);
 
   const handleAddTask = () => {
-    addTask(newTask, isRecurring, selectedWeek);
-    setNewTask("");
-    setIsOpen(false);
+    if (newTask.trim()) {
+      addTask(newTask, isRecurring, selectedWeek);
+      setNewTask("");
+      setIsOpen(false);
+    }
   };
 
   const currentWeekTasks = getTasksForWeek(parseInt(selectedWeek));

@@ -17,13 +17,17 @@ export const useTaskManager = (goalId: string) => {
       week: parseInt(selectedWeek),
     };
 
-    setTasks([...tasks, task]);
+    setTasks(prevTasks => [...prevTasks, task]);
     console.log("Task added:", { goalId, task });
+    
+    toast({
+      description: "Task added successfully",
+    });
   };
 
   const editTask = (taskId: string, newTitle: string) => {
-    setTasks(
-      tasks.map((task) =>
+    setTasks(prevTasks =>
+      prevTasks.map((task) =>
         task.id === taskId ? { ...task, title: newTitle } : task
       )
     );
@@ -33,8 +37,8 @@ export const useTaskManager = (goalId: string) => {
   };
 
   const toggleTaskCompletion = (taskId: string) => {
-    setTasks(
-      tasks.map((task) =>
+    setTasks(prevTasks =>
+      prevTasks.map((task) =>
         task.id === taskId ? { ...task, completed: !task.completed } : task
       )
     );
