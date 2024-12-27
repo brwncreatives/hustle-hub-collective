@@ -89,14 +89,7 @@ export const ActiveGoals = () => {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Target className="h-5 w-5 text-primary" />
-                    {goal.title}
-                    <span className="text-sm text-muted-foreground">
-                      ({goal.quarter})
-                    </span>
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
+                  <div className="mb-2">
                     <GoalStatusBadge
                       status={goal.status}
                       isEditing={editingStatus === goal.id}
@@ -107,6 +100,13 @@ export const ActiveGoals = () => {
                       onStartEditing={() => startEditingStatus(goal.id, goal.status)}
                     />
                   </div>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    {goal.title}
+                    <span className="text-sm text-muted-foreground">
+                      ({goal.quarter})
+                    </span>
+                  </CardTitle>
                 </div>
                 <Button
                   variant="outline"
