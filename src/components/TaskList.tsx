@@ -18,16 +18,21 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
 
   // Group tasks by week
   const groupedTasks = tasks.reduce((acc, task) => {
-    if (showCompleted || !task.completed) {
-      if (task.isRecurring) {
-        // Add recurring tasks to all weeks
-        for (let week = 1; week <= 12; week++) {
+    if (task.isRecurring) {
+      // For recurring tasks
+      if (!task.completed || (showCompleted && task.completed)) {
+        // If not completed, show in all weeks
+        // If completed and showing completed tasks, only show in the week it was completed
+        const weeksToShow = task.completed ? [task.week || 1] : Array.from({ length: 12 }, (_, i) => i + 1);
+        weeksToShow.forEach(week => {
           const weekKey = `week${week}`;
           acc[weekKey] = acc[weekKey] || [];
           acc[weekKey].push({ ...task, week });
-        }
-      } else {
-        // Add non-recurring tasks to their specific week
+        });
+      }
+    } else {
+      // For non-recurring tasks
+      if (!task.completed || (showCompleted && task.completed)) {
         const weekKey = `week${task.week}`;
         acc[weekKey] = acc[weekKey] || [];
         acc[weekKey].push(task);
