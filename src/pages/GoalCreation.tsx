@@ -13,15 +13,13 @@ import { GoalQuarterField } from "@/components/goal/GoalQuarterField";
 import { GoalStatusField } from "@/components/goal/GoalStatusField";
 import { goalFormSchema, GoalFormValues } from "@/components/goal/types";
 import { Separator } from "@/components/ui/separator";
-
-const getCurrentQuarter = () => {
-  const currentMonth = new Date().getMonth();
-  return `Q${Math.floor(currentMonth / 3) + 1}-2025`;
-};
+import { Header } from "@/components/Header";
+import { useAuth } from "@/contexts/AuthContext";
 
 const GoalCreation = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const form = useForm<GoalFormValues>({
     resolver: zodResolver(goalFormSchema),
@@ -43,50 +41,58 @@ const GoalCreation = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-2xl">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-6 w-6" />
-            Create New Goal
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <GoalTitleField form={form} />
-              <GoalDescriptionField form={form} />
-              <GoalQuarterField form={form} />
-              <GoalStatusField form={form} />
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted text-foreground">
+      <div className="container mx-auto px-4 py-6 space-y-6 max-w-2xl">
+        <Header user={user} signOut={signOut} />
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-6 w-6" />
+              Create New Goal
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <GoalTitleField form={form} />
+                <GoalDescriptionField form={form} />
+                <GoalQuarterField form={form} />
+                <GoalStatusField form={form} />
 
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate("/")}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Create Goal</Button>
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate("/")}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Create Goal</Button>
+                </div>
+              </form>
+            </Form>
+
+            <Separator className="my-6" />
+            
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold">Weekly Tasks</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  You can add and manage tasks at any time, even after creating your goal. Tasks can be either one-time or recurring weekly.
+                </p>
               </div>
-            </form>
-          </Form>
-
-          <Separator className="my-6" />
-          
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold">Weekly Tasks</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                You can add and manage tasks at any time, even after creating your goal. Tasks can be either one-time or recurring weekly.
-              </p>
+              <TaskList goalId="new-goal" />
             </div>
-            <TaskList goalId="new-goal" />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
+};
+
+const getCurrentQuarter = () => {
+  const currentMonth = new Date().getMonth();
+  return `Q${Math.floor(currentMonth / 3) + 1}-2025`;
 };
 
 export default GoalCreation;
