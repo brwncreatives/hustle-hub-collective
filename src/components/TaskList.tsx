@@ -5,12 +5,20 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Task {
   id: string;
   title: string;
   completed: boolean;
   isRecurring: boolean;
+  week?: number;
 }
 
 interface TaskListProps {
@@ -21,6 +29,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState<string>("1");
 
   const handleAddTask = () => {
     if (!newTask.trim()) return;
@@ -30,6 +39,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
       title: newTask,
       completed: false,
       isRecurring,
+      week: parseInt(selectedWeek),
     };
 
     setTasks([...tasks, task]);
@@ -45,6 +55,8 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     );
   };
 
+  const weeks = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
+
   return (
     <div className="space-y-4 mt-4">
       <div className="flex flex-col space-y-2">
@@ -55,6 +67,21 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             onChange={(e) => setNewTask(e.target.value)}
             className="flex-1"
           />
+          <Select
+            value={selectedWeek}
+            onValueChange={setSelectedWeek}
+          >
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Select week" />
+            </SelectTrigger>
+            <SelectContent>
+              {weeks.map((week) => (
+                <SelectItem key={week} value={week}>
+                  Week {week}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             size="sm"
             onClick={handleAddTask}
@@ -99,11 +126,17 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             >
               {task.title}
             </label>
-            {task.isRecurring && (
-              <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
-                Weekly
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {task.isRecurring ? (
+                <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded">
+                  Weekly
+                </span>
+              ) : (
+                <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded">
+                  Week {task.week}
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>
