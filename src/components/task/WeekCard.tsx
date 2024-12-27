@@ -64,19 +64,19 @@ export const WeekCard = ({
         <div className="space-y-4">
           {/* Header Section */}
           <div className="flex flex-col space-y-2">
-            {isCurrentWeek && (
-              <Badge variant="secondary" className="w-fit text-xs font-medium">
-                Current Week
+            <div className="flex flex-wrap gap-2">
+              {isCurrentWeek && (
+                <Badge variant="secondary" className="text-xs font-medium">
+                  Current Week
+                </Badge>
+              )}
+              <Badge variant="outline" className="text-xs font-medium">
+                {quarter}
               </Badge>
-            )}
+            </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <h4 className="font-medium">
-                  Week {weekNumber}
-                  <span className="text-muted-foreground text-sm ml-1">
-                    ({quarter})
-                  </span>
-                </h4>
+                <h4 className="font-medium">Week {weekNumber}</h4>
               </div>
               <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
