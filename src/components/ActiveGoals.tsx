@@ -29,7 +29,7 @@ export const ActiveGoals = () => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'not started':
-        return 'bg-[#D6BCFA] hover:bg-[#D6BCFA]/80 text-gray-800';
+        return 'bg-gray-400 hover:bg-gray-500 text-white';
       case 'in progress':
         return 'bg-[#7E69AB] hover:bg-[#7E69AB]/80 text-white';
       case 'completed':
