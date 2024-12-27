@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { TaskItem } from "./TaskItem";
 import { TaskListProps } from "@/types/task";
 import { useTaskManager } from "@/hooks/useTaskManager";
+import { Card, CardContent } from "./ui/card";
+import { Separator } from "./ui/separator";
 
 export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
   const {
@@ -62,23 +64,30 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
       {sortedWeeks.map((weekKey) => {
         if (groupedTasks[weekKey].length === 0) return null;
         
+        const weekNumber = weekKey.replace('week', '');
+        
         return (
-          <div key={weekKey} className="space-y-2">
-            <h4 className="text-sm font-medium text-muted-foreground">
-              Week {weekKey.replace('week', '')}
-            </h4>
-            <div className="space-y-2">
-              {groupedTasks[weekKey].map((task: any) => (
-                <TaskItem
-                  key={`${task.id}-${weekKey}`}
-                  {...task}
-                  onToggleComplete={toggleTaskCompletion}
-                  onEditTask={editTask}
-                  onDeleteTask={deleteTask}
-                />
-              ))}
-            </div>
-          </div>
+          <Card key={weekKey} className="bg-background/50">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-sm font-semibold">Week {weekNumber}</h4>
+                <span className="text-xs text-muted-foreground">
+                  {groupedTasks[weekKey].length} {groupedTasks[weekKey].length === 1 ? 'task' : 'tasks'}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {groupedTasks[weekKey].map((task: any) => (
+                  <TaskItem
+                    key={`${task.id}-${weekKey}`}
+                    {...task}
+                    onToggleComplete={toggleTaskCompletion}
+                    onEditTask={editTask}
+                    onDeleteTask={deleteTask}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         );
       })}
     </div>
