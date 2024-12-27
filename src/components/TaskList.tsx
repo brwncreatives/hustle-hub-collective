@@ -3,7 +3,7 @@ import { TaskItem } from "./TaskItem";
 import { TaskListProps } from "@/types/task";
 import { useTaskManager } from "@/hooks/useTaskManager";
 import { Card, CardContent } from "./ui/card";
-import { Separator } from "./ui/separator";
+import { Badge } from "./ui/badge";
 
 export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
   const {
@@ -13,6 +13,15 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
     toggleTaskCompletion,
   } = useTaskManager(goalId);
 
+  const getCurrentWeek = () => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    const diff = now.getTime() - start.getTime();
+    const oneWeek = 1000 * 60 * 60 * 24 * 7;
+    const currentWeek = Math.ceil(diff / oneWeek);
+    return (currentWeek % 12) || 12; // Returns 1-12, mapping week 13 back to 1, etc.
+  };
+
   useEffect(() => {
     console.log("TaskList - All tasks:", tasks);
     console.log("TaskList - goalId:", goalId);
@@ -21,10 +30,7 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
   // Group tasks by week
   const groupedTasks = tasks.reduce((acc, task) => {
     if (task.isRecurring) {
-      // For recurring tasks
       if (!task.completed || (showCompleted && task.completed)) {
-        // If not completed, show in all weeks
-        // If completed and showing completed tasks, only show in the week it was completed
         const weeksToShow = task.completed ? [task.week || 1] : Array.from({ length: 12 }, (_, i) => i + 1);
         weeksToShow.forEach(week => {
           const weekKey = `week${week}`;
@@ -33,7 +39,6 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
         });
       }
     } else {
-      // For non-recurring tasks
       if (!task.completed || (showCompleted && task.completed)) {
         const weekKey = `week${task.week}`;
         acc[weekKey] = acc[weekKey] || [];
@@ -43,13 +48,15 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
     return acc;
   }, {} as Record<string, any>);
 
-  // Sort weeks numerically
+  // Sort weeks in reverse order (most recent first)
   const sortedWeeks = Object.keys(groupedTasks)
     .sort((a, b) => {
       const weekA = parseInt(a.replace('week', ''));
       const weekB = parseInt(b.replace('week', ''));
-      return weekA - weekB;
+      return weekB - weekA; // Reverse order
     });
+
+  const currentWeek = getCurrentWeek();
 
   if (sortedWeeks.length === 0) {
     return (
@@ -64,13 +71,24 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
       {sortedWeeks.map((weekKey) => {
         if (groupedTasks[weekKey].length === 0) return null;
         
-        const weekNumber = weekKey.replace('week', '');
+        const weekNumber = parseInt(weekKey.replace('week', ''));
+        const isCurrentWeek = weekNumber === currentWeek;
         
         return (
-          <Card key={weekKey} className="bg-background/50">
+          <Card 
+            key={weekKey} 
+            className={`bg-background/50 ${isCurrentWeek ? 'ring-2 ring-primary' : ''}`}
+          >
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
-                <h4 className="text-sm font-semibold">Week {weekNumber}</h4>
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-semibold">Week {weekNumber}</h4>
+                  {isCurrentWeek && (
+                    <Badge variant="secondary" className="text-xs">
+                      Current Week
+                    </Badge>
+                  )}
+                </div>
                 <span className="text-xs text-muted-foreground">
                   {groupedTasks[weekKey].length} {groupedTasks[weekKey].length === 1 ? 'task' : 'tasks'}
                 </span>
