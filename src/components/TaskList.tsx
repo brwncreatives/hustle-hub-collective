@@ -55,15 +55,20 @@ export const TaskList = ({ goalId, showCompleted = false }: TaskListProps) => {
     return acc;
   }, {} as Record<string, any>);
 
-  // Sort weeks in chronological order (week 1 to 12)
+  const currentWeek = getCurrentWeek();
+  
+  // Sort weeks in chronological order (week 1 to 12), but put current week first
   const sortedWeeks = Object.keys(groupedTasks)
     .sort((a, b) => {
+      // If one of the weeks is the current week, prioritize it
+      if (parseInt(a.replace('week', '')) === currentWeek) return -1;
+      if (parseInt(b.replace('week', '')) === currentWeek) return 1;
+      
+      // Otherwise, sort chronologically
       const weekA = parseInt(a.replace('week', ''));
       const weekB = parseInt(b.replace('week', ''));
-      return weekA - weekB; // Changed to chronological order
+      return weekA - weekB;
     });
-
-  const currentWeek = getCurrentWeek();
 
   if (tasks.length === 0) {
     return (
