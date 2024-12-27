@@ -20,7 +20,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     toggleTaskCompletion,
   } = useTaskManager(goalId);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
