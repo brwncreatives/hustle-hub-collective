@@ -102,7 +102,7 @@ export const ActiveGoals = () => {
                     />
                     <Badge
                       variant="default"
-                      className="bg-[#FEF7CD] hover:bg-[#FEF7CD]/80 text-yellow-800 text-xs font-medium"
+                      className="bg-[#FEF7CD] hover:bg-[#FEF7CD]/80 text-yellow-800 text-[0.75rem] leading-[1.25]"
                     >
                       {goal.quarter?.split('-')[0]}
                     </Badge>
