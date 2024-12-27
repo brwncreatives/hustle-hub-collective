@@ -6,6 +6,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Home } from "lucide-react";
 
 interface HeaderProps {
   user: any;
@@ -33,7 +35,15 @@ export const Header = ({ user, signOut }: HeaderProps) => {
     <div>
       <h1 className="text-3xl font-bold text-primary text-center mb-4">Hustle Saturday</h1>
       <div className="flex items-center justify-between bg-white/10 p-4 rounded-lg backdrop-blur-sm">
-        <div>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/')}
+            className="hover:bg-primary/20"
+          >
+            <Home className="h-5 w-5" />
+          </Button>
           <h2 className="font-bold text-xl text-primary">
             Welcome {displayName}
           </h2>
