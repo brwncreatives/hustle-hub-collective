@@ -20,7 +20,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     toggleTaskCompletion,
   } = useTaskManager(goalId);
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [completedTasksVisibility, setCompletedTasksVisibility] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -103,30 +103,28 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             </Button>
           </CollapsibleTrigger>
         </div>
-        <CollapsibleContent>
-          <div className="grid gap-4 pt-4">
-            {weeksToShow.map((weekKey) => {
-              const weekNumber = parseInt(weekKey.replace('week', ''));
-              const isCurrentWeek = weekNumber === currentWeek;
-              
-              return (
-                <WeekCard
-                  key={weekKey}
-                  weekKey={weekKey}
-                  weekNumber={weekNumber}
-                  isCurrentWeek={isCurrentWeek}
-                  tasksForWeek={groupedTasks[weekKey]}
-                  showCompletedForWeek={completedTasksVisibility[weekKey]}
-                  toggleCompletedForWeek={toggleCompletedForWeek}
-                  toggleTaskCompletion={toggleTaskCompletion}
-                  editTask={editTask}
-                  deleteTask={deleteTask}
-                  goalId={goalId}
-                />
-              );
-            })}
-          </div>
-        </CollapsibleContent>
+        <div className="pt-4">
+          {weeksToShow.map((weekKey) => {
+            const weekNumber = parseInt(weekKey.replace('week', ''));
+            const isCurrentWeek = weekNumber === currentWeek;
+            
+            return (
+              <WeekCard
+                key={weekKey}
+                weekKey={weekKey}
+                weekNumber={weekNumber}
+                isCurrentWeek={isCurrentWeek}
+                tasksForWeek={groupedTasks[weekKey]}
+                showCompletedForWeek={completedTasksVisibility[weekKey]}
+                toggleCompletedForWeek={toggleCompletedForWeek}
+                toggleTaskCompletion={toggleTaskCompletion}
+                editTask={editTask}
+                deleteTask={deleteTask}
+                goalId={goalId}
+              />
+            );
+          })}
+        </div>
       </Collapsible>
     </div>
   );
