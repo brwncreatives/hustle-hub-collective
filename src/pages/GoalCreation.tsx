@@ -5,19 +5,45 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { GoalFormValues } from "@/components/goal/types";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const GoalCreation = () => {
   const { user, signOut } = useAuth();
   const [showCompleted, setShowCompleted] = useState(false);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = (data: GoalFormValues) => {
-    const newGoal = {
-      id: crypto.randomUUID(),
-      ...data,
-    };
+  const handleSubmit = async (data: GoalFormValues) => {
+    if (!user) return;
 
-    const existingGoals = JSON.parse(localStorage.getItem('goals') || '[]');
-    localStorage.setItem('goals', JSON.stringify([...existingGoals, newGoal]));
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .insert([
+          {
+            ...data,
+            user_id: user.id,
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Goal created successfully!",
+      });
+      
+      navigate("/");
+    } catch (error: any) {
+      console.error('Error creating goal:', error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create goal. Please try again.",
+      });
+    }
   };
 
   return (
