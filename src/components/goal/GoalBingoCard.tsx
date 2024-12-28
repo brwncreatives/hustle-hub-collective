@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, Target, Star } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
@@ -16,6 +16,7 @@ export const GoalBingoCard = () => {
   const { toast } = useToast();
   const gridSize = 5;
   const totalCells = gridSize * gridSize;
+  const previousCompletedLinesRef = useRef<number>(0);
 
   const getCompletedGoalsCount = () => {
     return goals.filter(goal => goal.status.toLowerCase() === 'completed').length;
@@ -23,17 +24,53 @@ export const GoalBingoCard = () => {
 
   const checkForBingo = () => {
     const completedGoals = goals.filter(goal => goal.status.toLowerCase() === 'completed');
-    if (completedGoals.length >= 5) {
+    let currentCompletedLines = 0;
+
+    // Check horizontal lines
+    for (let row = 0; row < gridSize; row++) {
+      if (isLineComplete(row * gridSize, (row + 1) * gridSize)) {
+        currentCompletedLines++;
+      }
+    }
+
+    // Check vertical lines
+    for (let col = 0; col < gridSize; col++) {
+      if (isLineComplete(col, col + 6, 3)) {
+        currentCompletedLines++;
+      }
+    }
+
+    // Check diagonal (top-left to bottom-right)
+    if (isLineComplete(0, 8, 4)) {
+      currentCompletedLines++;
+    }
+
+    // Check diagonal (top-right to bottom-left)
+    if (isLineComplete(2, 6, 2)) {
+      currentCompletedLines++;
+    }
+
+    // Only show toast if we have new completed lines
+    if (currentCompletedLines > previousCompletedLinesRef.current) {
       toast({
         title: "BINGO! 🎉",
         description: "You've completed a line of goals! Keep up the great work!",
       });
     }
+
+    previousCompletedLinesRef.current = currentCompletedLines;
   };
 
   useEffect(() => {
-    checkForBingo();
+    if (goals.length > 0) {
+      checkForBingo();
+    }
   }, [goals]);
+
+  const isLineComplete = (start: number, end: number, step = 1) => {
+    const goals = groupGoals.slice(start, end);
+    return goals.every((goal) => goal.progress >= 100);
+  };
 
   const createBingoGrid = () => {
     const grid = [];
