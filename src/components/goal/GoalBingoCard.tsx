@@ -68,8 +68,8 @@ export const GoalBingoCard = () => {
   }, [goals]);
 
   const isLineComplete = (start: number, end: number, step = 1) => {
-    const goals = groupGoals.slice(start, end);
-    return goals.every((goal) => goal.progress >= 100);
+    const lineGoals = goals.slice(start, end);
+    return lineGoals.every((goal) => goal.status.toLowerCase() === 'completed');
   };
 
   const createBingoGrid = () => {
