@@ -25,3 +25,7 @@ export interface ProfilesDefinition {
   };
   Relationships: [];
 }
+
+export type ProfileRow = ProfilesDefinition['Row'];
+export type ProfileInsert = ProfilesDefinition['Insert'];
+export type ProfileUpdate = ProfilesDefinition['Update'];

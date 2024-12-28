@@ -34,3 +34,7 @@ export interface GoalsDefinition {
   };
   Relationships: [];
 }
+
+export type GoalRow = GoalsDefinition['Row'];
+export type GoalInsert = GoalsDefinition['Insert'];
+export type GoalUpdate = GoalsDefinition['Update'];

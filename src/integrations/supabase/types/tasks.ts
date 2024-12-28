@@ -39,3 +39,7 @@ export interface TasksDefinition {
     }
   ];
 }
+
+export type TaskRow = TasksDefinition['Row'];
+export type TaskInsert = TasksDefinition['Insert'];
+export type TaskUpdate = TasksDefinition['Update'];

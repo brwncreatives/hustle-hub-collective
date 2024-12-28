@@ -22,3 +22,7 @@ export interface NotificationsDefinition {
   };
   Relationships: [];
 }
+
+export type NotificationRow = NotificationsDefinition['Row'];
+export type NotificationInsert = NotificationsDefinition['Insert'];
+export type NotificationUpdate = NotificationsDefinition['Update'];
