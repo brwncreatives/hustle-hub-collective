@@ -21,12 +21,14 @@ const GoalCreation = () => {
     try {
       const { error } = await supabase
         .from('goals')
-        .insert([
-          {
-            ...data,
-            user_id: user.id,
-          }
-        ]);
+        .insert({
+          title: data.title,
+          description: data.description,
+          quarter: data.quarter,
+          status: data.status,
+          categories: data.categories,
+          user_id: user.id,
+        });
 
       if (error) throw error;
 
