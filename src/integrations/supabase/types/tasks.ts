@@ -1,32 +1,41 @@
-export interface TaskRow {
-  id: string;
-  goal_id: string;
-  title: string;
-  completed: boolean;
-  is_recurring: boolean;
-  week: number | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface TaskInsert {
-  id?: string;
-  goal_id: string;
-  title: string;
-  completed?: boolean;
-  is_recurring?: boolean;
-  week?: number | null;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface TaskUpdate {
-  id?: string;
-  goal_id?: string;
-  title?: string;
-  completed?: boolean;
-  is_recurring?: boolean;
-  week?: number | null;
-  created_at?: string;
-  updated_at?: string;
+export interface TasksDefinition {
+  Row: {
+    completed: boolean;
+    created_at: string;
+    goal_id: string;
+    id: string;
+    is_recurring: boolean;
+    title: string;
+    updated_at: string;
+    week: number | null;
+  };
+  Insert: {
+    completed?: boolean;
+    created_at?: string;
+    goal_id: string;
+    id?: string;
+    is_recurring?: boolean;
+    title: string;
+    updated_at?: string;
+    week?: number | null;
+  };
+  Update: {
+    completed?: boolean;
+    created_at?: string;
+    goal_id?: string;
+    id?: string;
+    is_recurring?: boolean;
+    title?: string;
+    updated_at?: string;
+    week?: number | null;
+  };
+  Relationships: [
+    {
+      foreignKeyName: "tasks_goal_id_fkey";
+      columns: ["goal_id"];
+      isOneToOne: false;
+      referencedRelation: "goals";
+      referencedColumns: ["id"];
+    }
+  ];
 }

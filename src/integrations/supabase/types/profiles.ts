@@ -1,26 +1,27 @@
-export interface ProfileRow {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-  onboarding_completed: boolean | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ProfileInsert {
-  id: string;
-  first_name?: string | null;
-  last_name?: string | null;
-  onboarding_completed?: boolean | null;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface ProfileUpdate {
-  id?: string;
-  first_name?: string | null;
-  last_name?: string | null;
-  onboarding_completed?: boolean | null;
-  created_at?: string;
-  updated_at?: string;
+export interface ProfilesDefinition {
+  Row: {
+    created_at: string;
+    first_name: string | null;
+    id: string;
+    last_name: string | null;
+    onboarding_completed: boolean | null;
+    updated_at: string;
+  };
+  Insert: {
+    created_at?: string;
+    first_name?: string | null;
+    id: string;
+    last_name?: string | null;
+    onboarding_completed?: boolean | null;
+    updated_at?: string;
+  };
+  Update: {
+    created_at?: string;
+    first_name?: string | null;
+    id?: string;
+    last_name?: string | null;
+    onboarding_completed?: boolean | null;
+    updated_at?: string;
+  };
+  Relationships: [];
 }
