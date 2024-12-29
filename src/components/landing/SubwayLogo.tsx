@@ -49,7 +49,7 @@ export function SubwayLogo() {
           </div>
         ))}
       </div>
-      <p className="text-muted-foreground text-sm md:text-base mt-2">Your Line to Accountability</p>
+      <p className="text-muted-foreground text-lg md:text-xl mt-2">Your Line to Accountability</p>
     </div>
   );
 }
