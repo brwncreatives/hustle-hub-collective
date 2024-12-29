@@ -39,8 +39,8 @@ export function HowItWorksSection() {
           </h2>
         </div>
         <div className="mx-auto max-w-2xl lg:max-w-4xl relative">
-          {/* Vertical line connecting all stops - increased width from w-1 to w-2 */}
-          <div className="absolute left-4 top-8 bottom-8 w-2 bg-gradient-to-b from-[#ea384c] via-[#22c55e] to-[#9b87f5]" />
+          {/* Vertical line connecting all stops - increased height by adjusting top and bottom */}
+          <div className="absolute left-4 top-0 bottom-0 w-1 bg-primary" />
           
           <div className="space-y-12">
             {steps.map((step, index) => (
