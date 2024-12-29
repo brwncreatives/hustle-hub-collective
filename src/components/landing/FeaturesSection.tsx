@@ -43,7 +43,7 @@ export function FeaturesSection() {
         </div>
         <div className="mx-auto mt-12 max-w-2xl lg:mt-16 lg:max-w-5xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {features.map((feature, index) => (
+            {features.map((feature) => (
               <div 
                 key={feature.title} 
                 className="bg-[#1a1a1a] p-8 rounded-lg relative overflow-hidden"
@@ -59,10 +59,10 @@ export function FeaturesSection() {
                 
                 <div className="flex items-center gap-4 mb-6">
                   <div 
-                    className="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold text-white"
+                    className="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: feature.color }}
                   >
-                    {index + 1}
+                    <feature.icon className="w-8 h-8 text-white" />
                   </div>
                 </div>
                 
