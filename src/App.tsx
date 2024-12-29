@@ -8,15 +8,14 @@ import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 import GoalCreation from "./pages/GoalCreation";
 import GoalEdit from "./pages/GoalEdit";
-import GroupLanding from "./pages/GroupLanding";
 import GroupManagement from "./pages/GroupManagement";
-import GroupCreation from "./pages/GroupCreation";
 import Settings from "./pages/Settings";
 import { useEffect } from "react";
 import { supabase } from "./integrations/supabase/client";
 import { useAuth } from "./contexts/AuthContext";
 import { AuthForms } from "./components/AuthForms";
 import { SignUpForm } from "./components/SignUpForm";
+import { RequestGroupForm } from "./components/group/RequestGroupForm";
 
 const AuthCallback = () => {
   useEffect(() => {
@@ -78,12 +77,11 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
-      <Route path="/join-group" element={<GroupLanding />} />
       <Route
-        path="/create-group"
+        path="/request-group"
         element={
           <PrivateRoute>
-            <GroupCreation />
+            <RequestGroupForm />
           </PrivateRoute>
         }
       />
