@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { supabase } from "./integrations/supabase/client";
 import { useAuth } from "./contexts/AuthContext";
 import { AuthForms } from "./components/AuthForms";
+import { SignUpForm } from "./components/SignUpForm";
 
 const AuthCallback = () => {
   useEffect(() => {
@@ -37,7 +38,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/auth/login" />;
   }
 
   return <>{children}</>;
@@ -52,6 +53,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
       <Route path="/auth/login" element={user ? <Navigate to="/dashboard" /> : <AuthForms />} />
+      <Route path="/auth/signup" element={user ? <Navigate to="/dashboard" /> : <SignUpForm />} />
       <Route
         path="/dashboard"
         element={
