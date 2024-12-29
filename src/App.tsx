@@ -54,14 +54,17 @@ const AppRoutes = () => {
   const { user } = useAuth();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      return;
+    }
   };
 
   return (
     <Routes>
-      <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
-      <Route path="/auth/login" element={user ? <Navigate to="/dashboard" /> : <AuthForms />} />
-      <Route path="/auth/signup" element={user ? <Navigate to="/dashboard" /> : <SignUpForm />} />
+      <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Landing />} />
+      <Route path="/auth/login" element={user ? <Navigate to="/dashboard" replace /> : <AuthForms />} />
+      <Route path="/auth/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignUpForm />} />
       <Route
         path="/dashboard"
         element={

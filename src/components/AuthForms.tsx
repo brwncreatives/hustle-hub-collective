@@ -4,12 +4,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useAuth } from "@/contexts/AuthContext";
 import { Header } from "@/components/Header";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
 
 export function AuthForms() {
   const [searchParams] = useSearchParams();
   const inviteCode = searchParams.get('invite');
   const { signIn, user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,7 +26,6 @@ export function AuthForms() {
 
     try {
       await signIn(email, password);
-      navigate('/dashboard');
     } catch (error) {
       // Error is handled in the auth context
     }
