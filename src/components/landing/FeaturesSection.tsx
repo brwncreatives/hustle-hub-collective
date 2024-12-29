@@ -1,26 +1,29 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, Users, Target, Trophy } from "lucide-react";
+import { Users, Target, TrendingUp, Trophy } from "lucide-react";
 
 const features = [
-  {
-    title: "Invest in Yourself",
-    description: "Make time to focus on your goals, your passions, and your vision.",
-    icon: Clock,
-  },
   {
     title: "Build Community",
     description: "Invite like-minded individuals to join your group for support and accountability.",
     icon: Users,
+    color: "#ea384c", // Red Line
   },
   {
     title: "Stay Consistent",
     description: "Weekly check-ins keep you on track and motivated to keep going.",
     icon: Target,
+    color: "#0EA5E9", // Blue Line
   },
   {
-    title: "Celebrate Your Wins",
+    title: "Track Progress",
+    description: "Monitor your journey and see how far you've come with clear metrics.",
+    icon: TrendingUp,
+    color: "#22c55e", // Green Line
+  },
+  {
+    title: "Celebrate Wins",
     description: "Share your progress and milestones with people who truly get it.",
     icon: Trophy,
+    color: "#F97316", // Orange Line
   },
 ];
 
@@ -33,20 +36,33 @@ export function FeaturesSection() {
             Why Hustle Saturday?
           </h2>
         </div>
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-          <div className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-4">
+        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+          <div className="space-y-8">
             {features.map((feature) => (
-              <Card key={feature.title}>
-                <CardHeader>
-                  <feature.icon className="h-6 w-6 text-primary" />
-                  <CardTitle className="mt-4 text-primary">
+              <div 
+                key={feature.title} 
+                className="flex items-center gap-6 group"
+              >
+                {/* Circle icon */}
+                <div 
+                  className="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
+                  style={{ backgroundColor: feature.color }}
+                >
+                  <feature.icon className="h-8 w-8 text-white" />
+                </div>
+                
+                {/* Station sign */}
+                <div 
+                  className="flex-grow bg-gray-900 text-white p-6 rounded-lg shadow-lg transform transition-transform group-hover:-translate-y-1"
+                >
+                  <h3 className="text-2xl font-bold tracking-wide mb-2">
                     {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </CardContent>
-              </Card>
+                  </h3>
+                  <p className="text-gray-300">
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
