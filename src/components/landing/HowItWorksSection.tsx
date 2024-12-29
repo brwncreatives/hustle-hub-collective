@@ -46,11 +46,12 @@ export function HowItWorksSection() {
             {steps.map((step, index) => (
               <div key={step.title} className={cn(
                 "relative pl-14",
-                index % 2 === 0 ? "lg:ml-0" : "lg:ml-8"
+                // Remove the alternating margin that was causing misalignment
+                // index % 2 === 0 ? "lg:ml-0" : "lg:ml-8"
               )}>
                 {/* Station stop circle */}
                 <div 
-                  className="absolute left-0 w-8 h-8 rounded-full border-4 border-background"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-4 border-background"
                   style={{ backgroundColor: step.color }}
                 />
                 
