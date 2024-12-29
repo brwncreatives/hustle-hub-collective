@@ -17,6 +17,9 @@ export function HeroSection() {
           </h1>
           <div className="space-y-6">
             <p className="text-lg leading-8 text-muted-foreground">
+              Hustle Saturday is your time to stop giving all your energy to everyone else and start investing in yourself.
+            </p>
+            <p className="text-lg leading-8 text-muted-foreground">
               Hustle Saturday began as a simple idea: a Saturday morning meetup where we'd spend 1-3 hours working on the things we kept putting off. 
               It was a time to focus, support each other, and make real progress.
             </p>
