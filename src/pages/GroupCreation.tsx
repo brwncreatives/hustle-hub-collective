@@ -19,6 +19,8 @@ import { Users, Target, Mail } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GroupInvite from "@/components/GroupInvite";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const groupFormSchema = z.object({
   name: z.string().min(1, "Group name is required").max(100),
@@ -33,6 +35,7 @@ const GroupCreation = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [createdGroupId, setCreatedGroupId] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const form = useForm<GroupFormValues>({
     resolver: zodResolver(groupFormSchema),
@@ -45,22 +48,43 @@ const GroupCreation = () => {
   });
 
   const onSubmit = async (data: GroupFormValues) => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "You must be logged in to create a group",
+      });
+      return;
+    }
+
     try {
-      // Here we would normally save the group to the database
-      // For now, we'll simulate it with a timeout
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data: group, error } = await supabase
+        .from('groups')
+        .insert([
+          {
+            name: data.name,
+            description: data.description,
+            max_members: data.maxMembers,
+            owner_id: user.id,
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
       
-      setCreatedGroupId("sample-group-id"); // Replace with actual group ID from database
+      setCreatedGroupId(group.id);
       
       toast({
         title: "Success",
         description: "Your accountability group has been created!",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error creating group:', error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to create group. Please try again.",
+        description: error.message || "Failed to create group. Please try again.",
       });
     }
   };
@@ -70,7 +94,7 @@ const GroupCreation = () => {
       <div className="container mx-auto px-4 py-6 max-w-2xl">
         <GroupInvite groupId={createdGroupId} groupName={form.getValues("name")} />
         <div className="mt-4 flex justify-end">
-          <Button onClick={() => navigate("/")}>Go to Dashboard</Button>
+          <Button onClick={() => navigate("/dashboard")}>Go to Dashboard</Button>
         </div>
       </div>
     );
@@ -154,34 +178,11 @@ const GroupCreation = () => {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="inviteEmails"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Invite Members (Optional)</FormLabel>
-                    <FormControl>
-                      <div className="flex items-center space-x-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          placeholder="Enter email addresses separated by commas..."
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormDescription>
-                      Add email addresses of people you'd like to invite
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="flex justify-end space-x-2">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/dashboard")}
                 >
                   Cancel
                 </Button>
