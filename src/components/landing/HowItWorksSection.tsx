@@ -55,12 +55,23 @@ export function HowItWorksSection() {
                   {index + 1}
                 </div>
                 
-                <Card className="bg-[#1a1a1a] transition-transform hover:translate-x-2">
+                <Card className="bg-[#1a1a1a] relative overflow-hidden group hover:translate-x-2 transition-all duration-300">
+                  {/* Metro line accent at the top */}
+                  <div 
+                    className="absolute top-0 left-0 w-full h-1"
+                    style={{ backgroundColor: step.color }}
+                  />
+                  
                   <CardHeader>
-                    <CardTitle className="text-white">{step.title}</CardTitle>
+                    <CardTitle className="text-3xl font-bold text-white tracking-wide">
+                      {step.title}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-white/80">{step.description}</p>
+                    <div className="h-px bg-white/20 mb-4" />
+                    <p className="text-lg text-white/80">
+                      {step.description}
+                    </p>
                   </CardContent>
                 </Card>
               </div>
