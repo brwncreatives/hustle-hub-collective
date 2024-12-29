@@ -20,7 +20,7 @@ export function HeroSection() {
           <div className="mt-10 flex items-center justify-center gap-x-6">
             {!user ? (
               <Button asChild size="lg" className="gap-2">
-                <Link to="/join-group">
+                <Link to="/auth/login">
                   <Rocket className="h-4 w-4" />
                   Get Started
                 </Link>
