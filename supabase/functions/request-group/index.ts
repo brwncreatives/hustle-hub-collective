@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { Resend } from 'npm:resend'
 
 const corsHeaders = {
@@ -12,6 +13,32 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization')?.split(' ')[1]
+    if (!authHeader) {
+      throw new Error('No authorization header')
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: `Bearer ${authHeader}` } } }
+    )
+
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
+    if (userError || !user) {
+      throw new Error('Failed to get user data')
+    }
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('first_name, last_name')
+      .eq('id', user.id)
+      .single()
+
+    if (profileError || !profile) {
+      throw new Error('Failed to get profile data')
+    }
+
     const resend = new Resend(Deno.env.get('RESEND_API_KEY'))
     const adminEmail = Deno.env.get('ADMIN_EMAIL')
 
@@ -19,18 +46,22 @@ serve(async (req) => {
       throw new Error('Admin email not configured')
     }
 
-    const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',
+    const { error: emailError } = await resend.emails.send({
+      from: 'Hustle Saturday <onboarding@resend.dev>',
       to: adminEmail,
       subject: 'New Group Creation Request',
       html: `
-        <p>A new user has requested to create a group.</p>
-        <p>Please review their request and follow up accordingly.</p>
+        <h2>New Group Creation Request</h2>
+        <p>A user has requested to create a new accountability group:</p>
+        <ul>
+          <li>Name: ${profile.first_name} ${profile.last_name}</li>
+          <li>Email: ${user.email}</li>
+        </ul>
       `,
     })
 
-    if (error) {
-      throw error
+    if (emailError) {
+      throw emailError
     }
 
     return new Response(

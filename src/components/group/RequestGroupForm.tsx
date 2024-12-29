@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const RequestGroupForm = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleRequest = async () => {
     setLoading(true);
@@ -18,13 +20,14 @@ export const RequestGroupForm = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            Authorization: `Bearer ${user?.access_token}`,
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to submit request");
+        const error = await response.json();
+        throw new Error(error.error || "Failed to submit request");
       }
 
       toast({
@@ -50,16 +53,25 @@ export const RequestGroupForm = () => {
         <CardHeader>
           <CardTitle>Request to Create a Group</CardTitle>
           <CardDescription>
-            Join our waitlist to create your own accountability group. We'll review your request and get back to you soon.
+            Join our waitlist to create your own accountability group. Our team will review your request 
+            and get back to you via email with next steps.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="bg-muted/50 rounded-lg p-4 text-sm space-y-2">
+            <p className="font-medium">What happens next?</p>
+            <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+              <li>Our team will review your request</li>
+              <li>We'll reach out via email with additional information</li>
+              <li>You'll receive guidance on setting up and managing your group</li>
+            </ul>
+          </div>
           <Button 
             onClick={handleRequest} 
             className="w-full"
             disabled={loading}
           >
-            {loading ? "Submitting..." : "Join Waitlist"}
+            {loading ? "Submitting..." : "Request to Create a Group"}
           </Button>
         </CardContent>
       </Card>
