@@ -10,17 +10,17 @@ export default function Landing() {
   const { user, signOut } = useAuth();
 
   return (
-    <div className="min-h-screen bg-black/[0.02] relative overflow-hidden">
+    <div className="min-h-screen bg-[#121212] relative overflow-hidden">
       {/* Metro-inspired flowing background */}
       <div className="absolute inset-0 z-0">
         {/* Curved metro lines */}
         <div 
-          className="absolute w-[200%] h-[200%] -top-1/2 -left-1/2 opacity-[0.03]"
+          className="absolute w-[200%] h-[200%] -top-1/2 -left-1/2 opacity-[0.06]"
           style={{
             background: `
-              radial-gradient(circle at 50% 50%, transparent 20%, #403E43 20.5%, transparent 21%),
-              radial-gradient(circle at 0% 50%, transparent 30%, #403E43 30.5%, transparent 31%),
-              radial-gradient(circle at 100% 50%, transparent 40%, #403E43 40.5%, transparent 41%)
+              radial-gradient(circle at 50% 50%, transparent 20%, #666666 20.5%, transparent 21%),
+              radial-gradient(circle at 0% 50%, transparent 30%, #666666 30.5%, transparent 31%),
+              radial-gradient(circle at 100% 50%, transparent 40%, #666666 40.5%, transparent 41%)
             `,
             backgroundSize: '60px 60px',
             transform: 'rotate(-15deg)',
@@ -30,7 +30,7 @@ export default function Landing() {
 
       {/* Decorative subway lines with curves */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <svg className="absolute w-full h-full opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <svg className="absolute w-full h-full opacity-30" viewBox="0 0 100 100" preserveAspectRatio="none">
           <path d="M -10,20 Q 30,40 70,20 T 110,40" fill="none" stroke="#ea384c" strokeWidth="0.5" />
           <path d="M -10,40 Q 40,60 80,40 T 110,60" fill="none" stroke="#0EA5E9" strokeWidth="0.5" />
           <path d="M -10,60 Q 50,80 90,60 T 110,80" fill="none" stroke="#22c55e" strokeWidth="0.5" />

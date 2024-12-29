@@ -33,7 +33,7 @@ export function HowItWorksSection() {
     <div className="py-8 sm:py-12 mb-8 relative">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-[#221F26] sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
             How It Works
           </h2>
         </div>
@@ -41,7 +41,7 @@ export function HowItWorksSection() {
           {/* Vertical metro line connecting all stops */}
           <div 
             className="absolute left-8 top-0 bottom-0 w-1" 
-            style={{ backgroundColor: '#403E43' }} 
+            style={{ backgroundColor: '#666666' }} 
           />
           
           <div className="space-y-12">
@@ -49,18 +49,18 @@ export function HowItWorksSection() {
               <div key={step.title} className="relative pl-24">
                 {/* Station stop circle with number */}
                 <div 
-                  className="absolute left-0 top-6 w-16 h-16 rounded-full border-4 border-[#F1F1F1] flex items-center justify-center text-white font-bold text-3xl shadow-lg"
+                  className="absolute left-0 top-6 w-16 h-16 rounded-full border-4 border-[#1a1a1a] flex items-center justify-center text-white font-bold text-3xl shadow-lg"
                   style={{ backgroundColor: step.color }}
                 >
                   {index + 1}
                 </div>
                 
-                <Card className="bg-white/80 backdrop-blur-sm border-t-4 transition-transform hover:translate-x-2" style={{ borderColor: step.color }}>
+                <Card className="bg-[#1a1a1a]/80 backdrop-blur-sm border-t-4 transition-transform hover:translate-x-2" style={{ borderColor: step.color }}>
                   <CardHeader>
-                    <CardTitle className="text-[#221F26]">{step.title}</CardTitle>
+                    <CardTitle className="text-white">{step.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-[#403E43]">{step.description}</p>
+                    <p className="text-gray-300">{step.description}</p>
                   </CardContent>
                 </Card>
               </div>
