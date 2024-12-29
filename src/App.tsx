@@ -14,6 +14,7 @@ import Settings from "./pages/Settings";
 import { useEffect } from "react";
 import { supabase } from "./integrations/supabase/client";
 import { useAuth } from "./contexts/AuthContext";
+import { AuthForms } from "./components/AuthForms";
 
 const AuthCallback = () => {
   useEffect(() => {
@@ -49,6 +50,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
+      <Route path="/auth/login" element={user ? <Navigate to="/dashboard" /> : <AuthForms />} />
       <Route
         path="/dashboard"
         element={
