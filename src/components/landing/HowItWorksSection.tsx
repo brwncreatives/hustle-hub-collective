@@ -39,19 +39,15 @@ export function HowItWorksSection() {
           </h2>
         </div>
         <div className="mx-auto max-w-2xl lg:max-w-4xl relative">
-          {/* Vertical line connecting all stops */}
-          <div className="absolute left-4 top-8 bottom-8 w-1 bg-gradient-to-b from-[#ea384c] via-[#22c55e] to-[#9b87f5]" />
+          {/* Vertical line connecting all stops - increased width from w-1 to w-2 */}
+          <div className="absolute left-4 top-8 bottom-8 w-2 bg-gradient-to-b from-[#ea384c] via-[#22c55e] to-[#9b87f5]" />
           
           <div className="space-y-12">
             {steps.map((step, index) => (
-              <div key={step.title} className={cn(
-                "relative pl-14",
-                // Remove the alternating margin that was causing misalignment
-                // index % 2 === 0 ? "lg:ml-0" : "lg:ml-8"
-              )}>
-                {/* Station stop circle */}
+              <div key={step.title} className="relative pl-14">
+                {/* Station stop circle - positioned relative to the card */}
                 <div 
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-4 border-background"
+                  className="absolute left-0 top-14 -translate-y-1/2 w-8 h-8 rounded-full border-4 border-background"
                   style={{ backgroundColor: step.color }}
                 />
                 
