@@ -11,26 +11,31 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#F1F1F1] relative overflow-hidden">
-      {/* Metro-inspired background grid */}
+      {/* Metro-inspired flowing background */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0" 
+        {/* Curved metro lines */}
+        <div 
+          className="absolute w-[200%] h-[200%] -top-1/2 -left-1/2 opacity-[0.03]"
           style={{
-            backgroundImage: `
-              linear-gradient(to right, #403E43 1px, transparent 1px),
-              linear-gradient(to bottom, #403E43 1px, transparent 1px)
+            background: `
+              radial-gradient(circle at 50% 50%, transparent 20%, #403E43 20.5%, transparent 21%),
+              radial-gradient(circle at 0% 50%, transparent 30%, #403E43 30.5%, transparent 31%),
+              radial-gradient(circle at 100% 50%, transparent 40%, #403E43 40.5%, transparent 41%)
             `,
-            backgroundSize: '4rem 4rem',
-            opacity: 0.05
+            backgroundSize: '60px 60px',
+            transform: 'rotate(-15deg)',
           }}
         />
       </div>
 
-      {/* Decorative subway lines */}
+      {/* Decorative subway lines with curves */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute h-1 bg-[#ea384c] transform rotate-45 -left-20 top-1/4 w-96 opacity-20" />
-        <div className="absolute h-1 bg-[#0EA5E9] transform -rotate-45 -right-20 top-1/3 w-96 opacity-20" />
-        <div className="absolute h-1 bg-[#22c55e] transform rotate-30 left-1/4 top-2/3 w-96 opacity-20" />
-        <div className="absolute h-1 bg-[#F97316] transform -rotate-30 right-1/4 bottom-1/4 w-96 opacity-20" />
+        <svg className="absolute w-full h-full opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M -10,20 Q 30,40 70,20 T 110,40" fill="none" stroke="#ea384c" strokeWidth="0.5" />
+          <path d="M -10,40 Q 40,60 80,40 T 110,60" fill="none" stroke="#0EA5E9" strokeWidth="0.5" />
+          <path d="M -10,60 Q 50,80 90,60 T 110,80" fill="none" stroke="#22c55e" strokeWidth="0.5" />
+          <path d="M -10,80 Q 60,100 100,80 T 110,100" fill="none" stroke="#F97316" strokeWidth="0.5" />
+        </svg>
       </div>
 
       <div className="relative z-10">
