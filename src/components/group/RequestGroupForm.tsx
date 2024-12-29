@@ -12,7 +12,6 @@ export const RequestGroupForm = () => {
   const handleRequest = async () => {
     setLoading(true);
     try {
-      // Here we'll call the edge function to send the email
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/request-group`,
         {
