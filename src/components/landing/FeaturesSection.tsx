@@ -32,6 +32,11 @@ export function FeaturesSection() {
     <div className="py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center mb-16">
+          <p className="mt-6 text-lg leading-8 text-muted-foreground mb-16">
+            We spend so much of our time working for others—our jobs, our families, our responsibilities—but what about our dreams? 
+            Hustle Saturday is about reclaiming your time to pour into yourself and your goals. It's a day dedicated to side hustles, 
+            personal growth, and turning aspirations into action—all with the support of your own online community.
+          </p>
           <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
             Why Hustle Saturday?
           </h2>
