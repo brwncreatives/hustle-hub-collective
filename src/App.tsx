@@ -92,12 +92,10 @@ const AppRoutes = () => {
       <Route
         path="/request-group"
         element={
-          <PrivateRoute>
-            <div className="min-h-screen bg-background">
-              <Header user={user} signOut={handleSignOut} />
-              <RequestGroupForm />
-            </div>
-          </PrivateRoute>
+          <div className="min-h-screen bg-background">
+            <Header user={user} signOut={handleSignOut} />
+            <RequestGroupForm />
+          </div>
         }
       />
       <Route
