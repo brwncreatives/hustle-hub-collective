@@ -1,17 +1,6 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Mail } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { InviteForm } from "@/components/group/InviteForm";
 
 interface GroupInviteProps {
   groupId: string;
@@ -19,55 +8,6 @@ interface GroupInviteProps {
 }
 
 const GroupInvite = ({ groupId, groupName }: GroupInviteProps) => {
-  const [email, setEmail] = useState("");
-  const { toast } = useToast();
-
-  const sendEmailInvite = async () => {
-    if (!email) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please enter an email address",
-      });
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('group_invites')
-        .insert([
-          { 
-            group_id: groupId,
-            email: email,
-            expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() // 7 days
-          }
-        ]);
-
-      if (error) {
-        console.error('Supabase error:', error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to send invite",
-        });
-        return;
-      }
-
-      toast({
-        title: "Success",
-        description: "Invitation sent successfully",
-      });
-      setEmail("");
-    } catch (error) {
-      console.error('Error sending invite:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to send invite",
-      });
-    }
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -79,19 +19,7 @@ const GroupInvite = ({ groupId, groupName }: GroupInviteProps) => {
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor="email">Email Invitation</Label>
-          <div className="flex space-x-2">
-            <Input
-              id="email"
-              type="email"
-              placeholder="Enter email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Button onClick={sendEmailInvite}>
-              <Mail className="mr-2 h-4 w-4" />
-              Send
-            </Button>
-          </div>
+          <InviteForm groupId={groupId} />
         </div>
       </CardContent>
     </Card>
