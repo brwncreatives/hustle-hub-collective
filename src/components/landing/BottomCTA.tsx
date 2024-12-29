@@ -17,13 +17,13 @@ export function BottomCTA() {
             {!user ? (
               <Button asChild size="lg" className="gap-2">
                 <Link to="/auth/login">
-                  Request to Create or Join a Group Today
+                  Request to Create a Group Today
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             ) : (
               <Button asChild size="lg">
-                <Link to="/create-goal">Create Your First Goal</Link>
+                <Link to="/request-group">Request to Create a Group</Link>
               </Button>
             )}
           </div>
