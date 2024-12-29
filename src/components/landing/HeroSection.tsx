@@ -8,8 +8,8 @@ export function HeroSection() {
   const { user } = useAuth();
 
   return (
-    <div className="relative isolate px-6 pt-8 lg:px-8">
-      <div className="mx-auto max-w-3xl py-20 sm:py-32 lg:py-40">
+    <div className="relative isolate px-6 pt-4 lg:px-8">
+      <div className="mx-auto max-w-3xl py-12 sm:py-20 lg:py-28">
         <div className="text-center space-y-8">
           <SubwayLogo />
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
