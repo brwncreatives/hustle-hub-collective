@@ -16,6 +16,7 @@ import { useAuth } from "./contexts/AuthContext";
 import { AuthForms } from "./components/AuthForms";
 import { SignUpForm } from "./components/SignUpForm";
 import { RequestGroupForm } from "./components/group/RequestGroupForm";
+import { Header } from "./components/Header";
 
 const AuthCallback = () => {
   useEffect(() => {
@@ -81,7 +82,10 @@ const AppRoutes = () => {
         path="/request-group"
         element={
           <PrivateRoute>
-            <RequestGroupForm />
+            <div className="min-h-screen bg-background">
+              <Header user={user} signOut={() => supabase.auth.signOut()} />
+              <RequestGroupForm />
+            </div>
           </PrivateRoute>
         }
       />
