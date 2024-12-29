@@ -55,12 +55,12 @@ export function HowItWorksSection() {
                   {index + 1}
                 </div>
                 
-                <Card className="bg-[#1a1a1a]/80 backdrop-blur-sm border-t-4 transition-transform hover:translate-x-2" style={{ borderColor: step.color }}>
+                <Card className="bg-white/10 backdrop-blur-sm border-t-4 transition-transform hover:translate-x-2" style={{ borderColor: step.color }}>
                   <CardHeader>
                     <CardTitle className="text-white">{step.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-300">{step.description}</p>
+                    <p className="text-white">{step.description}</p>
                   </CardContent>
                 </Card>
               </div>
