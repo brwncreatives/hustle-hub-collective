@@ -40,14 +40,14 @@ export function HowItWorksSection() {
         </div>
         <div className="mx-auto max-w-2xl lg:max-w-4xl relative">
           {/* Vertical line connecting all stops */}
-          <div className="absolute left-6 top-0 bottom-0 w-1 bg-primary" />
+          <div className="absolute left-8 top-0 bottom-0 w-1" style={{ backgroundColor: '#403E43' }} />
           
           <div className="space-y-12">
             {steps.map((step, index) => (
-              <div key={step.title} className="relative pl-20">
+              <div key={step.title} className="relative pl-24">
                 {/* Station stop circle with number - positioned to align with card header */}
                 <div 
-                  className="absolute left-0 top-6 w-12 h-12 rounded-full border-4 border-background flex items-center justify-center text-white font-bold text-2xl"
+                  className="absolute left-0 top-6 w-16 h-16 rounded-full border-4 border-background flex items-center justify-center text-white font-bold text-3xl"
                   style={{ backgroundColor: step.color }}
                 >
                   {index + 1}
