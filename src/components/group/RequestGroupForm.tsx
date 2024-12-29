@@ -5,20 +5,20 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
 export const RequestGroupForm = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     groupName: "",
-    purpose: "",
-    additionalNotes: "",
+    managerFullName: "",
+    managerEmail: "",
+    friendEmails: "",
   });
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -27,11 +27,11 @@ export const RequestGroupForm = () => {
   };
 
   const handleRequest = async () => {
-    if (!formData.groupName.trim() || !formData.purpose.trim()) {
+    if (!formData.groupName.trim() || !formData.managerFullName.trim() || !formData.managerEmail.trim()) {
       toast({
         variant: "destructive",
         title: "Required Fields",
-        description: "Please fill in the group name and purpose.",
+        description: "Please fill in the group name, your full name, and email.",
       });
       return;
     }
@@ -40,19 +40,20 @@ export const RequestGroupForm = () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session?.access_token) {
-        throw new Error("No access token available");
-      }
-
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/request-group`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${session.access_token}`,
+            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            groupName: formData.groupName,
+            managerFullName: formData.managerFullName,
+            managerEmail: formData.managerEmail,
+            friendEmails: formData.friendEmails.split(',').map(email => email.trim()).filter(email => email),
+          }),
         }
       );
 
@@ -66,7 +67,7 @@ export const RequestGroupForm = () => {
         description: "We've received your request to create a group. We'll be in touch soon!",
       });
       
-      navigate("/dashboard");
+      navigate("/");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -103,27 +104,38 @@ export const RequestGroupForm = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="purpose">Group Purpose *</Label>
-              <Textarea
-                id="purpose"
-                name="purpose"
-                placeholder="What is the main focus or purpose of your group?"
-                value={formData.purpose}
+              <Label htmlFor="managerFullName">Your Full Name *</Label>
+              <Input
+                id="managerFullName"
+                name="managerFullName"
+                placeholder="Enter your full name"
+                value={formData.managerFullName}
                 onChange={handleInputChange}
                 required
-                className="min-h-[100px]"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="additionalNotes">Additional Notes</Label>
-              <Textarea
-                id="additionalNotes"
-                name="additionalNotes"
-                placeholder="Any additional information you'd like to share about your group"
-                value={formData.additionalNotes}
+              <Label htmlFor="managerEmail">Your Email *</Label>
+              <Input
+                id="managerEmail"
+                name="managerEmail"
+                type="email"
+                placeholder="Enter your email address"
+                value={formData.managerEmail}
                 onChange={handleInputChange}
-                className="min-h-[100px]"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="friendEmails">Friend Emails (Optional)</Label>
+              <Input
+                id="friendEmails"
+                name="friendEmails"
+                placeholder="Enter email addresses, separated by commas"
+                value={formData.friendEmails}
+                onChange={handleInputChange}
               />
             </div>
           </div>
