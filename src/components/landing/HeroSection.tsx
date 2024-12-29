@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { SubwayLogo } from "./SubwayLogo";
 
 export function HeroSection() {
   const { user } = useAuth();
@@ -10,6 +11,7 @@ export function HeroSection() {
     <div className="relative isolate px-6 pt-14 lg:px-8">
       <div className="mx-auto max-w-3xl py-32 sm:py-48 lg:py-56">
         <div className="text-center space-y-8">
+          <SubwayLogo />
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
             Pour Into Your Dreams. Build With Your Community.
           </h1>
