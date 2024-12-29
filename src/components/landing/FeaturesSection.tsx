@@ -29,19 +29,19 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <div className="py-24 sm:py-32">
+    <div className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+        <div className="mx-auto max-w-2xl text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl mb-6">
             Why Hustle Saturday?
           </h2>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground mb-16">
+          <p className="text-lg leading-8 text-muted-foreground">
             We spend so much of our time working for others—our jobs, our families, our responsibilities—but what about our dreams? 
             Hustle Saturday is about reclaiming your time to pour into yourself and your goals. It's a day dedicated to side hustles, 
             personal growth, and turning aspirations into action—all with the support of your own online community.
           </p>
         </div>
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-5xl">
+        <div className="mx-auto mt-12 max-w-2xl lg:mt-16 lg:max-w-5xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {features.map((feature, index) => (
               <div 
@@ -52,7 +52,6 @@ export function FeaturesSection() {
                 }}
               >
                 <div className="flex items-center gap-4 mb-6">
-                  {/* Line number circle */}
                   <div 
                     className="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold text-white"
                     style={{ backgroundColor: feature.color }}
@@ -61,10 +60,8 @@ export function FeaturesSection() {
                   </div>
                 </div>
                 
-                {/* White line above title */}
                 <div className="h-px bg-white mb-4" />
                 
-                {/* Feature text */}
                 <div>
                   <h3 className="text-3xl font-bold text-white tracking-wide mb-3">
                     {feature.title}
