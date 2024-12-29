@@ -92,18 +92,6 @@ export const RequestGroupForm = () => {
         <CardContent className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="groupName">Group Name *</Label>
-              <Input
-                id="groupName"
-                name="groupName"
-                placeholder="Enter your proposed group name"
-                value={formData.groupName}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="managerFullName">Your Full Name *</Label>
               <Input
                 id="managerFullName"
@@ -123,6 +111,18 @@ export const RequestGroupForm = () => {
                 type="email"
                 placeholder="Enter your email address"
                 value={formData.managerEmail}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="groupName">Group Name *</Label>
+              <Input
+                id="groupName"
+                name="groupName"
+                placeholder="Enter your proposed group name"
+                value={formData.groupName}
                 onChange={handleInputChange}
                 required
               />
