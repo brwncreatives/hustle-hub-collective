@@ -49,6 +49,10 @@ const queryClient = new QueryClient();
 const AppRoutes = () => {
   const { user } = useAuth();
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   return (
     <Routes>
       <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
@@ -83,7 +87,7 @@ const AppRoutes = () => {
         element={
           <PrivateRoute>
             <div className="min-h-screen bg-background">
-              <Header user={user} signOut={() => supabase.auth.signOut()} />
+              <Header user={user} signOut={handleSignOut} />
               <RequestGroupForm />
             </div>
           </PrivateRoute>
