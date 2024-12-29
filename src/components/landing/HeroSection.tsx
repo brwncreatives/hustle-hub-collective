@@ -15,10 +15,15 @@ export function HeroSection() {
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-6xl">
             Pour Into Your Dreams. Build With Your Community.
           </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto">
-            Hustle Saturday is your time to stop giving all your energy to everyone else and start investing in yourself. 
-            Create an accountability group, set your goals, and achieve more—together.
-          </p>
+          <div className="space-y-6">
+            <p className="text-lg leading-8 text-muted-foreground">
+              Hustle Saturday began as a simple idea: a Saturday morning meetup where we'd spend 1-3 hours working on the things we kept putting off. 
+              It was a time to focus, support each other, and make real progress.
+            </p>
+            <p className="text-lg leading-8 text-muted-foreground">
+              Create an accountability group, set your goals, and achieve more—together.
+            </p>
+          </div>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             {!user ? (
               <Button asChild size="lg" className="gap-2">
