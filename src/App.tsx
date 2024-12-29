@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import GoalCreation from "./pages/GoalCreation";
 import GoalEdit from "./pages/GoalEdit";
 import GroupLanding from "./pages/GroupLanding";
@@ -12,12 +13,13 @@ import GroupManagement from "./pages/GroupManagement";
 import Settings from "./pages/Settings";
 import { useEffect } from "react";
 import { supabase } from "./integrations/supabase/client";
+import { useAuth } from "./contexts/AuthContext";
 
 const AuthCallback = () => {
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
-        window.location.href = "/";
+        window.location.href = "/dashboard";
       }
     });
   }, []);
@@ -25,7 +27,73 @@ const AuthCallback = () => {
   return null;
 };
 
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/" />;
+  }
+
+  return <>{children}</>;
+};
+
 const queryClient = new QueryClient();
+
+const AppRoutes = () => {
+  const { user } = useAuth();
+
+  return (
+    <Routes>
+      <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Landing />} />
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Index />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/create-goal"
+        element={
+          <PrivateRoute>
+            <GoalCreation />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/manage-goal/:goalId"
+        element={
+          <PrivateRoute>
+            <GoalEdit />
+          </PrivateRoute>
+        }
+      />
+      <Route path="/join-group" element={<GroupLanding />} />
+      <Route
+        path="/manage-group/:groupId"
+        element={
+          <PrivateRoute>
+            <GroupManagement />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <PrivateRoute>
+            <Settings />
+          </PrivateRoute>
+        }
+      />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+    </Routes>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -34,15 +102,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/create-goal" element={<GoalCreation />} />
-            <Route path="/manage-goal/:goalId" element={<GoalEdit />} />
-            <Route path="/join-group" element={<GroupLanding />} />
-            <Route path="/manage-group/:groupId" element={<GroupManagement />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-          </Routes>
+          <AppRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
