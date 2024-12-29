@@ -16,7 +16,7 @@ export function Header({ user }: HeaderProps) {
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link to="/" className="text-xl font-bold">
-          Hustle Hub
+          Hustle Saturday
         </Link>
         <div className="flex items-center gap-4">
           {!user && !isAuthPage && (

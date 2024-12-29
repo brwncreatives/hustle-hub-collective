@@ -15,14 +15,14 @@ export function BottomCTA() {
           </h2>
           <div className="mt-10 flex items-center justify-center">
             {!user ? (
-              <Button asChild size="lg" className="gap-2 bg-[#9b87f5] hover:bg-[#7E69AB] transition-colors">
+              <Button asChild size="lg" className="gap-2 bg-[#0EA5E9] hover:bg-[#0EA5E9]/80 transition-colors">
                 <Link to="/auth/login">
                   Request to Create a Group Today
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             ) : (
-              <Button asChild size="lg" className="bg-[#9b87f5] hover:bg-[#7E69AB] transition-colors">
+              <Button asChild size="lg" className="bg-[#0EA5E9] hover:bg-[#0EA5E9]/80 transition-colors">
                 <Link to="/request-group">Request to Create a Group</Link>
               </Button>
             )}
