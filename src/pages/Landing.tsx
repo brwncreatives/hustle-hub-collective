@@ -10,7 +10,7 @@ export default function Landing() {
   const { user, signOut } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#121212] relative overflow-hidden">
+    <div className="min-h-screen bg-[#121212] relative overflow-hidden text-white">
       {/* Metro-inspired flowing background */}
       <div className="absolute inset-0 z-0">
         {/* Curved metro lines */}
