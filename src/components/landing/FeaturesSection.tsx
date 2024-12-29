@@ -36,29 +36,32 @@ export function FeaturesSection() {
             Why Hustle Saturday?
           </h2>
         </div>
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-          <div 
-            className="bg-black p-8 rounded-lg space-y-6"
-            style={{ 
-              fontFamily: "Helvetica Neue, Arial, sans-serif",
-            }}
-          >
+        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {features.map((feature, index) => (
               <div 
                 key={feature.title} 
-                className="flex items-center gap-4 group"
+                className="bg-black p-8 rounded-lg"
+                style={{ 
+                  fontFamily: "Helvetica Neue, Arial, sans-serif",
+                }}
               >
-                {/* Line number circle */}
-                <div 
-                  className="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-                  style={{ backgroundColor: feature.color }}
-                >
-                  {index + 1}
+                <div className="flex items-center gap-4 mb-6">
+                  {/* Line number circle */}
+                  <div 
+                    className="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold text-white"
+                    style={{ backgroundColor: feature.color }}
+                  >
+                    {index + 1}
+                  </div>
                 </div>
                 
+                {/* White line above title */}
+                <div className="h-px bg-white mb-4" />
+                
                 {/* Feature text */}
-                <div className="flex-grow">
-                  <h3 className="text-3xl font-bold text-white tracking-wide mb-1">
+                <div>
+                  <h3 className="text-3xl font-bold text-white tracking-wide mb-3">
                     {feature.title}
                   </h3>
                   <p className="text-gray-300 text-lg">
