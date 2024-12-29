@@ -1,9 +1,9 @@
 export function AboutSection() {
   return (
-    <div className="py-24 sm:py-32 bg-gradient-to-br from-muted/50 to-background">
+    <div className="py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:text-center space-y-12">
-          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent sm:text-4xl mb-6">
+          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl mb-6">
             What is Hustle Saturday?
           </h2>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
@@ -12,7 +12,7 @@ export function AboutSection() {
             personal growth, and turning aspirations into action—all with the support of your own online community.
           </p>
 
-          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent sm:text-4xl mb-6">
+          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl mb-6">
             This is Your Time. Are You Ready?
           </h2>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">

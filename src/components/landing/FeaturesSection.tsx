@@ -29,17 +29,17 @@ export function FeaturesSection() {
     <div className="py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
             Why Hustle Saturday?
           </h2>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
           <div className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-4">
-            {features.map((feature, index) => (
-              <Card key={feature.title} className="flex flex-col transition-all duration-300 hover:scale-105 hover:shadow-lg bg-white/50 backdrop-blur-sm border-primary/10">
+            {features.map((feature) => (
+              <Card key={feature.title}>
                 <CardHeader>
                   <feature.icon className="h-6 w-6 text-primary" />
-                  <CardTitle className="mt-4 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                  <CardTitle className="mt-4 text-primary">
                     {feature.title}
                   </CardTitle>
                 </CardHeader>
