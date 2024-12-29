@@ -9,7 +9,7 @@ export function HeroSection() {
 
   return (
     <div className="relative isolate px-6 pt-4 lg:px-8">
-      <div className="mx-auto max-w-3xl py-8 sm:py-12 lg:py-16">
+      <div className="mx-auto max-w-3xl py-8 sm:py-12">
         <div className="space-y-8">
           <div className="text-center">
             <SubwayLogo />
@@ -31,7 +31,7 @@ export function HeroSection() {
             </p>
           </div>
           
-          <div className="flex items-center justify-center gap-x-6 pt-4">
+          <div className="flex items-center justify-center gap-x-6">
             {!user ? (
               <Button asChild size="lg" className="gap-2">
                 <Link to="/auth/login">
