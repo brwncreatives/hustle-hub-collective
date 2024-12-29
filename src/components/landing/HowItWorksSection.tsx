@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 const steps = [
   {
@@ -34,31 +33,34 @@ export function HowItWorksSection() {
     <div className="py-8 sm:py-12 mb-8 relative">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-[#221F26] sm:text-4xl">
             How It Works
           </h2>
         </div>
         <div className="mx-auto max-w-2xl lg:max-w-4xl relative">
-          {/* Vertical line connecting all stops */}
-          <div className="absolute left-8 top-0 bottom-0 w-1" style={{ backgroundColor: '#403E43' }} />
+          {/* Vertical metro line connecting all stops */}
+          <div 
+            className="absolute left-8 top-0 bottom-0 w-1" 
+            style={{ backgroundColor: '#403E43' }} 
+          />
           
           <div className="space-y-12">
             {steps.map((step, index) => (
               <div key={step.title} className="relative pl-24">
-                {/* Station stop circle with number - positioned to align with card header */}
+                {/* Station stop circle with number */}
                 <div 
-                  className="absolute left-0 top-6 w-16 h-16 rounded-full border-4 border-background flex items-center justify-center text-white font-bold text-3xl"
+                  className="absolute left-0 top-6 w-16 h-16 rounded-full border-4 border-[#F1F1F1] flex items-center justify-center text-white font-bold text-3xl shadow-lg"
                   style={{ backgroundColor: step.color }}
                 >
                   {index + 1}
                 </div>
                 
-                <Card>
+                <Card className="bg-white/80 backdrop-blur-sm border-t-4 transition-transform hover:translate-x-2" style={{ borderColor: step.color }}>
                   <CardHeader>
-                    <CardTitle>{step.title}</CardTitle>
+                    <CardTitle className="text-[#221F26]">{step.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">{step.description}</p>
+                    <p className="text-[#403E43]">{step.description}</p>
                   </CardContent>
                 </Card>
               </div>

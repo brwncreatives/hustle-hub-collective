@@ -32,10 +32,10 @@ export function FeaturesSection() {
     <div className="py-8 sm:py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl mb-6">
+          <h2 className="text-3xl font-bold tracking-tight text-[#221F26] sm:text-4xl mb-6">
             Why Hustle Saturday?
           </h2>
-          <p className="text-lg leading-8 text-muted-foreground">
+          <p className="text-lg leading-8 text-[#403E43]">
             We spend so much of our time working for others—our jobs, our families, our responsibilities—but what about our dreams? 
             Hustle Saturday is about reclaiming your time to pour into yourself and your goals. It's a day dedicated to side hustles, 
             personal growth, and turning aspirations into action—all with the support of your own online community.
@@ -46,11 +46,17 @@ export function FeaturesSection() {
             {features.map((feature, index) => (
               <div 
                 key={feature.title} 
-                className="bg-black p-8 rounded-lg"
+                className="bg-[#221F26] p-8 rounded-lg relative overflow-hidden"
                 style={{ 
                   fontFamily: "Helvetica Neue, Arial, sans-serif",
                 }}
               >
+                {/* Metro line accent */}
+                <div 
+                  className="absolute top-0 left-0 w-full h-1"
+                  style={{ backgroundColor: feature.color }}
+                />
+                
                 <div className="flex items-center gap-4 mb-6">
                   <div 
                     className="flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-3xl font-bold text-white"
@@ -60,7 +66,7 @@ export function FeaturesSection() {
                   </div>
                 </div>
                 
-                <div className="h-px bg-white mb-4" />
+                <div className="h-px bg-white/20 mb-4" />
                 
                 <div>
                   <h3 className="text-3xl font-bold text-white tracking-wide mb-3">
