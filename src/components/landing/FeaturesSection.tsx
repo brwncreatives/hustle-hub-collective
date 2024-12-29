@@ -35,7 +35,7 @@ export function FeaturesSection() {
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-6">
             Why Hustle Saturday?
           </h2>
-          <p className="text-lg leading-8 text-gray-300">
+          <p className="text-lg leading-8 text-white">
             We spend so much of our time working for others—our jobs, our families, our responsibilities—but what about our dreams? 
             Hustle Saturday is about reclaiming your time to pour into yourself and your goals. It's a day dedicated to side hustles, 
             personal growth, and turning aspirations into action—all with the support of your own online community.
@@ -72,7 +72,7 @@ export function FeaturesSection() {
                   <h3 className="text-3xl font-bold text-white tracking-wide mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-300 text-lg">
+                  <p className="text-lg text-white">
                     {feature.description}
                   </p>
                 </div>
