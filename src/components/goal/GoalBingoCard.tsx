@@ -3,13 +3,8 @@ import { Trophy, Target, Star } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-
-interface Goal {
-  id: string;
-  title: string;
-  status: string;
-  quarter?: string;
-}
+import { BingoGrid } from "./BingoGrid";
+import { Goal } from "./types/bingo";
 
 export const GoalBingoCard = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -23,7 +18,6 @@ export const GoalBingoCard = () => {
   };
 
   const checkForBingo = () => {
-    const completedGoals = goals.filter(goal => goal.status.toLowerCase() === 'completed');
     let currentCompletedLines = 0;
 
     // Check horizontal lines
@@ -40,17 +34,10 @@ export const GoalBingoCard = () => {
       }
     }
 
-    // Check diagonal (top-left to bottom-right)
-    if (isLineComplete(0, 8, 4)) {
-      currentCompletedLines++;
-    }
+    // Check diagonals
+    if (isLineComplete(0, 8, 4)) currentCompletedLines++;
+    if (isLineComplete(2, 6, 2)) currentCompletedLines++;
 
-    // Check diagonal (top-right to bottom-left)
-    if (isLineComplete(2, 6, 2)) {
-      currentCompletedLines++;
-    }
-
-    // Only show toast if we have new completed lines
     if (currentCompletedLines > previousCompletedLinesRef.current) {
       toast({
         title: "BINGO! 🎉",
@@ -73,12 +60,10 @@ export const GoalBingoCard = () => {
   };
 
   const createBingoGrid = () => {
-    const grid = [];
     const completedGoals = goals.filter(goal => goal.status.toLowerCase() === 'completed');
     const inProgressGoals = goals.filter(goal => goal.status.toLowerCase() === 'in progress');
     const notStartedGoals = goals.filter(goal => goal.status.toLowerCase() === 'not started');
     
-    // Combine all goals and pad with empty cells if needed
     const allGoals = [...completedGoals, ...inProgressGoals, ...notStartedGoals];
     const paddedGoals = [...allGoals];
     
@@ -86,10 +71,9 @@ export const GoalBingoCard = () => {
       paddedGoals.push({ id: `empty-${paddedGoals.length}`, title: '', status: 'empty' });
     }
 
-    // Create the grid rows
+    const grid = [];
     for (let i = 0; i < gridSize; i++) {
-      const row = paddedGoals.slice(i * gridSize, (i + 1) * gridSize);
-      grid.push(row);
+      grid.push(paddedGoals.slice(i * gridSize, (i + 1) * gridSize));
     }
 
     return grid;
@@ -132,25 +116,11 @@ export const GoalBingoCard = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-5 gap-2">
-          {createBingoGrid().map((row, rowIndex) => (
-            row.map((goal, colIndex) => (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                className={`aspect-square p-2 border rounded-lg flex flex-col items-center justify-center text-center transition-all hover:scale-105 ${getGoalColor(goal.status)}`}
-              >
-                {goal.status !== 'empty' ? (
-                  <>
-                    {getGoalIcon(goal.status)}
-                    <span className="text-xs mt-1 line-clamp-2 font-medium">{goal.title}</span>
-                  </>
-                ) : (
-                  <span className="text-xs text-gray-400">Empty</span>
-                )}
-              </div>
-            ))
-          ))}
-        </div>
+        <BingoGrid 
+          grid={createBingoGrid()}
+          getGoalColor={getGoalColor}
+          getGoalIcon={getGoalIcon}
+        />
       </CardContent>
     </Card>
   );
