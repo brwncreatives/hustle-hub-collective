@@ -22,28 +22,28 @@ const saturdayLetters = [
 
 export function SubwayLogo() {
   return (
-    <div className="flex flex-col items-center gap-4 mb-8">
-      <div className="flex gap-2">
+    <div className="flex flex-col items-center gap-6 mb-12">
+      <div className="flex gap-3">
         {letters.map((letter, index) => (
           <div
             key={index}
-            className="w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center"
+            className="w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center"
             style={{ backgroundColor: letter.color }}
           >
-            <span className="text-white font-bold text-xl md:text-2xl font-helvetica">
+            <span className="text-white font-bold text-2xl md:text-3xl font-helvetica">
               {letter.char}
             </span>
           </div>
         ))}
       </div>
-      <div className="flex gap-1">
+      <div className="flex gap-2">
         {saturdayLetters.map((letter, index) => (
           <div
             key={index}
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center"
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center"
             style={{ backgroundColor: letter.color }}
           >
-            <span className="text-white font-bold text-sm md:text-base font-helvetica">
+            <span className="text-white font-bold text-base md:text-lg font-helvetica">
               {letter.char}
             </span>
           </div>
