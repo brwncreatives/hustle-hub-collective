@@ -23,6 +23,10 @@ export function HeroSection() {
               Hustle Saturday is your time to stop giving all your energy to everyone else and start investing in yourself.
             </p>
             <p className="text-lg leading-8 text-muted-foreground text-left">
+              Hustle Saturday began as a simple idea: a Saturday morning meetup where we'd spend 1-3 hours working on the things we kept putting off. 
+              It was a time to focus, support each other, and make real progress.
+            </p>
+            <p className="text-lg leading-8 text-muted-foreground text-left">
               Create an accountability group, set your goals, and achieve more—together.
             </p>
           </div>
