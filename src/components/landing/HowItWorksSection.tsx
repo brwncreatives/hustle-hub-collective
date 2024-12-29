@@ -45,23 +45,17 @@ export function HowItWorksSection() {
           <div className="space-y-12">
             {steps.map((step, index) => (
               <div key={step.title} className="relative pl-14">
-                {/* Station stop circle - positioned to align with card header */}
+                {/* Station stop circle with number - positioned to align with card header */}
                 <div 
-                  className="absolute left-0 top-6 w-8 h-8 rounded-full border-4 border-background"
+                  className="absolute left-0 top-6 w-8 h-8 rounded-full border-4 border-background flex items-center justify-center text-white font-semibold"
                   style={{ backgroundColor: step.color }}
-                />
+                >
+                  {index + 1}
+                </div>
                 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-4">
-                      <span 
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-primary-foreground"
-                        style={{ backgroundColor: step.color }}
-                      >
-                        {index + 1}
-                      </span>
-                      {step.title}
-                    </CardTitle>
+                    <CardTitle>{step.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground">{step.description}</p>
