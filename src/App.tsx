@@ -63,6 +63,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/index" element={<Landing />} /> {/* Added explicit index route */}
       <Route path="/auth/login" element={user ? <Navigate to="/dashboard" replace /> : <AuthForms />} />
       <Route path="/auth/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignUpForm />} />
       <Route
