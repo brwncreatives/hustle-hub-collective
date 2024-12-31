@@ -106,6 +106,9 @@ const AppRoutes = () => {
         }
       />
       <Route path="/auth/callback" element={<AuthCallback />} />
+      {/* Redirect /index to root path */}
+      <Route path="/index" element={<Navigate to="/" replace />} />
+      {/* Catch all route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
