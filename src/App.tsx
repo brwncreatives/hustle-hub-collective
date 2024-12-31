@@ -61,7 +61,8 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
+      <Route index element={<Landing />} />
+      <Route path="/index" element={<Navigate to="/" replace />} />
       <Route path="/auth/login" element={user ? <Navigate to="/" replace /> : <AuthForms />} />
       <Route path="/auth/signup" element={user ? <Navigate to="/" replace /> : <SignUpForm />} />
       <Route
