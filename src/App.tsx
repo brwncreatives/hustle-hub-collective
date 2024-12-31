@@ -61,6 +61,7 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      <Route index element={<Landing />} />
       <Route path="/" element={<Landing />} />
       <Route path="/auth/login" element={user ? <Navigate to="/" replace /> : <AuthForms />} />
       <Route path="/auth/signup" element={user ? <Navigate to="/" replace /> : <SignUpForm />} />
@@ -106,9 +107,7 @@ const AppRoutes = () => {
         }
       />
       <Route path="/auth/callback" element={<AuthCallback />} />
-      {/* Redirect /index to root path */}
-      <Route path="/index" element={<Navigate to="/" replace />} />
-      {/* Catch all route */}
+      {/* Catch all route - redirect everything else to home */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
