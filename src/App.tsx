@@ -68,7 +68,7 @@ const AppRoutes = () => {
         path="/dashboard"
         element={
           <PrivateRoute>
-            <Index />
+            <Landing />
           </PrivateRoute>
         }
       />
