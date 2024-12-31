@@ -11,11 +11,10 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-[#121212] relative overflow-hidden text-white">
-      {/* Metro-inspired flowing background */}
+      {/* Metro-inspired flowing background with adjusted opacity */}
       <div className="absolute inset-0 z-0">
-        {/* Curved metro lines */}
         <div 
-          className="absolute w-[200%] h-[200%] -top-1/2 -left-1/2 opacity-[0.06]"
+          className="absolute w-[200%] h-[200%] -top-1/2 -left-1/2 opacity-[0.08]"
           style={{
             background: `
               radial-gradient(circle at 50% 50%, transparent 20%, #666666 20.5%, transparent 21%),
@@ -40,7 +39,7 @@ export default function Landing() {
 
       <div className="relative z-10">
         <Header user={user} signOut={signOut} />
-        <main className="space-y-12 overflow-hidden">
+        <main className="space-y-16 overflow-hidden"> {/* Increased spacing between sections */}
           <HeroSection />
           <FeaturesSection />
           <HowItWorksSection />
