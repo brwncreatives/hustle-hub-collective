@@ -21,7 +21,7 @@ const AuthCallback = () => {
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
-        window.location.href = "/dashboard";
+        window.location.href = "/";
       }
     });
   }, []);
@@ -62,16 +62,8 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
-      <Route path="/auth/login" element={user ? <Navigate to="/dashboard" replace /> : <AuthForms />} />
-      <Route path="/auth/signup" element={user ? <Navigate to="/dashboard" replace /> : <SignUpForm />} />
-      <Route
-        path="/dashboard"
-        element={
-          <PrivateRoute>
-            <Landing />
-          </PrivateRoute>
-        }
-      />
+      <Route path="/auth/login" element={user ? <Navigate to="/" replace /> : <AuthForms />} />
+      <Route path="/auth/signup" element={user ? <Navigate to="/" replace /> : <SignUpForm />} />
       <Route
         path="/create-goal"
         element={
