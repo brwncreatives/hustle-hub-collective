@@ -16,6 +16,17 @@ interface GroupGoal {
   status: string;
 }
 
+interface GoalWithProfile {
+  id: string;
+  title: string;
+  status: string;
+  user_id: string;
+  profiles: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
 export const GroupBingoBoardCard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -46,7 +57,7 @@ export const GroupBingoBoardCard = () => {
           title,
           status,
           user_id,
-          profiles!inner(
+          profiles (
             first_name,
             last_name
           )
@@ -58,7 +69,7 @@ export const GroupBingoBoardCard = () => {
         return;
       }
 
-      const formattedGoals: GroupGoal[] = goals.map(goal => ({
+      const formattedGoals: GroupGoal[] = (goals as GoalWithProfile[]).map(goal => ({
         id: goal.id,
         memberId: goal.user_id,
         memberName: `${goal.profiles.first_name} ${goal.profiles.last_name}`,
