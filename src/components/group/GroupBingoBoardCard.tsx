@@ -4,20 +4,45 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useParams } from "react-router-dom";
 import { BingoCell } from "./BingoCell";
 import { GroupGoal, GoalWithProfile } from "./types/bingo";
 
 export const GroupBingoBoardCard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const { groupId } = useParams();
   const [groupGoals, setGroupGoals] = useState<GroupGoal[]>([]);
   const [completedLines, setCompletedLines] = useState<number[][]>([]);
+  const [groupId, setGroupId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserGroup = async () => {
+      if (!user) return;
+
+      const { data: groupMember, error: groupError } = await supabase
+        .from('group_members')
+        .select('group_id')
+        .eq('user_id', user.id)
+        .single();
+
+      if (groupError) {
+        console.error('Error fetching user group:', groupError);
+        return;
+      }
+
+      if (groupMember) {
+        console.log('Found group ID:', groupMember.group_id);
+        setGroupId(groupMember.group_id);
+      }
+    };
+
+    fetchUserGroup();
+  }, [user]);
 
   useEffect(() => {
     const fetchGroupGoals = async () => {
       if (!user || !groupId) return;
+
+      console.log('Fetching goals for group:', groupId);
 
       const { data: groupMembers, error: membersError } = await supabase
         .from('group_members')
@@ -30,6 +55,7 @@ export const GroupBingoBoardCard = () => {
       }
 
       const memberIds = groupMembers.map(member => member.user_id);
+      console.log('Group member IDs:', memberIds);
 
       const { data: goals, error: goalsError } = await supabase
         .from('goals')
@@ -38,7 +64,7 @@ export const GroupBingoBoardCard = () => {
           title,
           status,
           user_id,
-          profiles!inner (
+          profiles (
             first_name,
             last_name
           )
@@ -53,17 +79,19 @@ export const GroupBingoBoardCard = () => {
 
       console.log('Fetched goals:', goals);
 
-      const formattedGoals: GroupGoal[] = goals.map(goal => ({
-        id: goal.id,
-        memberId: goal.user_id,
-        memberName: `${goal.profiles.first_name} ${goal.profiles.last_name}`,
-        title: goal.title,
-        progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
-        status: goal.status
-      }));
+      if (goals) {
+        const formattedGoals: GroupGoal[] = goals.map(goal => ({
+          id: goal.id,
+          memberId: goal.user_id,
+          memberName: `${goal.profiles.first_name} ${goal.profiles.last_name}`,
+          title: goal.title,
+          progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
+          status: goal.status
+        }));
 
-      console.log('Formatted group goals:', formattedGoals);
-      setGroupGoals(formattedGoals);
+        console.log('Formatted group goals:', formattedGoals);
+        setGroupGoals(formattedGoals);
+      }
     };
 
     fetchGroupGoals();
