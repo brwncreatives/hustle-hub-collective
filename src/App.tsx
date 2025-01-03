@@ -1,139 +1,108 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
-import Landing from "./pages/Landing";
-import { Dashboard } from "./pages/Dashboard";
-import GoalCreation from "./pages/GoalCreation";
-import GoalEdit from "./pages/GoalEdit";
-import GroupManagement from "./pages/GroupManagement";
-import Settings from "./pages/Settings";
-import { useEffect } from "react";
-import { supabase } from "./integrations/supabase/client";
-import { useAuth } from "./contexts/AuthContext";
-import { AuthForms } from "./components/AuthForms";
-import { SignUpForm } from "./components/SignUpForm";
-import { RequestGroupForm } from "./components/group/RequestGroupForm";
-import { Header } from "./components/Header";
-
-const AuthCallback = () => {
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN") {
-        window.location.href = "/dashboard";
-      }
-    });
-  }, []);
-
-  return null;
-};
-
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/" />;
-  }
-
-  return <>{children}</>;
-};
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { Landing } from "@/pages/Landing";
+import { Dashboard } from "@/pages/Dashboard";
+import { GoalCreation } from "@/pages/GoalCreation";
+import { GoalEdit } from "@/pages/GoalEdit";
+import { GroupCreation } from "@/pages/GroupCreation";
+import { GroupLanding } from "@/pages/GroupLanding";
+import { GroupManagement } from "@/pages/GroupManagement";
+import { Settings } from "@/pages/Settings";
 
 const queryClient = new QueryClient();
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
 
 const AppRoutes = () => {
   const { user } = useAuth();
 
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
-      return;
-    }
-  };
-
   return (
     <Routes>
-      <Route 
-        path="/" 
-        element={user ? <Navigate to="/dashboard" /> : <Landing />} 
+      <Route
+        path="/"
+        element={user ? <Navigate to="/dashboard" replace /> : <Landing />}
       />
-      <Route path="/auth/login" element={<AuthForms />} />
-      <Route path="/auth/signup" element={<SignUpForm />} />
       <Route
         path="/dashboard"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <Dashboard />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/create-goal"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <GoalCreation />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
       <Route
-        path="/manage-goal/:goalId"
+        path="/edit-goal/:goalId"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <GoalEdit />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
       <Route
-        path="/request-group"
+        path="/create-group"
         element={
-          <div className="min-h-screen bg-background">
-            <Header user={user} signOut={handleSignOut} />
-            <RequestGroupForm />
-          </div>
+          <ProtectedRoute>
+            <GroupCreation />
+          </ProtectedRoute>
         }
       />
       <Route
-        path="/manage-group/:groupId"
+        path="/group/:groupId"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
+            <GroupLanding />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/group/:groupId/manage"
+        element={
+          <ProtectedRoute>
             <GroupManagement />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/settings"
         element={
-          <PrivateRoute>
+          <ProtectedRoute>
             <Settings />
-          </PrivateRoute>
+          </ProtectedRoute>
         }
       />
-      <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <BrowserRouter>
+        <AuthProvider>
           <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+          <Toaster />
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
