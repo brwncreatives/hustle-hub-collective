@@ -21,6 +21,9 @@ export const GroupBingoBoardCard = () => {
   const [completedLines, setCompletedLines] = useState<number[][]>([]);
 
   const checkForBingoLines = () => {
+    // Only check for bingo if there are actual goals
+    if (groupGoals.length === 0) return [];
+    
     const lines: number[][] = [];
     const gridSize = 3;
 
@@ -53,23 +56,27 @@ export const GroupBingoBoardCard = () => {
 
   const isLineComplete = (start: number, end: number, step = 1) => {
     const goals = groupGoals.slice(start, end);
-    return goals.every((goal) => goal.progress >= 100);
+    // Only consider a line complete if there are actual goals in those positions
+    return goals.length > 0 && goals.every((goal) => goal?.progress >= 100);
   };
 
   useEffect(() => {
-    const newLines = checkForBingoLines().filter(
-      line => !completedLines.some(existing => 
-        existing.length === line.length && 
-        existing.every(num => line.includes(num))
-      )
-    );
+    // Only check for new lines if there are goals
+    if (groupGoals.length > 0) {
+      const newLines = checkForBingoLines().filter(
+        line => !completedLines.some(existing => 
+          existing.length === line.length && 
+          existing.every(num => line.includes(num))
+        )
+      );
 
-    if (newLines.length > 0) {
-      setCompletedLines(prev => [...prev, ...newLines]);
-      toast({
-        title: "BINGO! 🎉",
-        description: "A team line of goals has been completed! Great teamwork!",
-      });
+      if (newLines.length > 0) {
+        setCompletedLines(prev => [...prev, ...newLines]);
+        toast({
+          title: "BINGO! 🎉",
+          description: "A team line of goals has been completed! Great teamwork!",
+        });
+      }
     }
   }, [groupGoals]);
 
