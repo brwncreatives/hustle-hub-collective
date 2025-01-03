@@ -2,9 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Landing from "./pages/Landing";
+import { Dashboard } from "./pages/Dashboard";
 import GoalCreation from "./pages/GoalCreation";
 import GoalEdit from "./pages/GoalEdit";
 import GroupManagement from "./pages/GroupManagement";
@@ -21,7 +22,7 @@ const AuthCallback = () => {
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
-        window.location.href = "/";
+        window.location.href = "/dashboard";
       }
     });
   }, []);
@@ -41,7 +42,7 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!user) {
-    return <Landing />;
+    return <Navigate to="/" />;
   }
 
   return <>{children}</>;
@@ -61,9 +62,20 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
+      <Route 
+        path="/" 
+        element={user ? <Navigate to="/dashboard" /> : <Landing />} 
+      />
       <Route path="/auth/login" element={<AuthForms />} />
       <Route path="/auth/signup" element={<SignUpForm />} />
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
       <Route
         path="/create-goal"
         element={
@@ -106,7 +118,7 @@ const AppRoutes = () => {
         }
       />
       <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="*" element={<Landing />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };
