@@ -11,6 +11,8 @@ import GroupCreation from "@/pages/GroupCreation";
 import GroupLanding from "@/pages/GroupLanding";
 import GroupManagement from "@/pages/GroupManagement";
 import Settings from "@/pages/Settings";
+import { AuthForms } from "@/components/AuthForms";
+import { SignUpForm } from "@/components/SignUpForm";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +20,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/auth/login" replace />;
   }
 
   return children;
@@ -30,6 +32,8 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/auth/login" element={<AuthForms />} />
+      <Route path="/auth/signup" element={<SignUpForm />} />
       <Route
         path="/dashboard"
         element={
