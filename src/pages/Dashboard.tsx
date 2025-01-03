@@ -5,7 +5,7 @@ import { AccountabilityGroups } from "@/components/AccountabilityGroups";
 import { MemberFeed } from "@/components/MemberFeed";
 import { useAuth } from "@/contexts/AuthContext";
 
-export const Dashboard = () => {
+const Dashboard = () => {
   const { user, signOut } = useAuth();
 
   return (
@@ -22,3 +22,5 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+export default Dashboard;
