@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useParams } from "react-router-dom";
 
 interface GroupGoal {
   id: string;
@@ -18,8 +19,80 @@ interface GroupGoal {
 export const GroupBingoBoardCard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { groupId } = useParams();
   const [groupGoals, setGroupGoals] = useState<GroupGoal[]>([]);
   const [completedLines, setCompletedLines] = useState<number[][]>([]);
+
+  useEffect(() => {
+    const fetchGroupGoals = async () => {
+      if (!user || !groupId) return;
+
+      const { data: groupMembers, error: membersError } = await supabase
+        .from('group_members')
+        .select('user_id')
+        .eq('group_id', groupId);
+
+      if (membersError) {
+        console.error('Error fetching group members:', membersError);
+        return;
+      }
+
+      const memberIds = groupMembers.map(member => member.user_id);
+
+      const { data: goals, error: goalsError } = await supabase
+        .from('goals')
+        .select(`
+          id,
+          title,
+          status,
+          user_id,
+          profiles!inner(
+            first_name,
+            last_name
+          )
+        `)
+        .in('user_id', memberIds);
+
+      if (goalsError) {
+        console.error('Error fetching goals:', goalsError);
+        return;
+      }
+
+      const formattedGoals: GroupGoal[] = goals.map(goal => ({
+        id: goal.id,
+        memberId: goal.user_id,
+        memberName: `${goal.profiles.first_name} ${goal.profiles.last_name}`,
+        title: goal.title,
+        progress: goal.status === 'completed' ? 100 : goal.status === 'in progress' ? 50 : 0,
+        status: goal.status
+      }));
+
+      console.log('Formatted group goals:', formattedGoals);
+      setGroupGoals(formattedGoals);
+    };
+
+    fetchGroupGoals();
+
+    // Set up real-time subscription
+    const goalsSubscription = supabase
+      .channel('group_goals_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'goals',
+        },
+        () => {
+          fetchGroupGoals();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      goalsSubscription.unsubscribe();
+    };
+  }, [user, groupId]);
 
   const checkForBingoLines = () => {
     // Only check for bingo if there are actual goals
