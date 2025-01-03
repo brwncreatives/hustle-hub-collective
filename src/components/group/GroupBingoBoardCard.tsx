@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Target } from "lucide-react";
+import { Trophy, Target, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,6 +12,7 @@ interface GroupGoal {
   memberName: string;
   title: string;
   progress: number;
+  status: string;
 }
 
 export const GroupBingoBoardCard = () => {
@@ -56,8 +57,31 @@ export const GroupBingoBoardCard = () => {
 
   const isLineComplete = (start: number, end: number, step = 1) => {
     const goals = groupGoals.slice(start, end);
-    // Only consider a line complete if there are actual goals in those positions
     return goals.length > 0 && goals.every((goal) => goal?.progress >= 100);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'bg-primary/10 border-primary';
+      case 'in progress':
+        return 'bg-yellow-50/80 border-yellow-200';
+      case 'not started':
+        return 'bg-gray-50 border-gray-200';
+      default:
+        return 'bg-gray-50/50 border-dashed border-gray-200';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return <Trophy className="h-5 w-5 text-primary" />;
+      case 'in progress':
+        return <Star className="h-5 w-5 text-yellow-500" />;
+      default:
+        return <Target className="h-5 w-5 text-gray-400" />;
+    }
   };
 
   useEffect(() => {
@@ -104,14 +128,13 @@ export const GroupBingoBoardCard = () => {
                   aspect-square p-4 border rounded-lg
                   flex flex-col items-center justify-center text-center
                   transition-all duration-200
-                  ${goal?.progress === 100 ? 'bg-primary/10 border-primary' : 'bg-card'}
+                  ${goal ? getStatusColor(goal.status) : 'bg-gray-50/50 border-dashed border-gray-200'}
                   ${completedLines.some(line => line.includes(index)) ? 'ring-2 ring-primary ring-offset-2' : ''}
-                  ${isEmptyCell ? 'bg-gray-50/50 border-dashed border-gray-200' : ''}
                 `}
               >
                 {!isEmptyCell ? (
                   <>
-                    <Target className="h-5 w-5 text-primary mb-2" />
+                    {getStatusIcon(goal.status)}
                     <div className="text-sm font-medium mb-1 line-clamp-2">
                       {goal.title}
                     </div>
