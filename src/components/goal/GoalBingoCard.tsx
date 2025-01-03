@@ -37,6 +37,30 @@ export const GoalBingoCard = () => {
     };
 
     fetchGoals();
+
+    // Set up real-time subscription for goals
+    const goalsSubscription = supabase
+      .channel('goals_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'goals',
+          filter: `user_id=eq.${user?.id}`,
+        },
+        (payload) => {
+          console.log('Real-time update received:', payload);
+          // Refetch goals when any change occurs
+          fetchGoals();
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription
+    return () => {
+      goalsSubscription.unsubscribe();
+    };
   }, [user]);
 
   const getCompletedGoalsCount = () => {
