@@ -13,10 +13,8 @@ const Dashboard = () => {
       <Header user={user} signOut={signOut} />
       <div className="container mx-auto px-4 py-8 space-y-8">
         <MotivationalQuote />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <ActiveGoals />
-          <AccountabilityGroups />
-        </div>
+        <ActiveGoals />
+        <AccountabilityGroups />
         <MemberFeed />
       </div>
     </div>
