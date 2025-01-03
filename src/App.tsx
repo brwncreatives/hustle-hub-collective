@@ -31,7 +31,7 @@ const AppRoutes = () => {
     <Routes>
       <Route
         path="/"
-        element={user ? <Navigate to="/dashboard" replace /> : <Landing />}
+        element={!user ? <Landing /> : <Navigate to="/dashboard" replace />}
       />
       <Route
         path="/dashboard"
