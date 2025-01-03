@@ -5,13 +5,39 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { BingoGrid } from "./BingoGrid";
 import { Goal } from "./types/bingo";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const GoalBingoCard = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const { toast } = useToast();
+  const { user } = useAuth();
   const gridSize = 5;
   const totalCells = gridSize * gridSize;
   const previousCompletedLinesRef = useRef<number>(0);
+
+  useEffect(() => {
+    const fetchGoals = async () => {
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from('goals')
+        .select('id, title, status')
+        .eq('user_id', user.id);
+      
+      if (error) {
+        console.error('Error fetching goals:', error);
+        return;
+      }
+
+      if (data) {
+        console.log('Fetched goals:', data);
+        setGoals(data);
+      }
+    };
+
+    fetchGoals();
+  }, [user]);
 
   const getCompletedGoalsCount = () => {
     return goals.filter(goal => goal.status.toLowerCase() === 'completed').length;
@@ -56,7 +82,7 @@ export const GoalBingoCard = () => {
 
   const isLineComplete = (start: number, end: number, step = 1) => {
     const lineGoals = goals.slice(start, end);
-    return lineGoals.every((goal) => goal.status.toLowerCase() === 'completed');
+    return lineGoals.every((goal) => goal?.status?.toLowerCase() === 'completed');
   };
 
   const createBingoGrid = () => {
