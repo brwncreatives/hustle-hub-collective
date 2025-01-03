@@ -13,30 +13,48 @@ export const GroupBingoBoardCard = () => {
   const [groupGoals, setGroupGoals] = useState<GroupGoal[]>([]);
   const [completedLines, setCompletedLines] = useState<number[][]>([]);
   const [groupId, setGroupId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserGroup = async () => {
       if (!user) return;
 
-      const { data: groupMember, error: groupError } = await supabase
-        .from('group_members')
-        .select('group_id')
-        .eq('user_id', user.id)
-        .single();
+      try {
+        const { data: groupMember, error: groupError } = await supabase
+          .from('group_members')
+          .select('group_id')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (groupError) {
-        console.error('Error fetching user group:', groupError);
-        return;
-      }
+        if (groupError) {
+          console.error('Error fetching user group:', groupError);
+          toast({
+            title: "Error",
+            description: "Could not fetch your group information. Please try again later.",
+            variant: "destructive"
+          });
+          return;
+        }
 
-      if (groupMember) {
-        console.log('Found group ID:', groupMember.group_id);
-        setGroupId(groupMember.group_id);
+        if (groupMember) {
+          console.log('Found group ID:', groupMember.group_id);
+          setGroupId(groupMember.group_id);
+        } else {
+          console.log('No group found for user');
+          toast({
+            title: "No Group Found",
+            description: "You are not currently a member of any group. Join or create a group to see the bingo board.",
+          });
+        }
+      } catch (error) {
+        console.error('Error in fetchUserGroup:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserGroup();
-  }, [user]);
+  }, [user, toast]);
 
   useEffect(() => {
     const fetchGroupGoals = async () => {
@@ -44,53 +62,62 @@ export const GroupBingoBoardCard = () => {
 
       console.log('Fetching goals for group:', groupId);
 
-      const { data: groupMembers, error: membersError } = await supabase
-        .from('group_members')
-        .select('user_id')
-        .eq('group_id', groupId);
+      try {
+        const { data: groupMembers, error: membersError } = await supabase
+          .from('group_members')
+          .select('user_id')
+          .eq('group_id', groupId);
 
-      if (membersError) {
-        console.error('Error fetching group members:', membersError);
-        return;
-      }
+        if (membersError) {
+          console.error('Error fetching group members:', membersError);
+          return;
+        }
 
-      const memberIds = groupMembers.map(member => member.user_id);
-      console.log('Group member IDs:', memberIds);
+        const memberIds = groupMembers.map(member => member.user_id);
+        console.log('Group member IDs:', memberIds);
 
-      const { data: goals, error: goalsError } = await supabase
-        .from('goals')
-        .select(`
-          id,
-          title,
-          status,
-          user_id,
-          profiles (
-            first_name,
-            last_name
-          )
-        `)
-        .in('user_id', memberIds)
-        .returns<GoalWithProfile[]>();
+        const { data: goals, error: goalsError } = await supabase
+          .from('goals')
+          .select(`
+            id,
+            title,
+            status,
+            user_id,
+            profiles (
+              first_name,
+              last_name
+            )
+          `)
+          .in('user_id', memberIds)
+          .returns<GoalWithProfile[]>();
 
-      if (goalsError) {
-        console.error('Error fetching goals:', goalsError);
-        return;
-      }
+        if (goalsError) {
+          console.error('Error fetching goals:', goalsError);
+          return;
+        }
 
-      console.log('Fetched goals:', goals);
+        console.log('Fetched goals:', goals);
 
-      if (goals) {
-        const formattedGoals: GroupGoal[] = goals.map(goal => ({
-          id: goal.id,
-          memberId: goal.user_id,
-          memberName: `${goal.profiles.first_name} ${goal.profiles.last_name}`,
-          title: goal.title,
-          progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
-          status: goal.status
-        }));
+        if (goals) {
+          const formattedGoals: GroupGoal[] = goals.map(goal => ({
+            id: goal.id,
+            memberId: goal.user_id,
+            memberName: `${goal.profiles.first_name} ${goal.profiles.last_name}`,
+            title: goal.title,
+            progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
+            status: goal.status
+          }));
 
-        console.log('Formatted group goals:', formattedGoals);
-        setGroupGoals(formattedGoals);
+          console.log('Formatted group goals:', formattedGoals);
+          setGroupGoals(formattedGoals);
+        }
+      } catch (error) {
+        console.error('Error in fetchGroupGoals:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch group goals. Please try again later.",
+          variant: "destructive"
+        });
       }
     };
 
@@ -114,7 +141,7 @@ export const GroupBingoBoardCard = () => {
     return () => {
       goalsSubscription.unsubscribe();
     };
-  }, [user, groupId]);
+  }, [user, groupId, toast]);
 
   const checkForBingoLines = () => {
     if (groupGoals.length === 0) return [];
@@ -180,22 +207,31 @@ export const GroupBingoBoardCard = () => {
           <Trophy className="h-5 w-5 text-primary" />
           Q1 2024 Bingo Card
         </CardTitle>
-        <p className="text-sm text-muted-foreground mt-2">
-          Track your group's Q1 progress together! Each member can set up to three goals for the quarter. Once a goal is marked as complete, it automatically fills the corresponding square on the shared Bingo board. Complete three squares in a row—horizontally, vertically, or diagonally—for a BINGO! Celebrate each milestone and keep the momentum going.
-        </p>
+        {!loading && !groupId && (
+          <p className="text-sm text-muted-foreground mt-2">
+            You are not currently a member of any group. Join or create a group to participate in group bingo!
+          </p>
+        )}
+        {groupId && (
+          <p className="text-sm text-muted-foreground mt-2">
+            Track your group's Q1 progress together! Each member can set up to three goals for the quarter. Once a goal is marked as complete, it automatically fills the corresponding square on the shared Bingo board. Complete three squares in a row—horizontally, vertically, or diagonally—for a BINGO! Celebrate each milestone and keep the momentum going.
+          </p>
+        )}
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-3 gap-4">
-          {Array.from({ length: 9 }).map((_, index) => (
-            <BingoCell
-              key={index}
-              goal={groupGoals[index]}
-              index={index}
-              isCompletedLine={completedLines.some(line => line.includes(index))}
-            />
-          ))}
-        </div>
-      </CardContent>
+      {groupId && (
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            {Array.from({ length: 9 }).map((_, index) => (
+              <BingoCell
+                key={index}
+                goal={groupGoals[index]}
+                index={index}
+                isCompletedLine={completedLines.some(line => line.includes(index))}
+              />
+            ))}
+          </div>
+        </CardContent>
+      )}
     </Card>
   );
 };
