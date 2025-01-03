@@ -63,6 +63,7 @@ export const GroupBingoBoardCard = () => {
       console.log('Fetching goals for group:', groupId);
 
       try {
+        // First get group members
         const { data: groupMembers, error: membersError } = await supabase
           .from('group_members')
           .select('user_id')
@@ -76,41 +77,43 @@ export const GroupBingoBoardCard = () => {
         const memberIds = groupMembers.map(member => member.user_id);
         console.log('Group member IDs:', memberIds);
 
+        // Then get goals
         const { data: goals, error: goalsError } = await supabase
           .from('goals')
-          .select(`
-            id,
-            title,
-            status,
-            user_id,
-            profiles (
-              first_name,
-              last_name
-            )
-          `)
-          .in('user_id', memberIds)
-          .returns<GoalWithProfile[]>();
+          .select('id, title, status, user_id')
+          .in('user_id', memberIds);
 
         if (goalsError) {
           console.error('Error fetching goals:', goalsError);
           return;
         }
 
-        console.log('Fetched goals:', goals);
+        // Finally get profiles separately
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', memberIds);
 
-        if (goals) {
-          const formattedGoals: GroupGoal[] = goals.map(goal => ({
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+          return;
+        }
+
+        // Combine the data
+        const formattedGoals: GroupGoal[] = goals.map(goal => {
+          const profile = profiles.find(p => p.id === goal.user_id);
+          return {
             id: goal.id,
             memberId: goal.user_id,
-            memberName: `${goal.profiles.first_name} ${goal.profiles.last_name}`,
+            memberName: profile ? `${profile.first_name} ${profile.last_name}` : 'Unknown Member',
             title: goal.title,
             progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
             status: goal.status
-          }));
+          };
+        });
 
-          console.log('Formatted group goals:', formattedGoals);
-          setGroupGoals(formattedGoals);
-        }
+        console.log('Formatted group goals:', formattedGoals);
+        setGroupGoals(formattedGoals);
       } catch (error) {
         console.error('Error in fetchGroupGoals:', error);
         toast({
