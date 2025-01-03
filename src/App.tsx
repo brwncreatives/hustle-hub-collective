@@ -3,14 +3,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { Landing } from "@/pages/Landing";
-import { Dashboard } from "@/pages/Dashboard";
-import { GoalCreation } from "@/pages/GoalCreation";
-import { GoalEdit } from "@/pages/GoalEdit";
-import { GroupCreation } from "@/pages/GroupCreation";
-import { GroupLanding } from "@/pages/GroupLanding";
-import { GroupManagement } from "@/pages/GroupManagement";
-import { Settings } from "@/pages/Settings";
+import Landing from "@/pages/Landing";
+import Dashboard from "@/pages/Dashboard";
+import GoalCreation from "@/pages/GoalCreation";
+import GoalEdit from "@/pages/GoalEdit";
+import GroupCreation from "@/pages/GroupCreation";
+import GroupLanding from "@/pages/GroupLanding";
+import GroupManagement from "@/pages/GroupManagement";
+import Settings from "@/pages/Settings";
 
 const queryClient = new QueryClient();
 
