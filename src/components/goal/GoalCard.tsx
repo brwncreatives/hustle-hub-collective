@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TaskList } from "../TaskList";
+import { TaskSection } from "./TaskSection";
 import { Badge } from "../ui/badge";
 import { Progress } from "../ui/progress";
 import { GoalStatusBadge } from "./GoalStatusBadge";
@@ -34,7 +35,7 @@ export const GoalCard = ({ goal, onStatusChange }: GoalCardProps) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate(`/manage-goal/${goal.id}`)}
+              onClick={() => navigate(`/edit-goal/${goal.id}`)}
               className="h-8"
             >
               Manage Goal
@@ -75,7 +76,8 @@ export const GoalCard = ({ goal, onStatusChange }: GoalCardProps) => {
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        <TaskSection goalId={goal.id} />
         <TaskList goalId={goal.id} />
       </CardContent>
     </Card>
