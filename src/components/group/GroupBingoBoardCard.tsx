@@ -1,31 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Trophy, Target, Star } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useParams } from "react-router-dom";
-
-interface GroupGoal {
-  id: string;
-  memberId: string;
-  memberName: string;
-  title: string;
-  progress: number;
-  status: string;
-}
-
-interface GoalWithProfile {
-  id: string;
-  title: string;
-  status: string;
-  user_id: string;
-  profiles: {
-    first_name: string;
-    last_name: string;
-  };
-}
+import { BingoCell } from "./BingoCell";
+import { GroupGoal, GoalWithProfile } from "./types/bingo";
 
 export const GroupBingoBoardCard = () => {
   const { toast } = useToast();
@@ -57,24 +38,27 @@ export const GroupBingoBoardCard = () => {
           title,
           status,
           user_id,
-          profiles (
+          profiles!inner (
             first_name,
             last_name
           )
         `)
-        .in('user_id', memberIds);
+        .in('user_id', memberIds)
+        .returns<GoalWithProfile[]>();
 
       if (goalsError) {
         console.error('Error fetching goals:', goalsError);
         return;
       }
 
-      const formattedGoals: GroupGoal[] = (goals as GoalWithProfile[]).map(goal => ({
+      console.log('Fetched goals:', goals);
+
+      const formattedGoals: GroupGoal[] = goals.map(goal => ({
         id: goal.id,
         memberId: goal.user_id,
         memberName: `${goal.profiles.first_name} ${goal.profiles.last_name}`,
         title: goal.title,
-        progress: goal.status === 'completed' ? 100 : goal.status === 'in progress' ? 50 : 0,
+        progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
         status: goal.status
       }));
 
@@ -84,7 +68,6 @@ export const GroupBingoBoardCard = () => {
 
     fetchGroupGoals();
 
-    // Set up real-time subscription
     const goalsSubscription = supabase
       .channel('group_goals_channel')
       .on(
@@ -106,7 +89,6 @@ export const GroupBingoBoardCard = () => {
   }, [user, groupId]);
 
   const checkForBingoLines = () => {
-    // Only check for bingo if there are actual goals
     if (groupGoals.length === 0) return [];
     
     const lines: number[][] = [];
@@ -144,32 +126,7 @@ export const GroupBingoBoardCard = () => {
     return goals.length > 0 && goals.every((goal) => goal?.progress >= 100);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return 'bg-primary/10 border-primary';
-      case 'in progress':
-        return 'bg-yellow-50/80 border-yellow-200';
-      case 'not started':
-        return 'bg-gray-50 border-gray-200';
-      default:
-        return 'bg-gray-50/50 border-dashed border-gray-200';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return <Trophy className="h-5 w-5 text-primary" />;
-      case 'in progress':
-        return <Star className="h-5 w-5 text-yellow-500" />;
-      default:
-        return <Target className="h-5 w-5 text-gray-400" />;
-    }
-  };
-
   useEffect(() => {
-    // Only check for new lines if there are goals
     if (groupGoals.length > 0) {
       const newLines = checkForBingoLines().filter(
         line => !completedLines.some(existing => 
@@ -201,41 +158,14 @@ export const GroupBingoBoardCard = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4">
-          {Array.from({ length: 9 }).map((_, index) => {
-            const goal = groupGoals[index];
-            const isEmptyCell = !goal;
-            
-            return (
-              <div
-                key={goal?.id || `empty-${index}`}
-                className={`
-                  aspect-square p-4 border rounded-lg
-                  flex flex-col items-center justify-center text-center
-                  transition-all duration-200
-                  ${goal ? getStatusColor(goal.status) : 'bg-gray-50/50 border-dashed border-gray-200'}
-                  ${completedLines.some(line => line.includes(index)) ? 'ring-2 ring-primary ring-offset-2' : ''}
-                `}
-              >
-                {!isEmptyCell ? (
-                  <>
-                    {getStatusIcon(goal.status)}
-                    <div className="text-sm font-medium mb-1 line-clamp-2">
-                      {goal.title}
-                    </div>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      {goal.memberName}
-                    </div>
-                    <Progress value={goal.progress} className="h-2 w-full" />
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {goal.progress}%
-                    </div>
-                  </>
-                ) : (
-                  <span className="text-xs text-muted-foreground">Empty Goal Slot</span>
-                )}
-              </div>
-            );
-          })}
+          {Array.from({ length: 9 }).map((_, index) => (
+            <BingoCell
+              key={index}
+              goal={groupGoals[index]}
+              index={index}
+              isCompletedLine={completedLines.some(line => line.includes(index))}
+            />
+          ))}
         </div>
       </CardContent>
     </Card>
