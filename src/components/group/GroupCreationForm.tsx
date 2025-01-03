@@ -38,7 +38,7 @@ export const GroupCreationForm = ({ userId, onSuccess }: GroupCreationFormProps)
   const form = useForm<GroupFormValues>({
     resolver: zodResolver(groupFormSchema),
     defaultValues: {
-      name: "",
+      name: "Hustle Saturday Gang",
       description: "",
       maxMembers: 10,
     },
@@ -46,7 +46,8 @@ export const GroupCreationForm = ({ userId, onSuccess }: GroupCreationFormProps)
 
   const onSubmit = async (data: GroupFormValues) => {
     try {
-      const { data: group, error } = await supabase
+      // First create the group
+      const { data: group, error: groupError } = await supabase
         .from('groups')
         .insert([
           {
@@ -59,7 +60,20 @@ export const GroupCreationForm = ({ userId, onSuccess }: GroupCreationFormProps)
         .select()
         .single();
 
-      if (error) throw error;
+      if (groupError) throw groupError;
+
+      // Then add the creator as an admin member
+      const { error: memberError } = await supabase
+        .from('group_members')
+        .insert([
+          {
+            group_id: group.id,
+            user_id: userId,
+            role: 'admin'
+          }
+        ]);
+
+      if (memberError) throw memberError;
       
       onSuccess(group.id);
       
