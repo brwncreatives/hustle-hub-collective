@@ -11,7 +11,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header user={user} signOut={signOut} />
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
         <MotivationalQuote />
         <ActiveGoals />
         <AccountabilityGroups />
