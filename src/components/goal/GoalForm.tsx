@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TaskList } from "@/components/TaskList";
+import { TaskSection } from "@/components/goal/TaskSection";
 import { GoalTitleField } from "@/components/goal/GoalTitleField";
 import { GoalDescriptionField } from "@/components/goal/GoalDescriptionField";
 import { GoalQuarterField } from "@/components/goal/GoalQuarterField";
@@ -81,12 +82,7 @@ export const GoalForm = ({ initialData, onSubmit, title }: GoalFormProps) => {
         
         {initialData?.id && (
           <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold">Weekly Tasks</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                You can add and manage tasks at any time. Tasks can be either one-time or recurring weekly.
-              </p>
-            </div>
+            <TaskSection goalId={initialData.id} />
             <TaskList goalId={initialData.id} />
           </div>
         )}
