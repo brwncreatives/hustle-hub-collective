@@ -66,7 +66,7 @@ export const useGroupBoardData = (userId: string | undefined) => {
           title,
           status,
           user_id,
-          user:profiles(
+          user:profiles!inner(
             first_name,
             last_name
           )
@@ -81,7 +81,10 @@ export const useGroupBoardData = (userId: string | undefined) => {
         title: goal.title,
         status: goal.status,
         user_id: goal.user_id,
-        user: goal.user
+        user: {
+          first_name: goal.user?.[0]?.first_name || null,
+          last_name: goal.user?.[0]?.last_name || null
+        }
       }));
 
       console.log('Fetched goals with profiles:', transformedGoals);
