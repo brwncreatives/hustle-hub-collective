@@ -23,7 +23,11 @@ export function MemberFeed() {
         // Fetch user's group
         const { data: groupData } = await supabase
           .from('group_members')
-          .select('groups(name)')
+          .select(`
+            groups (
+              name
+            )
+          `)
           .eq('user_id', user.id)
           .single();
 
@@ -31,18 +35,24 @@ export function MemberFeed() {
           setGroupName(groupData.groups.name);
         }
 
-        // Fetch completed tasks with related data
+        // First fetch user profiles
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name');
+
+        // Create a map of user profiles for easy lookup
+        const profileMap = new Map(
+          profiles?.map(profile => [profile.id, profile]) || []
+        );
+
+        // Fetch completed tasks
         const { data: completedTasks, error: tasksError } = await supabase
           .from('tasks')
           .select(`
             *,
             goals (
               title,
-              user_id,
-              profiles (
-                first_name,
-                last_name
-              )
+              user_id
             )
           `)
           .eq('completed', true)
@@ -50,16 +60,10 @@ export function MemberFeed() {
 
         if (tasksError) throw tasksError;
 
-        // Fetch new goals with user profiles
+        // Fetch new goals
         const { data: newGoals, error: goalsError } = await supabase
           .from('goals')
-          .select(`
-            *,
-            profiles (
-              first_name,
-              last_name
-            )
-          `)
+          .select('*, user_id')
           .order('created_at', { ascending: false })
           .limit(10);
 
@@ -70,30 +74,34 @@ export function MemberFeed() {
 
         if (completedTasks) {
           completedTasks.forEach(task => {
-            if (task.goals?.profiles) {
-              allActivities.push({
-                id: `task-${task.id}`,
-                type: 'complete_task',
-                userId: task.goals.user_id,
-                userName: `${task.goals.profiles.first_name || ''} ${task.goals.profiles.last_name || ''}`.trim(),
-                timestamp: task.updated_at,
-                data: {
-                  taskTitle: task.title,
-                  goalTitle: task.goals.title
-                }
-              });
+            if (task.goals) {
+              const userProfile = profileMap.get(task.goals.user_id);
+              if (userProfile) {
+                allActivities.push({
+                  id: `task-${task.id}`,
+                  type: 'complete_task',
+                  userId: task.goals.user_id,
+                  userName: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
+                  timestamp: task.updated_at,
+                  data: {
+                    taskTitle: task.title,
+                    goalTitle: task.goals.title
+                  }
+                });
+              }
             }
           });
         }
 
         if (newGoals) {
           newGoals.forEach(goal => {
-            if (goal.profiles) {
+            const userProfile = profileMap.get(goal.user_id);
+            if (userProfile) {
               allActivities.push({
                 id: `goal-${goal.id}`,
                 type: 'add_goal',
                 userId: goal.user_id,
-                userName: `${goal.profiles.first_name || ''} ${goal.profiles.last_name || ''}`.trim(),
+                userName: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
                 timestamp: goal.created_at,
                 data: {
                   goalTitle: goal.title
