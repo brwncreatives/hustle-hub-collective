@@ -6,7 +6,7 @@ export interface GroupBoardGoal {
   user: {
     first_name: string | null;
     last_name: string | null;
-  };
+  } | null;
 }
 
 export interface CompletedLine {

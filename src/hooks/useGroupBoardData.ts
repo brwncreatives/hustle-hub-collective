@@ -50,6 +50,13 @@ export const useGroupBoardData = (userId: string | undefined) => {
     if (!userId || !groupId) return;
 
     try {
+      const { data: memberIds } = await supabase
+        .from('group_members')
+        .select('user_id')
+        .eq('group_id', groupId);
+
+      if (!memberIds) return;
+
       const { data: goals, error: goalsError } = await supabase
         .from('goals')
         .select(`
@@ -57,22 +64,29 @@ export const useGroupBoardData = (userId: string | undefined) => {
           title,
           status,
           user_id,
-          user:profiles(
+          user:profiles!inner(
             first_name,
             last_name
           )
         `)
-        .in('user_id', (
-          await supabase
-            .from('group_members')
-            .select('user_id')
-            .eq('group_id', groupId)
-        ).data?.map(member => member.user_id) || []);
+        .in('user_id', memberIds.map(member => member.user_id));
 
       if (goalsError) throw goalsError;
 
-      console.log('Fetched goals with profiles:', goals);
-      setGroupGoals(goals);
+      // Transform the data to match our type
+      const transformedGoals: GroupBoardGoal[] = goals.map(goal => ({
+        id: goal.id,
+        title: goal.title,
+        status: goal.status,
+        user_id: goal.user_id,
+        user: {
+          first_name: goal.user?.first_name || null,
+          last_name: goal.user?.last_name || null
+        }
+      }));
+
+      console.log('Fetched goals with profiles:', transformedGoals);
+      setGroupGoals(transformedGoals);
     } catch (error) {
       console.error('Error in fetchGroupGoals:', error);
       toast({
