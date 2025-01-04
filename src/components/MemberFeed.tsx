@@ -75,44 +75,55 @@ export function MemberFeed() {
           }
         }
 
-        // Fetch completed tasks
-        const { data: completedTasks } = await supabase
+        // Fetch completed tasks with related data
+        const { data: completedTasks, error: tasksError } = await supabase
           .from('tasks')
           .select(`
             *,
-            goals:goals(title, user_id),
-            profiles:goals(user_id(id, first_name, last_name))
+            goal:goals (
+              title,
+              user_id,
+              profile:profiles (
+                first_name,
+                last_name
+              )
+            )
           `)
           .eq('completed', true)
           .order('updated_at', { ascending: false });
 
-        // Fetch new goals
-        const { data: newGoals } = await supabase
+        if (tasksError) throw tasksError;
+
+        // Fetch new goals with user profiles
+        const { data: newGoals, error: goalsError } = await supabase
           .from('goals')
           .select(`
             *,
-            profiles:profiles!goals_user_id_fkey(first_name, last_name)
+            profile:profiles (
+              first_name,
+              last_name
+            )
           `)
           .order('created_at', { ascending: false })
           .limit(10);
 
-        // Combine and transform activities
+        if (goalsError) throw goalsError;
+
+        // Transform and combine activities
         const allActivities: FeedActivity[] = [];
 
         if (completedTasks) {
           completedTasks.forEach(task => {
-            if (task.goals && task.profiles) {
-              const goal = task.goals;
-              const profile = task.profiles;
+            if (task.goal?.profile) {
               allActivities.push({
                 id: `task-${task.id}`,
                 type: 'complete_task',
-                userId: goal.user_id,
-                userName: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
+                userId: task.goal.user_id,
+                userName: `${task.goal.profile.first_name || ''} ${task.goal.profile.last_name || ''}`.trim(),
                 timestamp: task.updated_at,
                 data: {
                   taskTitle: task.title,
-                  goalTitle: goal.title
+                  goalTitle: task.goal.title
                 }
               });
             }
@@ -121,12 +132,12 @@ export function MemberFeed() {
 
         if (newGoals) {
           newGoals.forEach(goal => {
-            if (goal.profiles) {
+            if (goal.profile) {
               allActivities.push({
                 id: `goal-${goal.id}`,
                 type: 'add_goal',
                 userId: goal.user_id,
-                userName: `${goal.profiles.first_name || ''} ${goal.profiles.last_name || ''}`.trim(),
+                userName: `${goal.profile.first_name || ''} ${goal.profile.last_name || ''}`.trim(),
                 timestamp: goal.created_at,
                 data: {
                   goalTitle: goal.title
@@ -163,14 +174,6 @@ export function MemberFeed() {
     });
   };
 
-  // Filter activities to only show public weekly reflections or the user's own private reflections
-  const filteredActivities = activities.filter(activity => {
-    if (activity.type === 'weekly_reflection') {
-      return activity.data.isPublic || activity.userId === user?.id;
-    }
-    return true;
-  });
-
   return (
     <div className="space-y-6">
       <GroupBingoBoardCard />
@@ -185,7 +188,7 @@ export function MemberFeed() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">
-            {filteredActivities.length === 0 ? (
+            {activities.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-[300px] text-center">
                 <Users className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-lg font-medium">No activities yet</p>
@@ -195,7 +198,7 @@ export function MemberFeed() {
               </div>
             ) : (
               <div className="space-y-4">
-                {filteredActivities.map((activity) => (
+                {activities.map((activity) => (
                   <Card key={activity.id} className="p-4 bg-card/50">
                     <div className="flex items-start gap-3">
                       <Avatar className="h-8 w-8">
@@ -221,11 +224,6 @@ export function MemberFeed() {
                           <span className="text-xs text-muted-foreground">
                             {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                           </span>
-                          {activity.type === 'weekly_reflection' && !activity.data.isPublic && activity.userId === user?.id && (
-                            <Badge variant="secondary" className="text-xs">
-                              Private
-                            </Badge>
-                          )}
                           <button
                             onClick={() => handleLike(activity.id)}
                             className={`flex items-center gap-1 text-xs ${
