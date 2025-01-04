@@ -37,7 +37,7 @@ export const useGroupActivities = (userId: string | undefined) => {
 
       try {
         // Fetch user's group
-        const { data: groupData } = await supabase
+        const { data: groupData, error: groupError } = await supabase
           .from('group_members')
           .select(`
             groups (
@@ -47,7 +47,9 @@ export const useGroupActivities = (userId: string | undefined) => {
           .eq('user_id', userId)
           .single();
 
-        if (groupData?.groups?.name) {
+        if (groupError) throw groupError;
+
+        if (groupData?.groups) {
           setGroupName(groupData.groups.name);
         }
 
