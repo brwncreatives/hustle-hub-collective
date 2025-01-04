@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+interface GroupMemberData {
+  groups: {
+    name: string;
+  } | null;
+}
+
 export const useGroupData = (userId: string | undefined) => {
   const [groupName, setGroupName] = useState<string>("");
 
@@ -20,12 +26,14 @@ export const useGroupData = (userId: string | undefined) => {
             )
           `)
           .eq('user_id', userId)
-          .maybeSingle();
+          .maybeSingle() as { data: GroupMemberData | null, error: any };
 
         if (groupError) throw groupError;
 
         if (groupData?.groups) {
           setGroupName(groupData.groups.name || "");
+        } else {
+          setGroupName("");
         }
       } catch (error) {
         console.error('Error fetching group data:', error);
