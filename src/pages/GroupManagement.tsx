@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Settings, User } from "lucide-react";
 import GroupInvite from "@/components/GroupInvite";
@@ -8,28 +9,110 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/components/Header";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+interface GroupMember {
+  id: string;
+  user_id: string;
+  role: string;
+  profiles: {
+    first_name: string | null;
+    last_name: string | null;
+    id: string;
+  };
+}
 
 const GroupManagement = () => {
+  const { id: groupId } = useParams();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  const [groupName, setGroupName] = useState("My Group"); // This should be fetched from your database
   const [isEditing, setIsEditing] = useState(false);
+  const [groupName, setGroupName] = useState("");
 
-  // Temporary mock data - this should be fetched from your database
-  const members = [
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Member" },
-    { id: 3, name: "Bob Wilson", email: "bob@example.com", role: "Member" },
-  ];
+  // Fetch group data
+  const { data: groupData } = useQuery({
+    queryKey: ["group", groupId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("groups")
+        .select("*")
+        .eq("id", groupId)
+        .single();
 
-  const handleSaveGroupName = () => {
-    // Here you would typically save to the database
-    setIsEditing(false);
-    toast({
-      title: "Success",
-      description: "Group name updated successfully",
-    });
+      if (error) {
+        console.error("Error fetching group:", error);
+        throw error;
+      }
+
+      setGroupName(data.name);
+      return data;
+    },
+    enabled: !!groupId,
+  });
+
+  // Fetch group members
+  const { data: members } = useQuery({
+    queryKey: ["groupMembers", groupId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("group_members")
+        .select(`
+          id,
+          user_id,
+          role,
+          profiles (
+            first_name,
+            last_name,
+            id
+          )
+        `)
+        .eq("group_id", groupId);
+
+      if (error) {
+        console.error("Error fetching members:", error);
+        throw error;
+      }
+
+      return data as GroupMember[];
+    },
+    enabled: !!groupId,
+  });
+
+  const handleSaveGroupName = async () => {
+    try {
+      const { error } = await supabase
+        .from("groups")
+        .update({ name: groupName })
+        .eq("id", groupId);
+
+      if (error) throw error;
+
+      setIsEditing(false);
+      toast({
+        title: "Success",
+        description: "Group name updated successfully",
+      });
+    } catch (error) {
+      console.error("Error updating group name:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update group name",
+      });
+    }
   };
+
+  if (!groupData || !members) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header user={user} signOut={signOut} />
+        <div className="container mx-auto px-4 py-8">
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -47,7 +130,9 @@ const GroupManagement = () => {
                       onChange={(e) => setGroupName(e.target.value)}
                       className="max-w-[200px]"
                     />
-                    <Button size="sm" onClick={handleSaveGroupName}>Save</Button>
+                    <Button size="sm" onClick={handleSaveGroupName}>
+                      Save
+                    </Button>
                   </div>
                 ) : (
                   <CardTitle className="flex items-center gap-2">
@@ -78,9 +163,11 @@ const GroupManagement = () => {
                         <User className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium">{member.name}</p>
+                        <p className="font-medium">
+                          {member.profiles.first_name} {member.profiles.last_name}
+                        </p>
                         <p className="text-sm text-muted-foreground">
-                          {member.email}
+                          {member.profiles.id}
                         </p>
                       </div>
                     </div>
@@ -94,7 +181,7 @@ const GroupManagement = () => {
           </CardContent>
         </Card>
 
-        <GroupInvite groupId="your-group-id" groupName={groupName} />
+        <GroupInvite groupId={groupId || ""} groupName={groupName} />
       </div>
     </div>
   );
