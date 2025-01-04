@@ -60,7 +60,7 @@ export const WeekCard = ({
     <Card className={`bg-card border ${isCurrentWeek ? 'ring-1 ring-primary/20' : ''}`}>
       <CardContent className="p-4">
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between border-b pb-2">
             <div className="flex items-center gap-2">
               <h4 className="font-medium">Week {weekNumber}</h4>
               {isCurrentWeek && (
