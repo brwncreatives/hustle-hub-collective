@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
@@ -7,11 +7,19 @@ import GoalCreation from "@/pages/GoalCreation";
 import GoalEdit from "@/pages/GoalEdit";
 import GroupCreation from "@/pages/GroupCreation";
 import GroupManagement from "@/pages/GroupManagement";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Router() {
+  const { user } = useAuth();
+
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
+      <Route 
+        path="/" 
+        element={
+          user ? <Navigate to="/dashboard" replace /> : <Landing />
+        } 
+      />
       <Route 
         path="/dashboard" 
         element={
