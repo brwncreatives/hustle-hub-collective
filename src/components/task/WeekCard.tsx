@@ -4,11 +4,6 @@ import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 import { TaskItem } from "../TaskItem";
 import { Task } from "@/types/task";
-import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { TaskForm } from "../TaskForm";
-import { useState } from "react";
 import { useTaskManager } from "@/hooks/useTaskManager";
 
 interface WeekCardProps {
@@ -36,21 +31,6 @@ export const WeekCard = ({
   deleteTask,
   goalId,
 }: WeekCardProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [newTask, setNewTask] = useState("");
-  const [selectedWeek, setSelectedWeek] = useState(weekNumber.toString());
-  const [isRecurring, setIsRecurring] = useState(false);
-  
-  const { addTask } = useTaskManager(goalId);
-
-  const handleAddTask = () => {
-    if (!newTask.trim()) return;
-    
-    addTask(newTask, isRecurring, selectedWeek);
-    setNewTask("");
-    setIsOpen(false);
-  };
-
   const hasCompletedTasks = tasksForWeek.some((task) => task.completed);
   const filteredTasks = showCompletedForWeek 
     ? tasksForWeek 
@@ -69,32 +49,6 @@ export const WeekCard = ({
                 </Badge>
               )}
             </div>
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add task
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add Task for Week {weekNumber}</DialogTitle>
-                </DialogHeader>
-                <TaskForm
-                  newTask={newTask}
-                  setNewTask={setNewTask}
-                  selectedWeek={selectedWeek}
-                  setSelectedWeek={setSelectedWeek}
-                  isRecurring={isRecurring}
-                  setIsRecurring={setIsRecurring}
-                  onAddTask={handleAddTask}
-                />
-              </DialogContent>
-            </Dialog>
           </div>
 
           <div className="space-y-3">
