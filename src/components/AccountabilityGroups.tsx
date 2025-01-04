@@ -3,23 +3,103 @@ import { Button } from "@/components/ui/button";
 import { Users, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface Group {
   id: string;
   name: string;
-  role: 'member';
+  role: 'member' | 'admin';
 }
 
 export const AccountabilityGroups = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [group, setGroup] = useState<Group | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock data - replace with actual API call
-    const mockGroup = { id: '1', name: 'Tech Achievers', role: 'member' as const };
-    setGroup(mockGroup);
-  }, []);
+    const fetchUserGroup = async () => {
+      if (!user) return;
+      
+      try {
+        // First check if user owns any groups
+        const { data: ownedGroups, error: ownedError } = await supabase
+          .from('groups')
+          .select('id, name')
+          .eq('owner_id', user.id)
+          .single();
+
+        if (ownedGroups) {
+          setGroup({
+            id: ownedGroups.id,
+            name: ownedGroups.name,
+            role: 'admin'
+          });
+          setLoading(false);
+          return;
+        }
+
+        // If not an owner, check if member of any groups
+        const { data: memberGroups, error: memberError } = await supabase
+          .from('group_members')
+          .select(`
+            group_id,
+            role,
+            groups (
+              id,
+              name
+            )
+          `)
+          .eq('user_id', user.id)
+          .single();
+
+        if (memberGroups) {
+          setGroup({
+            id: memberGroups.groups.id,
+            name: memberGroups.groups.name,
+            role: memberGroups.role as 'member' | 'admin'
+          });
+        }
+
+        if (memberError && memberError.code !== 'PGRST116') {
+          console.error('Error fetching member groups:', memberError);
+          toast({
+            title: "Error",
+            description: "Failed to fetch your groups. Please try again.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Error in fetchUserGroup:', error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch your groups. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserGroup();
+  }, [user, toast]);
   
+  if (loading) {
+    return (
+      <Card className="border-none bg-white/5 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center gap-2 text-primary">
+            <Users className="h-5 w-5" />
+            Loading...
+          </CardTitle>
+        </CardHeader>
+      </Card>
+    );
+  }
+
   return (
     <Card className="border-none bg-white/5 backdrop-blur-sm">
       <CardHeader>
@@ -49,7 +129,7 @@ export const AccountabilityGroups = () => {
             onClick={() => navigate(`/manage-group/${group.id}`)}
           >
             <span>{group.name}</span>
-            <span className="text-xs text-muted-foreground">Member</span>
+            <span className="text-xs text-muted-foreground capitalize">{group.role}</span>
           </Button>
         )}
       </CardContent>
