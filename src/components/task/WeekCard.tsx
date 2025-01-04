@@ -63,6 +63,11 @@ export const WeekCard = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <h4 className="font-medium">Week {weekNumber}</h4>
+              {isCurrentWeek && (
+                <Badge variant="secondary" className="text-xs">
+                  Current Week
+                </Badge>
+              )}
             </div>
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
