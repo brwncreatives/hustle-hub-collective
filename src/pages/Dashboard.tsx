@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { MotivationalQuote } from "@/components/MotivationalQuote";
 import { ActiveGoals } from "@/components/ActiveGoals";
-import { AccountabilityGroups } from "@/components/AccountabilityGroups";
+import AccountabilityGroups from "@/components/AccountabilityGroups";
 import { MemberFeed } from "@/components/MemberFeed";
 import { useAuth } from "@/contexts/AuthContext";
 
