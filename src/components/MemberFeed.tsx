@@ -41,7 +41,7 @@ export function MemberFeed() {
           setGroupName(groupData.groups.name);
         }
 
-        // First fetch user profiles
+        // First fetch user profiles with explicit fields
         const { data: profiles } = await supabase
           .from('profiles')
           .select('id, first_name, last_name');
@@ -51,7 +51,7 @@ export function MemberFeed() {
           profiles?.map(profile => [profile.id, profile]) || []
         );
 
-        // Fetch completed tasks
+        // Fetch completed tasks with explicit joins
         const { data: completedTasks, error: tasksError } = await supabase
           .from('tasks')
           .select(`
@@ -66,7 +66,7 @@ export function MemberFeed() {
 
         if (tasksError) throw tasksError;
 
-        // Fetch new goals
+        // Fetch new goals with explicit joins
         const { data: newGoals, error: goalsError } = await supabase
           .from('goals')
           .select('*, user_id')
@@ -82,8 +82,8 @@ export function MemberFeed() {
           completedTasks.forEach(task => {
             if (task.goals) {
               const userProfile = profileMap.get(task.goals.user_id);
-              const userName = userProfile 
-                ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || 'Member'
+              const userName = userProfile && (userProfile.first_name || userProfile.last_name)
+                ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim()
                 : 'Member';
               
               allActivities.push({
@@ -104,8 +104,8 @@ export function MemberFeed() {
         if (newGoals) {
           newGoals.forEach(goal => {
             const userProfile = profileMap.get(goal.user_id);
-            const userName = userProfile 
-              ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || 'Member'
+            const userName = userProfile && (userProfile.first_name || userProfile.last_name)
+              ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim()
               : 'Member';
             
             allActivities.push({
@@ -128,6 +128,7 @@ export function MemberFeed() {
 
         setActivities(allActivities);
         console.log("Feed activities:", allActivities);
+        console.log("User profiles:", profiles);
       } catch (error) {
         console.error('Error fetching feed data:', error);
       }

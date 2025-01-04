@@ -58,41 +58,31 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (!memberIds) return;
 
-      // First fetch goals
+      // Fetch goals with user profiles in a single query
       const { data: goals, error: goalsError } = await supabase
         .from('goals')
-        .select('id, title, status, user_id')
+        .select(`
+          id,
+          title,
+          status,
+          user_id,
+          user:profiles(
+            first_name,
+            last_name
+          )
+        `)
         .in('user_id', memberIds.map(member => member.user_id));
 
       if (goalsError) throw goalsError;
 
-      // Then fetch profiles separately
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name')
-        .in('id', goals.map(goal => goal.user_id));
-
-      if (profilesError) throw profilesError;
-
-      // Create a map of profiles for easier lookup
-      const profileMap = new Map(
-        profiles?.map(profile => [profile.id, profile]) || []
-      );
-
-      // Transform the goals data to include profile information
-      const transformedGoals: GroupBoardGoal[] = goals.map(goal => {
-        const userProfile = profileMap.get(goal.user_id);
-        return {
-          id: goal.id,
-          title: goal.title,
-          status: goal.status,
-          user_id: goal.user_id,
-          user: userProfile ? {
-            first_name: userProfile.first_name,
-            last_name: userProfile.last_name
-          } : null
-        };
-      });
+      // Transform the goals data
+      const transformedGoals: GroupBoardGoal[] = goals.map(goal => ({
+        id: goal.id,
+        title: goal.title,
+        status: goal.status,
+        user_id: goal.user_id,
+        user: goal.user
+      }));
 
       console.log('Fetched goals with profiles:', transformedGoals);
       setGroupGoals(transformedGoals);
