@@ -66,7 +66,7 @@ export const AccountabilityGroups = () => {
           .single();
 
         if (memberGroups) {
-          const groupData = memberGroups as GroupMemberResponse;
+          const groupData = memberGroups as unknown as GroupMemberResponse;
           setGroup({
             id: groupData.groups.id,
             name: groupData.groups.name,
