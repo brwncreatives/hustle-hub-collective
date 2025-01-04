@@ -1,61 +1,19 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { FeedActivity } from "@/components/member-feed/types";
-
-interface Profile {
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-}
-
-interface GroupData {
-  groups: {
-    name: string;
-  } | null;
-}
-
-const formatUserName = (profile: Profile | undefined) => {
-  if (!profile) return 'Member';
-  
-  const firstName = profile.first_name?.trim();
-  const lastName = profile.last_name?.trim();
-  
-  // If both names exist and are not empty, use them
-  if (firstName && lastName) {
-    return `${firstName} ${lastName}`;
-  }
-  
-  // Return whichever name exists and is not empty, or 'Member' if neither exists
-  return firstName || lastName || 'Member';
-};
+import { FeedActivity, Profile } from "@/types/activity";
+import { formatUserName } from "@/utils/profileUtils";
+import { useGroupData } from "./useGroupData";
 
 export const useGroupActivities = (userId: string | undefined) => {
   const [activities, setActivities] = useState<FeedActivity[]>([]);
-  const [groupName, setGroupName] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const { groupName } = useGroupData(userId);
 
   useEffect(() => {
-    const fetchGroupAndActivities = async () => {
+    const fetchActivities = async () => {
       if (!userId) return;
 
       try {
-        // Fetch user's group
-        const { data: groupData, error: groupError } = await supabase
-          .from('group_members')
-          .select(`
-            groups (
-              name
-            )
-          `)
-          .eq('user_id', userId)
-          .single();
-
-        if (groupError) throw groupError;
-
-        if (groupData?.groups) {
-          setGroupName(groupData.groups.name || "");
-        }
-
         // Fetch all profiles first
         const { data: profiles } = await supabase
           .from('profiles')
@@ -148,7 +106,7 @@ export const useGroupActivities = (userId: string | undefined) => {
       }
     };
 
-    fetchGroupAndActivities();
+    fetchActivities();
   }, [userId]);
 
   return { activities, groupName, loading };
