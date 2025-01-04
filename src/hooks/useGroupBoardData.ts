@@ -50,6 +50,7 @@ export const useGroupBoardData = (userId: string | undefined) => {
     if (!userId || !groupId) return;
 
     try {
+      // First get member IDs
       const { data: memberIds } = await supabase
         .from('group_members')
         .select('user_id')
@@ -57,33 +58,36 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (!memberIds) return;
 
+      // Then fetch goals and user data separately
       const { data: goals, error: goalsError } = await supabase
         .from('goals')
-        .select(`
-          id,
-          title,
-          status,
-          user_id,
-          user:profiles!inner(
-            first_name,
-            last_name
-          )
-        `)
+        .select('id, title, status, user_id')
         .in('user_id', memberIds.map(member => member.user_id));
 
       if (goalsError) throw goalsError;
 
-      // Transform the data to match our type
-      const transformedGoals: GroupBoardGoal[] = goals.map(goal => ({
-        id: goal.id,
-        title: goal.title,
-        status: goal.status,
-        user_id: goal.user_id,
-        user: {
-          first_name: goal.user?.first_name || null,
-          last_name: goal.user?.last_name || null
-        }
-      }));
+      // Fetch profiles for the users
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .in('id', goals.map(goal => goal.user_id));
+
+      if (profilesError) throw profilesError;
+
+      // Map profiles to goals
+      const transformedGoals: GroupBoardGoal[] = goals.map(goal => {
+        const userProfile = profiles.find(profile => profile.id === goal.user_id);
+        return {
+          id: goal.id,
+          title: goal.title,
+          status: goal.status,
+          user_id: goal.user_id,
+          user: userProfile ? {
+            first_name: userProfile.first_name,
+            last_name: userProfile.last_name
+          } : null
+        };
+      });
 
       console.log('Fetched goals with profiles:', transformedGoals);
       setGroupGoals(transformedGoals);
