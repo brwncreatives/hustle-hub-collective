@@ -50,46 +50,29 @@ export const useGroupBoardData = (userId: string | undefined) => {
     if (!userId || !groupId) return;
 
     try {
-      // First get group members
-      const { data: groupMembers, error: membersError } = await supabase
-        .from('group_members')
-        .select('user_id')
-        .eq('group_id', groupId);
-
-      if (membersError) throw membersError;
-
-      const memberIds = groupMembers.map(member => member.user_id);
-      
-      // Get goals and user profiles in separate queries
       const { data: goals, error: goalsError } = await supabase
         .from('goals')
-        .select('id, title, status, user_id')
-        .in('user_id', memberIds);
+        .select(`
+          id,
+          title,
+          status,
+          user_id,
+          user:profiles(
+            first_name,
+            last_name
+          )
+        `)
+        .in('user_id', (
+          await supabase
+            .from('group_members')
+            .select('user_id')
+            .eq('group_id', groupId)
+        ).data?.map(member => member.user_id) || []);
 
       if (goalsError) throw goalsError;
 
-      // Get profiles for the member IDs
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name')
-        .in('id', memberIds);
-
-      if (profilesError) throw profilesError;
-
-      // Map profiles to a dictionary for easier lookup
-      const profileMap = profiles.reduce((acc, profile) => {
-        acc[profile.id] = profile;
-        return acc;
-      }, {} as Record<string, any>);
-
-      // Combine goals with profile information
-      const goalsWithProfiles = goals.map(goal => ({
-        ...goal,
-        user: profileMap[goal.user_id] || { first_name: null, last_name: null }
-      }));
-
-      setGroupGoals(goalsWithProfiles);
-      console.log('Goals with profiles:', goalsWithProfiles);
+      console.log('Fetched goals with profiles:', goals);
+      setGroupGoals(goals);
     } catch (error) {
       console.error('Error in fetchGroupGoals:', error);
       toast({

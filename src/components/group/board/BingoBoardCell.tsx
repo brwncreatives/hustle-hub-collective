@@ -38,7 +38,7 @@ export const BingoBoardCell = ({ goal, index, isCompletedLine }: BingoBoardCellP
     const lastName = goal.user?.last_name;
     
     if (!firstName && !lastName) {
-      return 'Anonymous Member';
+      return 'Member';
     }
     
     return [firstName, lastName].filter(Boolean).join(' ');
