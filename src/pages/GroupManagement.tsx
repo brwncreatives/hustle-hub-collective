@@ -61,7 +61,7 @@ const GroupManagement = () => {
           id,
           user_id,
           role,
-          profiles (
+          profiles:profiles (
             first_name,
             last_name,
             id
