@@ -47,35 +47,35 @@ const getActivityMessage = (activity: FeedActivity) => {
 
 export const FeedActivityItem = ({ activity, isLiked, onLike }: FeedActivityProps) => {
   return (
-    <Card key={activity.id} className="p-4 bg-card/50">
+    <Card key={activity.id} className="p-4 bg-black/20 border-primary/10">
       <div className="flex items-start gap-3">
-        <Avatar className="h-8 w-8">
+        <Avatar className="h-8 w-8 ring-1 ring-[#9b87f5]/30">
           <AvatarImage src={activity.userAvatar} />
           <AvatarFallback>{activity.userName[0]}</AvatarFallback>
         </Avatar>
         <div className="flex-1 space-y-1">
           <div className="flex items-center gap-2">
-            <span className="font-medium">{activity.userName}</span>
-            <span className="text-muted-foreground text-sm">
+            <span className="font-medium text-white">{activity.userName}</span>
+            <span className="text-white/60 text-sm">
               {getActivityMessage(activity)}
             </span>
           </div>
           {activity.type === 'weekly_reflection' && activity.data.reflection && (
-            <div className="mt-2 p-3 rounded-lg bg-muted/50">
-              <p className="text-sm italic">{activity.data.reflection}</p>
+            <div className="mt-2 p-3 rounded-lg bg-white/5">
+              <p className="text-sm italic text-white/80">{activity.data.reflection}</p>
             </div>
           )}
           <div className="flex items-center gap-2 mt-1">
-            <Badge variant="outline" className="text-xs">
+            <Badge variant="outline" className="text-xs bg-[#9b87f5]/10 border-[#9b87f5]/20 text-[#9b87f5]">
               {getActivityIcon(activity.type)}
             </Badge>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-white/40">
               {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
             </span>
             <button
               onClick={() => onLike(activity.id)}
               className={`flex items-center gap-1 text-xs ${
-                isLiked ? 'text-pink-500' : 'text-muted-foreground'
+                isLiked ? 'text-pink-500' : 'text-white/40'
               } hover:text-pink-500 transition-colors`}
             >
               <Heart className="h-3.5 w-3.5" fill={isLiked ? "currentColor" : "none"} />

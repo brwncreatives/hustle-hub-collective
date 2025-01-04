@@ -29,13 +29,13 @@ export function MemberFeed() {
     <div className="space-y-6">
       <GroupBingoBoardCard />
       
-      <Card className="w-full">
+      <Card className="w-full border-none bg-white/5 backdrop-blur-sm">
         <FeedHeader groupName={groupName} />
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">
             {loading ? (
               <div className="flex items-center justify-center h-[300px]">
-                <p className="text-muted-foreground">Loading activities...</p>
+                <p className="text-white/60">Loading activities...</p>
               </div>
             ) : activities.length === 0 ? (
               <EmptyFeed />
