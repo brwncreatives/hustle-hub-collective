@@ -3,6 +3,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { GroupBoardGoal } from "@/components/group/types/board";
 
+interface UserProfile {
+  profile: {
+    first_name: string | null;
+    last_name: string | null;
+  };
+}
+
+interface GoalWithProfile {
+  id: string;
+  title: string;
+  status: string;
+  user_id: string;
+  user: UserProfile;
+}
+
 export const useGroupBoardData = (userId: string | undefined) => {
   const [groupGoals, setGroupGoals] = useState<GroupBoardGoal[]>([]);
   const [groupId, setGroupId] = useState<string | null>(null);
@@ -78,7 +93,7 @@ export const useGroupBoardData = (userId: string | undefined) => {
       if (goalsError) throw goalsError;
 
       // Transform the goals data
-      const transformedGoals: GroupBoardGoal[] = goals.map(goal => ({
+      const transformedGoals: GroupBoardGoal[] = (goals as GoalWithProfile[]).map(goal => ({
         id: goal.id,
         title: goal.title,
         status: goal.status,
