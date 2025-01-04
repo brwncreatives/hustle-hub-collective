@@ -8,3 +8,7 @@ export interface GroupBoardGoal {
     last_name: string | null;
   };
 }
+
+export interface CompletedLine {
+  indices: number[];
+}
