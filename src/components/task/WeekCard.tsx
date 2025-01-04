@@ -77,7 +77,7 @@ export const WeekCard = ({
                   className="flex items-center gap-2"
                 >
                   <Plus className="h-4 w-4" />
-                  Add a task
+                  Add task
                 </Button>
               </DialogTrigger>
               <DialogContent>
