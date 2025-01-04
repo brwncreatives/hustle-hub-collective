@@ -58,7 +58,7 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (!memberIds) return;
 
-      // Fetch goals with profiles data
+      // Fetch goals with user profiles
       const { data: goals, error: goalsError } = await supabase
         .from('goals')
         .select(`
@@ -66,9 +66,11 @@ export const useGroupBoardData = (userId: string | undefined) => {
           title,
           status,
           user_id,
-          profiles!goals_user_id_fkey (
-            first_name,
-            last_name
+          user:user_id (
+            profile:profiles (
+              first_name,
+              last_name
+            )
           )
         `)
         .in('user_id', memberIds.map(member => member.user_id));
@@ -82,8 +84,8 @@ export const useGroupBoardData = (userId: string | undefined) => {
         status: goal.status,
         user_id: goal.user_id,
         user: {
-          first_name: goal.profiles?.first_name || null,
-          last_name: goal.profiles?.last_name || null
+          first_name: goal.user?.profile?.first_name || null,
+          last_name: goal.user?.profile?.last_name || null
         }
       }));
 
