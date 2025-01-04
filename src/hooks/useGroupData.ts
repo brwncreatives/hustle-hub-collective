@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { GroupData } from "@/types/activity";
 
 export const useGroupData = (userId: string | undefined) => {
   const [groupName, setGroupName] = useState<string>("");
 
   useEffect(() => {
     const fetchGroupData = async () => {
-      if (!userId) return;
+      if (!userId) {
+        setGroupName("");
+        return;
+      }
 
       try {
         const { data: groupData, error: groupError } = await supabase
@@ -18,7 +20,7 @@ export const useGroupData = (userId: string | undefined) => {
             )
           `)
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
 
         if (groupError) throw groupError;
 
@@ -27,6 +29,7 @@ export const useGroupData = (userId: string | undefined) => {
         }
       } catch (error) {
         console.error('Error fetching group data:', error);
+        setGroupName("");
       }
     };
 

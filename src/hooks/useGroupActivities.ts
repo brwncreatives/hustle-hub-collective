@@ -11,7 +11,11 @@ export const useGroupActivities = (userId: string | undefined) => {
 
   useEffect(() => {
     const fetchActivities = async () => {
-      if (!userId) return;
+      if (!userId) {
+        setActivities([]);
+        setLoading(false);
+        return;
+      }
 
       try {
         // Fetch all profiles first
@@ -101,6 +105,7 @@ export const useGroupActivities = (userId: string | undefined) => {
         console.log("Feed activities:", allActivities);
       } catch (error) {
         console.error('Error fetching feed data:', error);
+        setActivities([]);
       } finally {
         setLoading(false);
       }
