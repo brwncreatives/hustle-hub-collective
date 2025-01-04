@@ -1,6 +1,8 @@
 declare module 'next-themes/dist/types' {
+  type Attribute = 'class' | 'data-theme' | 'data-mode'
+  
   export interface ThemeProviderProps {
-    attribute?: string
+    attribute?: Attribute | Attribute[]
     defaultTheme?: string
     storageKey?: string
     enableSystem?: boolean
