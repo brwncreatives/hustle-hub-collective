@@ -8,22 +8,19 @@ interface Profile {
   last_name: string | null;
 }
 
-interface GroupData {
-  groups: {
-    name: string;
-  };
-}
-
 const formatUserName = (profile: Profile | undefined) => {
   if (!profile) return 'Member';
   
-  // If both names exist, use them
-  if (profile.first_name && profile.last_name) {
-    return `${profile.first_name} ${profile.last_name}`;
+  const firstName = profile.first_name?.trim();
+  const lastName = profile.last_name?.trim();
+  
+  // If both names exist and are not empty, use them
+  if (firstName && lastName) {
+    return `${firstName} ${lastName}`;
   }
   
-  // Return whichever name exists, or 'Member' if neither does
-  return profile.first_name || profile.last_name || 'Member';
+  // Return whichever name exists and is not empty, or 'Member' if neither exists
+  return firstName || lastName || 'Member';
 };
 
 export const useGroupActivities = (userId: string | undefined) => {
