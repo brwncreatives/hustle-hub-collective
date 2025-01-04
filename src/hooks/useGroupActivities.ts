@@ -47,7 +47,7 @@ export const useGroupActivities = (userId: string | undefined) => {
         if (groupError) throw groupError;
 
         if (groupData?.groups) {
-          setGroupName(groupData.groups.name);
+          setGroupName(groupData.groups.name || "");
         }
 
         // Fetch all profiles first
