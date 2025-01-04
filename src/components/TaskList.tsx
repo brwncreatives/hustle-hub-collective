@@ -55,10 +55,6 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
   const weeksToShow = Object.keys(groupedTasks)
     .sort((a, b) => {
-      // Always put current week first
-      if (parseInt(a.replace('week', '')) === currentWeek) return -1;
-      if (parseInt(b.replace('week', '')) === currentWeek) return 1;
-      // Then sort the rest normally
       const weekA = parseInt(a.replace('week', ''));
       const weekB = parseInt(b.replace('week', ''));
       return weekA - weekB;
@@ -103,28 +99,30 @@ export const TaskList = ({ goalId }: TaskListProps) => {
             </Button>
           </CollapsibleTrigger>
         </div>
-        <div className="space-y-4 pt-4">
-          {weeksToShow.map((weekKey) => {
-            const weekNumber = parseInt(weekKey.replace('week', ''));
-            const isCurrentWeek = weekNumber === currentWeek;
-            
-            return (
-              <WeekCard
-                key={weekKey}
-                weekKey={weekKey}
-                weekNumber={weekNumber}
-                isCurrentWeek={isCurrentWeek}
-                tasksForWeek={groupedTasks[weekKey]}
-                showCompletedForWeek={completedTasksVisibility[weekKey]}
-                toggleCompletedForWeek={toggleCompletedForWeek}
-                toggleTaskCompletion={toggleTaskCompletion}
-                editTask={editTask}
-                deleteTask={deleteTask}
-                goalId={goalId}
-              />
-            );
-          })}
-        </div>
+        <CollapsibleContent>
+          <div className="space-y-4 pt-4">
+            {weeksToShow.map((weekKey) => {
+              const weekNumber = parseInt(weekKey.replace('week', ''));
+              const isCurrentWeek = weekNumber === currentWeek;
+              
+              return (
+                <WeekCard
+                  key={weekKey}
+                  weekKey={weekKey}
+                  weekNumber={weekNumber}
+                  isCurrentWeek={isCurrentWeek}
+                  tasksForWeek={groupedTasks[weekKey]}
+                  showCompletedForWeek={completedTasksVisibility[weekKey]}
+                  toggleCompletedForWeek={toggleCompletedForWeek}
+                  toggleTaskCompletion={toggleTaskCompletion}
+                  editTask={editTask}
+                  deleteTask={deleteTask}
+                  goalId={goalId}
+                />
+              );
+            })}
+          </div>
+        </CollapsibleContent>
       </Collapsible>
     </div>
   );
