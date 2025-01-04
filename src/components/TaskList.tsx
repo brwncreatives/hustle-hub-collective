@@ -97,26 +97,16 @@ export const TaskList = ({ goalId }: TaskListProps) => {
 
       {/* Other Weeks - Collapsible */}
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="flex items-center justify-between pb-2 border-b">
-          <Label className="text-sm text-muted-foreground">
-            Other weeks
-          </Label>
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" className="flex items-center gap-1">
-              {isOpen ? (
-                <>
-                  <ChevronUp className="h-4 w-4" />
-                  Collapse weeks
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="h-4 w-4" />
-                  Show all weeks
-                </>
-              )}
-            </Button>
-          </CollapsibleTrigger>
-        </div>
+        <CollapsibleTrigger asChild>
+          <Button variant="ghost" size="sm" className="flex items-center gap-1 w-full justify-between">
+            <span>Other weeks</span>
+            {isOpen ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+        </CollapsibleTrigger>
         <CollapsibleContent>
           <div className="space-y-4 pt-4">
             {otherWeeks.map((weekKey) => {
