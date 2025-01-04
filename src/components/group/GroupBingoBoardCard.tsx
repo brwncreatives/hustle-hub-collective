@@ -1,145 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { BingoCell } from "./BingoCell";
-import { GroupGoal } from "./types/bingo";
+import { BingoBoardCell } from "./board/BingoBoardCell";
+import { useGroupBoardData } from "@/hooks/useGroupBoardData";
+import { CompletedLine } from "./types/board";
 
 export const GroupBingoBoardCard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [groupGoals, setGroupGoals] = useState<GroupGoal[]>([]);
-  const [completedLines, setCompletedLines] = useState<number[][]>([]);
-  const [groupId, setGroupId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUserGroup = async () => {
-      if (!user) return;
-
-      try {
-        const { data: groupMember, error: groupError } = await supabase
-          .from('group_members')
-          .select('group_id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (groupError) {
-          console.error('Error fetching user group:', groupError);
-          toast({
-            title: "Error",
-            description: "Could not fetch your group information. Please try again later.",
-            variant: "destructive"
-          });
-          return;
-        }
-
-        if (groupMember) {
-          console.log('Found group ID:', groupMember.group_id);
-          setGroupId(groupMember.group_id);
-        } else {
-          console.log('No group found for user');
-          toast({
-            title: "No Group Found",
-            description: "You are not currently a member of any group. Join or create a group to see the bingo board.",
-          });
-        }
-      } catch (error) {
-        console.error('Error in fetchUserGroup:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserGroup();
-  }, [user, toast]);
-
-  useEffect(() => {
-    const fetchGroupGoals = async () => {
-      if (!user || !groupId) return;
-
-      console.log('Fetching goals for group:', groupId);
-
-      try {
-        // First get group members
-        const { data: groupMembers, error: membersError } = await supabase
-          .from('group_members')
-          .select('user_id')
-          .eq('group_id', groupId);
-
-        if (membersError) {
-          console.error('Error fetching group members:', membersError);
-          return;
-        }
-
-        const memberIds = groupMembers.map(member => member.user_id);
-        console.log('Group member IDs:', memberIds);
-
-        // Get goals and profiles in a single query using joins
-        const { data: goalsWithProfiles, error: goalsError } = await supabase
-          .from('goals')
-          .select(`
-            id,
-            title,
-            status,
-            user_id,
-            profiles!inner (
-              first_name,
-              last_name
-            )
-          `)
-          .in('user_id', memberIds);
-
-        if (goalsError) {
-          console.error('Error fetching goals:', goalsError);
-          return;
-        }
-
-        // Format the goals with profile information
-        const formattedGoals: GroupGoal[] = goalsWithProfiles.map(goal => ({
-          id: goal.id,
-          memberId: goal.user_id,
-          memberName: `${goal.profiles.first_name || ''} ${goal.profiles.last_name || ''}`.trim(),
-          title: goal.title,
-          progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
-          status: goal.status
-        }));
-
-        console.log('Formatted group goals:', formattedGoals);
-        setGroupGoals(formattedGoals);
-      } catch (error) {
-        console.error('Error in fetchGroupGoals:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch group goals. Please try again later.",
-          variant: "destructive"
-        });
-      }
-    };
-
-    fetchGroupGoals();
-
-    const goalsSubscription = supabase
-      .channel('group_goals_channel')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'goals',
-        },
-        () => {
-          fetchGroupGoals();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      goalsSubscription.unsubscribe();
-    };
-  }, [user, groupId, toast]);
+  const [completedLines, setCompletedLines] = useState<CompletedLine[]>([]);
+  const { groupGoals, groupId, loading } = useGroupBoardData(user?.id);
 
   const checkForBingoLines = () => {
     if (groupGoals.length === 0) return [];
@@ -176,20 +48,20 @@ export const GroupBingoBoardCard = () => {
 
   const isLineComplete = (start: number, end: number, step = 1) => {
     const goals = groupGoals.slice(start, end);
-    return goals.length > 0 && goals.every((goal) => goal?.progress >= 100);
+    return goals.length > 0 && goals.every((goal) => goal?.status === 'completed');
   };
 
   useEffect(() => {
     if (groupGoals.length > 0) {
       const newLines = checkForBingoLines().filter(
         line => !completedLines.some(existing => 
-          existing.length === line.length && 
-          existing.every(num => line.includes(num))
+          existing.indices?.length === line.length && 
+          existing.indices?.every(num => line.includes(num))
         )
       );
 
       if (newLines.length > 0) {
-        setCompletedLines(prev => [...prev, ...newLines]);
+        setCompletedLines(prev => [...prev, ...newLines.map(indices => ({ indices }))]);
         toast({
           title: "BINGO! 🎉",
           description: "A team line of goals has been completed! Great teamwork!",
@@ -220,11 +92,11 @@ export const GroupBingoBoardCard = () => {
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
             {Array.from({ length: 9 }).map((_, index) => (
-              <BingoCell
+              <BingoBoardCell
                 key={index}
                 goal={groupGoals[index]}
                 index={index}
-                isCompletedLine={completedLines.some(line => line.includes(index))}
+                isCompletedLine={completedLines.some(line => line.indices.includes(index))}
               />
             ))}
           </div>
