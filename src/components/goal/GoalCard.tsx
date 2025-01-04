@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { TaskList } from "../TaskList";
 import { TaskSection } from "./TaskSection";
 import { Badge } from "../ui/badge";
-import { Progress } from "../ui/progress";
 import { GoalStatusBadge } from "./GoalStatusBadge";
 
 interface GoalCardProps {
@@ -65,13 +64,6 @@ export const GoalCard = ({ goal, onStatusChange }: GoalCardProps) => {
                   {category}
                 </Badge>
               ))}
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Progress</span>
-                <span className="font-medium">{goal.progress}%</span>
-              </div>
-              <Progress value={goal.progress} className="h-2" />
             </div>
           </div>
         </div>
