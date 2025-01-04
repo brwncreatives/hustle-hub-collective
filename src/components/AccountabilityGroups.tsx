@@ -1,148 +1,86 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Users, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-
-interface Group {
-  id: string;
-  name: string;
-  role: 'member' | 'admin';
-}
 
 interface GroupMemberResponse {
   group_id: string;
-  role: 'member' | 'admin';
+  role: string;
   groups: {
     id: string;
     name: string;
   };
 }
 
-export const AccountabilityGroups = () => {
-  const navigate = useNavigate();
+const AccountabilityGroups = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
-  const [group, setGroup] = useState<Group | null>(null);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUserGroup = async () => {
-      if (!user) return;
-      
-      try {
-        // First check if user owns any groups
-        const { data: ownedGroups, error: ownedError } = await supabase
-          .from('groups')
-          .select('id, name')
-          .eq('owner_id', user.id)
-          .single();
+  const { data: memberGroups, isLoading } = useQuery({
+    queryKey: ["memberGroups", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("group_members")
+        .select(`
+          group_id,
+          role,
+          groups:groups (
+            id,
+            name
+          )
+        `)
+        .eq("user_id", user?.id);
 
-        if (ownedGroups) {
-          setGroup({
-            id: ownedGroups.id,
-            name: ownedGroups.name,
-            role: 'admin'
-          });
-          setLoading(false);
-          return;
-        }
-
-        // If not an owner, check if member of any groups
-        const { data: memberGroups, error: memberError } = await supabase
-          .from('group_members')
-          .select(`
-            group_id,
-            role,
-            groups (
-              id,
-              name
-            )
-          `)
-          .eq('user_id', user.id)
-          .single();
-
-        if (memberGroups) {
-          const groupData = memberGroups as unknown as GroupMemberResponse;
-          setGroup({
-            id: groupData.groups.id,
-            name: groupData.groups.name,
-            role: groupData.role
-          });
-        }
-
-        if (memberError && memberError.code !== 'PGRST116') {
-          console.error('Error fetching member groups:', memberError);
-          toast({
-            title: "Error",
-            description: "Failed to fetch your groups. Please try again.",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        console.error('Error in fetchUserGroup:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch your groups. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
+      if (error) {
+        throw error;
       }
-    };
 
-    fetchUserGroup();
-  }, [user, toast]);
-  
-  if (loading) {
-    return (
-      <Card className="border-none bg-white/5 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2 text-primary">
-            <Users className="h-5 w-5" />
-            Loading...
-          </CardTitle>
-        </CardHeader>
-      </Card>
-    );
+      return data as unknown as GroupMemberResponse[];
+    },
+    enabled: !!user?.id,
+  });
+
+  const handleGroupClick = (groupId: string) => {
+    navigate(`/manage-group/${groupId}`);
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
-    <Card className="border-none bg-white/5 backdrop-blur-sm">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2 text-primary">
-          <Users className="h-5 w-5" />
-          Your Group
+        <CardTitle className="flex items-center gap-2">
+          <Users className="h-6 w-6" />
+          Your Accountability Groups
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {!group ? (
-          <div className="text-center space-y-4 py-6">
-            <p className="text-muted-foreground">
-              Join an accountability group to stay motivated and track progress together.
-            </p>
-            <Button
-              className="w-full sm:w-auto"
-              onClick={() => navigate('/join-group')}
-            >
-              <UserPlus className="mr-2 h-4 w-4" />
-              Join a Group
-            </Button>
-          </div>
-        ) : (
-          <Button
-            className="w-full justify-between"
-            variant="outline"
-            onClick={() => navigate(`/manage-group/${group.id}`)}
+        {memberGroups?.map((memberGroup) => (
+          <div
+            key={memberGroup.group_id}
+            className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent cursor-pointer"
+            onClick={() => handleGroupClick(memberGroup.groups.id)}
           >
-            <span>{group.name}</span>
-            <span className="text-xs text-muted-foreground capitalize">{group.role}</span>
-          </Button>
-        )}
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-medium">{memberGroup.groups.name}</p>
+                <p className="text-sm text-muted-foreground">
+                  Role: {memberGroup.role}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
       </CardContent>
     </Card>
   );
 };
+
+export default AccountabilityGroups;
