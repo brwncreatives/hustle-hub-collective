@@ -21,14 +21,14 @@ export function MemberFeed() {
 
       try {
         // Fetch user's group
-        const { data: groupMember } = await supabase
+        const { data: groupData } = await supabase
           .from('group_members')
           .select('groups(name)')
           .eq('user_id', user.id)
           .single();
 
-        if (groupMember?.groups) {
-          setGroupName(groupMember.groups.name);
+        if (groupData?.groups?.name) {
+          setGroupName(groupData.groups.name);
         }
 
         // Fetch completed tasks with related data
@@ -39,7 +39,7 @@ export function MemberFeed() {
             goals (
               title,
               user_id,
-              profiles!goals_user_id_fkey (
+              profiles (
                 first_name,
                 last_name
               )
@@ -55,7 +55,7 @@ export function MemberFeed() {
           .from('goals')
           .select(`
             *,
-            profiles!goals_user_id_fkey (
+            profiles (
               first_name,
               last_name
             )
