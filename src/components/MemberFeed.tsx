@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Heart } from "lucide-react";
@@ -9,6 +9,7 @@ import { GroupBingoBoardCard } from "./group/GroupBingoBoardCard";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 
 const getActivityIcon = (type: FeedActivity['type']) => {
   switch (type) {
@@ -47,8 +48,108 @@ const getActivityMessage = (activity: FeedActivity) => {
 export function MemberFeed() {
   const { user } = useAuth();
   const [likedActivities, setLikedActivities] = useState<Set<string>>(new Set());
-  const groupName = "Tech Achievers";
+  const [groupName, setGroupName] = useState<string>("");
   const [activities, setActivities] = useState<FeedActivity[]>([]);
+
+  useEffect(() => {
+    const fetchGroupAndActivities = async () => {
+      if (!user) return;
+
+      try {
+        // Fetch user's group
+        const { data: groupMember } = await supabase
+          .from('group_members')
+          .select('group_id')
+          .eq('user_id', user.id)
+          .single();
+
+        if (groupMember) {
+          const { data: group } = await supabase
+            .from('groups')
+            .select('name')
+            .eq('id', groupMember.group_id)
+            .single();
+
+          if (group) {
+            setGroupName(group.name);
+          }
+        }
+
+        // Fetch completed tasks
+        const { data: completedTasks } = await supabase
+          .from('tasks')
+          .select(`
+            *,
+            goals:goals(title, user_id),
+            profiles:goals(user_id(id, first_name, last_name))
+          `)
+          .eq('completed', true)
+          .order('updated_at', { ascending: false });
+
+        // Fetch new goals
+        const { data: newGoals } = await supabase
+          .from('goals')
+          .select(`
+            *,
+            profiles:profiles!goals_user_id_fkey(first_name, last_name)
+          `)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        // Combine and transform activities
+        const allActivities: FeedActivity[] = [];
+
+        if (completedTasks) {
+          completedTasks.forEach(task => {
+            if (task.goals && task.profiles) {
+              const goal = task.goals;
+              const profile = task.profiles;
+              allActivities.push({
+                id: `task-${task.id}`,
+                type: 'complete_task',
+                userId: goal.user_id,
+                userName: `${profile.first_name || ''} ${profile.last_name || ''}`.trim(),
+                timestamp: task.updated_at,
+                data: {
+                  taskTitle: task.title,
+                  goalTitle: goal.title
+                }
+              });
+            }
+          });
+        }
+
+        if (newGoals) {
+          newGoals.forEach(goal => {
+            if (goal.profiles) {
+              allActivities.push({
+                id: `goal-${goal.id}`,
+                type: 'add_goal',
+                userId: goal.user_id,
+                userName: `${goal.profiles.first_name || ''} ${goal.profiles.last_name || ''}`.trim(),
+                timestamp: goal.created_at,
+                data: {
+                  goalTitle: goal.title
+                }
+              });
+            }
+          });
+        }
+
+        // Sort activities by timestamp
+        allActivities.sort((a, b) => 
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        );
+
+        setActivities(allActivities);
+        console.log("Feed activities:", allActivities);
+      } catch (error) {
+        console.error('Error fetching feed data:', error);
+      }
+    };
+
+    fetchGroupAndActivities();
+  }, [user]);
 
   const handleLike = (activityId: string) => {
     setLikedActivities(prev => {
@@ -78,7 +179,7 @@ export function MemberFeed() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            {groupName} Activity Feed
+            {groupName || "Group"} Activity Feed
           </CardTitle>
           <NotificationsPopover />
         </CardHeader>
@@ -118,7 +219,7 @@ export function MemberFeed() {
                             {getActivityIcon(activity.type)}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(activity.timestamp))}
+                            {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
                           </span>
                           {activity.type === 'weekly_reflection' && !activity.data.isPublic && activity.userId === user?.id && (
                             <Badge variant="secondary" className="text-xs">
