@@ -3,17 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { GroupBoardGoal } from "@/components/group/types/board";
 
-interface UserProfile {
-  first_name: string | null;
-  last_name: string | null;
-}
-
 interface GoalWithProfile {
   id: string;
   title: string;
   status: string;
   user_id: string;
-  profiles: UserProfile;
+  profiles: {
+    first_name: string | null;
+    last_name: string | null;
+  };
 }
 
 export const useGroupBoardData = (userId: string | undefined) => {
@@ -88,7 +86,7 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (goalsError) throw goalsError;
 
-      // Transform the goals data
+      // Transform the goals data to match GroupBoardGoal structure
       const transformedGoals: GroupBoardGoal[] = (goals as GoalWithProfile[]).map(goal => ({
         id: goal.id,
         title: goal.title,
