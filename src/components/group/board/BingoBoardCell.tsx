@@ -1,4 +1,3 @@
-import { Progress } from "@/components/ui/progress";
 import { Trophy, Target, Star } from "lucide-react";
 import { GroupBoardGoal } from "../types/board";
 
@@ -61,12 +60,8 @@ export const BingoBoardCell = ({ goal, index, isCompletedLine }: BingoBoardCellP
           <div className="text-sm font-medium mb-1 line-clamp-2">
             {goal.title}
           </div>
-          <div className="text-xs text-muted-foreground mb-2">
+          <div className="text-xs text-muted-foreground">
             {getMemberName(goal)}
-          </div>
-          <Progress value={goal.status === 'completed' ? 100 : goal.status === 'in progress' ? 50 : 0} className="h-2 w-full" />
-          <div className="text-xs text-muted-foreground mt-1">
-            {goal.status === 'completed' ? '100' : goal.status === 'in progress' ? '50' : '0'}%
           </div>
         </>
       ) : (
