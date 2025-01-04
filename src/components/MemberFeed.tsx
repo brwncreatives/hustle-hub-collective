@@ -9,6 +9,12 @@ import { FeedHeader } from "./member-feed/FeedHeader";
 import { EmptyFeed } from "./member-feed/EmptyFeed";
 import { FeedActivityItem } from "./member-feed/FeedActivity";
 
+interface GroupData {
+  groups: {
+    name: string;
+  } | null;
+}
+
 export function MemberFeed() {
   const { user } = useAuth();
   const [likedActivities, setLikedActivities] = useState<Set<string>>(new Set());
@@ -29,7 +35,7 @@ export function MemberFeed() {
             )
           `)
           .eq('user_id', user.id)
-          .single();
+          .single() as { data: GroupData | null };
 
         if (groupData?.groups?.name) {
           setGroupName(groupData.groups.name);
