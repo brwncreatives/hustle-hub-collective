@@ -46,6 +46,8 @@ export function MemberFeed() {
           .from('profiles')
           .select('id, first_name, last_name');
 
+        console.log("User profiles:", profiles);
+
         // Create a map of user profiles for easy lookup
         const profileMap = new Map(
           profiles?.map(profile => [profile.id, profile]) || []
@@ -82,9 +84,10 @@ export function MemberFeed() {
           completedTasks.forEach(task => {
             if (task.goals) {
               const profile = profileMap.get(task.goals.user_id);
-              const firstName = profile?.first_name || '';
-              const lastName = profile?.last_name || '';
-              const userName = firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Member';
+              // Only use the name if both first and last name are present
+              const userName = profile?.first_name && profile?.last_name 
+                ? `${profile.first_name} ${profile.last_name}`
+                : profile?.first_name || profile?.last_name || 'Member';
               
               allActivities.push({
                 id: `task-${task.id}`,
@@ -104,9 +107,10 @@ export function MemberFeed() {
         if (newGoals) {
           newGoals.forEach(goal => {
             const profile = profileMap.get(goal.user_id);
-            const firstName = profile?.first_name || '';
-            const lastName = profile?.last_name || '';
-            const userName = firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Member';
+            // Only use the name if both first and last name are present
+            const userName = profile?.first_name && profile?.last_name 
+              ? `${profile.first_name} ${profile.last_name}`
+              : profile?.first_name || profile?.last_name || 'Member';
             
             allActivities.push({
               id: `goal-${goal.id}`,
@@ -128,7 +132,6 @@ export function MemberFeed() {
 
         setActivities(allActivities);
         console.log("Feed activities:", allActivities);
-        console.log("User profiles:", profiles);
       } catch (error) {
         console.error('Error fetching feed data:', error);
       }
