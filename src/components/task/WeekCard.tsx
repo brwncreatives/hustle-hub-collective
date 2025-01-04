@@ -19,7 +19,7 @@ interface WeekCardProps {
   showCompletedForWeek: boolean;
   toggleCompletedForWeek: (weekKey: string) => void;
   toggleTaskCompletion: (taskId: string) => void;
-  editTask: (taskId: string, newTitle: string, isRecurring: boolean, week?: number) => void;
+  editTask: (taskId: string, newTitle: string, is_recurring: boolean, week?: number) => void;
   deleteTask: (taskId: string) => void;
   goalId: string;
 }

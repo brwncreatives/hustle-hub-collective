@@ -24,10 +24,10 @@ interface TaskItemProps {
   id: string;
   title: string;
   completed: boolean;
-  isRecurring: boolean;
+  is_recurring: boolean;
   week?: number;
   onToggleComplete: (taskId: string) => void;
-  onEditTask: (taskId: string, newTitle: string, isRecurring: boolean, week?: number) => void;
+  onEditTask: (taskId: string, newTitle: string, is_recurring: boolean, week?: number) => void;
   onDeleteTask: (taskId: string) => void;
 }
 
@@ -35,7 +35,7 @@ export const TaskItem = ({
   id,
   title,
   completed,
-  isRecurring,
+  is_recurring,
   week,
   onToggleComplete,
   onEditTask,
@@ -43,7 +43,7 @@ export const TaskItem = ({
 }: TaskItemProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
-  const [editedIsRecurring, setEditedIsRecurring] = useState(isRecurring);
+  const [editedIsRecurring, setEditedIsRecurring] = useState(is_recurring);
   const [editedWeek, setEditedWeek] = useState(week?.toString() || "1");
   
   const weeks = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
@@ -64,7 +64,7 @@ export const TaskItem = ({
     <div className="flex items-center justify-between space-x-2 bg-white/5 p-2 rounded-md">
       <div>
         <div className="text-xs text-muted-foreground">
-          {isRecurring ? "Recurring Weekly" : `Week ${week}`}
+          {is_recurring ? "Recurring Weekly" : `Week ${week}`}
         </div>
         <div className={`${completed ? "line-through text-muted-foreground" : ""}`}>
           {title}
