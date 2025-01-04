@@ -8,6 +8,12 @@ interface Profile {
   last_name: string | null;
 }
 
+interface GroupData {
+  groups: {
+    name: string;
+  } | null;
+}
+
 const formatUserName = (profile: Profile | undefined) => {
   if (!profile) return 'Member';
   
