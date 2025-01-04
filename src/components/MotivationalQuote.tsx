@@ -15,7 +15,7 @@ export const MotivationalQuote = () => {
   return (
     <Card className="border-none bg-white/5 backdrop-blur-sm">
       <CardContent className="pt-6">
-        <p className="text-center text-xl font-bold text-primary">
+        <p className="text-center text-xl font-bold text-[#9b87f5]">
           {randomAffirmation}
         </p>
       </CardContent>
