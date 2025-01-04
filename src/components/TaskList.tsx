@@ -52,14 +52,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
   }, {} as Record<string, any>);
 
   const currentWeek = getCurrentWeekInQuarter(new Date());
-
-  const weeksToShow = Object.keys(groupedTasks)
-    .sort((a, b) => {
-      const weekA = parseInt(a.replace('week', ''));
-      const weekB = parseInt(b.replace('week', ''));
-      return weekA - weekB;
-    })
-    .filter(weekKey => isOpen || parseInt(weekKey.replace('week', '')) === currentWeek);
+  const currentWeekKey = `week${currentWeek}`;
 
   const toggleCompletedForWeek = (weekKey: string) => {
     setCompletedTasksVisibility(prev => ({
@@ -76,12 +69,37 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     );
   }
 
+  // Sort weeks, but ensure current week is not included in the collapsible section
+  const otherWeeks = Object.keys(groupedTasks)
+    .filter(weekKey => weekKey !== currentWeekKey)
+    .sort((a, b) => {
+      const weekA = parseInt(a.replace('week', ''));
+      const weekB = parseInt(b.replace('week', ''));
+      return weekA - weekB;
+    });
+
   return (
     <div className="space-y-6">
+      {/* Current Week Card - Always visible */}
+      <WeekCard
+        key={currentWeekKey}
+        weekKey={currentWeekKey}
+        weekNumber={currentWeek}
+        isCurrentWeek={true}
+        tasksForWeek={groupedTasks[currentWeekKey]}
+        showCompletedForWeek={completedTasksVisibility[currentWeekKey]}
+        toggleCompletedForWeek={toggleCompletedForWeek}
+        toggleTaskCompletion={toggleTaskCompletion}
+        editTask={editTask}
+        deleteTask={deleteTask}
+        goalId={goalId}
+      />
+
+      {/* Other Weeks - Collapsible */}
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex items-center justify-between pb-2 border-b">
           <Label className="text-sm text-muted-foreground">
-            {isOpen ? 'All weeks' : 'Current week'}
+            Other weeks
           </Label>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="flex items-center gap-1">
@@ -93,7 +111,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
               ) : (
                 <>
                   <ChevronDown className="h-4 w-4" />
-                  Expand all weeks
+                  Show all weeks
                 </>
               )}
             </Button>
@@ -101,16 +119,14 @@ export const TaskList = ({ goalId }: TaskListProps) => {
         </div>
         <CollapsibleContent>
           <div className="space-y-4 pt-4">
-            {weeksToShow.map((weekKey) => {
+            {otherWeeks.map((weekKey) => {
               const weekNumber = parseInt(weekKey.replace('week', ''));
-              const isCurrentWeek = weekNumber === currentWeek;
-              
               return (
                 <WeekCard
                   key={weekKey}
                   weekKey={weekKey}
                   weekNumber={weekNumber}
-                  isCurrentWeek={isCurrentWeek}
+                  isCurrentWeek={false}
                   tasksForWeek={groupedTasks[weekKey]}
                   showCompletedForWeek={completedTasksVisibility[weekKey]}
                   toggleCompletedForWeek={toggleCompletedForWeek}
