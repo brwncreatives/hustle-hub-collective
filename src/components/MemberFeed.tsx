@@ -82,15 +82,15 @@ export function MemberFeed() {
           completedTasks.forEach(task => {
             if (task.goals) {
               const userProfile = profileMap.get(task.goals.user_id);
-              const firstName = userProfile?.first_name || '';
-              const lastName = userProfile?.last_name || '';
-              const userName = [firstName, lastName].filter(Boolean).join(' ');
+              const userName = userProfile 
+                ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || 'Member'
+                : 'Member';
               
               allActivities.push({
                 id: `task-${task.id}`,
                 type: 'complete_task',
                 userId: task.goals.user_id,
-                userName: userName || 'Member',
+                userName,
                 timestamp: task.updated_at,
                 data: {
                   taskTitle: task.title,
@@ -104,15 +104,15 @@ export function MemberFeed() {
         if (newGoals) {
           newGoals.forEach(goal => {
             const userProfile = profileMap.get(goal.user_id);
-            const firstName = userProfile?.first_name || '';
-            const lastName = userProfile?.last_name || '';
-            const userName = [firstName, lastName].filter(Boolean).join(' ');
+            const userName = userProfile 
+              ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || 'Member'
+              : 'Member';
             
             allActivities.push({
               id: `goal-${goal.id}`,
               type: 'add_goal',
               userId: goal.user_id,
-              userName: userName || 'Member',
+              userName,
               timestamp: goal.created_at,
               data: {
                 goalTitle: goal.title
