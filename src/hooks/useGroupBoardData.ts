@@ -58,31 +58,22 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (!memberIds) return;
 
-      // Fetch goals and profiles separately
+      // Fetch goals with profiles data
       const { data: goals, error: goalsError } = await supabase
         .from('goals')
         .select(`
           id,
           title,
           status,
-          user_id
+          user_id,
+          profiles!goals_user_id_fkey (
+            first_name,
+            last_name
+          )
         `)
         .in('user_id', memberIds.map(member => member.user_id));
 
       if (goalsError) throw goalsError;
-
-      // Fetch profiles for the users
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name')
-        .in('id', memberIds.map(member => member.user_id));
-
-      if (profilesError) throw profilesError;
-
-      // Create a map of profiles for easy lookup
-      const profileMap = new Map(
-        profiles?.map(profile => [profile.id, profile]) || []
-      );
 
       // Transform the goals data
       const transformedGoals: GroupBoardGoal[] = goals.map(goal => ({
@@ -91,8 +82,8 @@ export const useGroupBoardData = (userId: string | undefined) => {
         status: goal.status,
         user_id: goal.user_id,
         user: {
-          first_name: profileMap.get(goal.user_id)?.first_name || null,
-          last_name: profileMap.get(goal.user_id)?.last_name || null
+          first_name: goal.profiles?.first_name || null,
+          last_name: goal.profiles?.last_name || null
         }
       }));
 
