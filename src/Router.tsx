@@ -8,6 +8,7 @@ import GoalEdit from "@/pages/GoalEdit";
 import GroupCreation from "@/pages/GroupCreation";
 import GroupManagement from "@/pages/GroupManagement";
 import { useAuth } from "@/contexts/AuthContext";
+import { AuthForms } from "@/components/AuthForms";
 
 export function Router() {
   const { user } = useAuth();
@@ -68,6 +69,8 @@ export function Router() {
           </ProtectedRoute>
         } 
       />
+      <Route path="/auth/login" element={<AuthForms />} />
+      <Route path="/auth/signup" element={<AuthForms />} />
     </Routes>
   );
 }
