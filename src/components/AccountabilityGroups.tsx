@@ -13,6 +13,15 @@ interface Group {
   role: 'member' | 'admin';
 }
 
+interface GroupMemberResponse {
+  group_id: string;
+  role: 'member' | 'admin';
+  groups: {
+    id: string;
+    name: string;
+  };
+}
+
 export const AccountabilityGroups = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -57,10 +66,11 @@ export const AccountabilityGroups = () => {
           .single();
 
         if (memberGroups) {
+          const groupData = memberGroups as GroupMemberResponse;
           setGroup({
-            id: memberGroups.groups.id,
-            name: memberGroups.groups.name,
-            role: memberGroups.role as 'member' | 'admin'
+            id: groupData.groups.id,
+            name: groupData.groups.name,
+            role: groupData.role
           });
         }
 
