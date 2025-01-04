@@ -83,11 +83,12 @@ export function MemberFeed() {
             if (task.goals) {
               const userProfile = profileMap.get(task.goals.user_id);
               if (userProfile) {
+                const userName = `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim();
                 allActivities.push({
                   id: `task-${task.id}`,
                   type: 'complete_task',
                   userId: task.goals.user_id,
-                  userName: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
+                  userName: userName || 'Member',
                   timestamp: task.updated_at,
                   data: {
                     taskTitle: task.title,
@@ -103,11 +104,12 @@ export function MemberFeed() {
           newGoals.forEach(goal => {
             const userProfile = profileMap.get(goal.user_id);
             if (userProfile) {
+              const userName = `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim();
               allActivities.push({
                 id: `goal-${goal.id}`,
                 type: 'add_goal',
                 userId: goal.user_id,
-                userName: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim(),
+                userName: userName || 'Member',
                 timestamp: goal.created_at,
                 data: {
                   goalTitle: goal.title

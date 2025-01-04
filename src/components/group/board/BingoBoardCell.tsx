@@ -33,13 +33,11 @@ export const BingoBoardCell = ({ goal, index, isCompletedLine }: BingoBoardCellP
   };
 
   const getMemberName = (goal: GroupBoardGoal) => {
-    const firstName = goal.user?.first_name;
-    const lastName = goal.user?.last_name;
+    if (!goal.user) return 'Member';
+    const firstName = goal.user.first_name;
+    const lastName = goal.user.last_name;
     
-    if (!firstName && !lastName) {
-      return 'Member';
-    }
-    
+    if (!firstName && !lastName) return 'Member';
     return [firstName, lastName].filter(Boolean).join(' ');
   };
 
