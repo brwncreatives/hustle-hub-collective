@@ -36,7 +36,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
       }
     }
 
-    if (task.isRecurring) {
+    if (task.is_recurring) {
       const weeksToShow = task.completed ? [task.week || 1] : Array.from({ length: 12 }, (_, i) => i + 1);
       weeksToShow.forEach(week => {
         const weekKey = `week${week}`;

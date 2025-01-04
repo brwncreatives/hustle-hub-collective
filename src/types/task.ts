@@ -2,7 +2,7 @@ export interface Task {
   id: string;
   title: string;
   completed: boolean;
-  isRecurring: boolean;
+  is_recurring: boolean; // Changed from isRecurring to match database column
   week?: number;
 }
 
