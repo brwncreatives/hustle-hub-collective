@@ -12,15 +12,17 @@ import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
+interface Profile {
+  first_name: string | null;
+  last_name: string | null;
+  id: string;
+}
+
 interface GroupMember {
   id: string;
   user_id: string;
   role: string;
-  profiles: {
-    first_name: string | null;
-    last_name: string | null;
-    id: string;
-  };
+  profiles: Profile;
 }
 
 const GroupManagement = () => {
@@ -61,7 +63,7 @@ const GroupManagement = () => {
           id,
           user_id,
           role,
-          profiles:profiles (
+          profiles!inner (
             first_name,
             last_name,
             id
@@ -74,7 +76,13 @@ const GroupManagement = () => {
         throw error;
       }
 
-      return data as GroupMember[];
+      // Transform the data to match our GroupMember type
+      const transformedData = data.map((member: any) => ({
+        ...member,
+        profiles: member.profiles[0] // Take the first profile since it's returning an array
+      }));
+
+      return transformedData as GroupMember[];
     },
     enabled: !!groupId,
   });
