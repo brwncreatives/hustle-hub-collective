@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { BingoCell } from "./BingoCell";
-import { GroupGoal, GoalWithProfile } from "./types/bingo";
+import { GroupGoal } from "./types/bingo";
 
 export const GroupBingoBoardCard = () => {
   const { toast } = useToast();
@@ -77,10 +77,19 @@ export const GroupBingoBoardCard = () => {
         const memberIds = groupMembers.map(member => member.user_id);
         console.log('Group member IDs:', memberIds);
 
-        // Then get goals
-        const { data: goals, error: goalsError } = await supabase
+        // Get goals and profiles in a single query using joins
+        const { data: goalsWithProfiles, error: goalsError } = await supabase
           .from('goals')
-          .select('id, title, status, user_id')
+          .select(`
+            id,
+            title,
+            status,
+            user_id,
+            profiles!inner (
+              first_name,
+              last_name
+            )
+          `)
           .in('user_id', memberIds);
 
         if (goalsError) {
@@ -88,29 +97,15 @@ export const GroupBingoBoardCard = () => {
           return;
         }
 
-        // Finally get profiles separately
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, first_name, last_name')
-          .in('id', memberIds);
-
-        if (profilesError) {
-          console.error('Error fetching profiles:', profilesError);
-          return;
-        }
-
-        // Combine the data
-        const formattedGoals: GroupGoal[] = goals.map(goal => {
-          const profile = profiles.find(p => p.id === goal.user_id);
-          return {
-            id: goal.id,
-            memberId: goal.user_id,
-            memberName: profile ? `${profile.first_name} ${profile.last_name}` : 'Unknown Member',
-            title: goal.title,
-            progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
-            status: goal.status
-          };
-        });
+        // Format the goals with profile information
+        const formattedGoals: GroupGoal[] = goalsWithProfiles.map(goal => ({
+          id: goal.id,
+          memberId: goal.user_id,
+          memberName: `${goal.profiles.first_name || ''} ${goal.profiles.last_name || ''}`.trim(),
+          title: goal.title,
+          progress: goal.status === 'completed' ? 100 : goal.status.toLowerCase() === 'in progress' ? 50 : 0,
+          status: goal.status
+        }));
 
         console.log('Formatted group goals:', formattedGoals);
         setGroupGoals(formattedGoals);
