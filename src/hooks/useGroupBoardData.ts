@@ -4,10 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 import { GroupBoardGoal } from "@/components/group/types/board";
 
 interface UserProfile {
-  profile: {
-    first_name: string | null;
-    last_name: string | null;
-  };
+  first_name: string | null;
+  last_name: string | null;
 }
 
 interface GoalWithProfile {
@@ -15,7 +13,7 @@ interface GoalWithProfile {
   title: string;
   status: string;
   user_id: string;
-  user: UserProfile;
+  profiles: UserProfile;
 }
 
 export const useGroupBoardData = (userId: string | undefined) => {
@@ -73,7 +71,7 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (!memberIds) return;
 
-      // Fetch goals with user profiles
+      // Fetch goals with profiles
       const { data: goals, error: goalsError } = await supabase
         .from('goals')
         .select(`
@@ -81,11 +79,9 @@ export const useGroupBoardData = (userId: string | undefined) => {
           title,
           status,
           user_id,
-          user:user_id (
-            profile:profiles (
-              first_name,
-              last_name
-            )
+          profiles (
+            first_name,
+            last_name
           )
         `)
         .in('user_id', memberIds.map(member => member.user_id));
@@ -99,8 +95,8 @@ export const useGroupBoardData = (userId: string | undefined) => {
         status: goal.status,
         user_id: goal.user_id,
         user: {
-          first_name: goal.user?.profile?.first_name || null,
-          last_name: goal.user?.profile?.last_name || null
+          first_name: goal.profiles?.first_name || null,
+          last_name: goal.profiles?.last_name || null
         }
       }));
 
