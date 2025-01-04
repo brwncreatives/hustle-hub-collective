@@ -1,112 +1,41 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import Landing from "@/pages/Landing";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Dashboard from "@/pages/Dashboard";
+import Landing from "@/pages/Landing";
+import Settings from "@/pages/Settings";
 import GoalCreation from "@/pages/GoalCreation";
 import GoalEdit from "@/pages/GoalEdit";
 import GroupCreation from "@/pages/GroupCreation";
-import GroupLanding from "@/pages/GroupLanding";
 import GroupManagement from "@/pages/GroupManagement";
-import Settings from "@/pages/Settings";
-import { AuthForms } from "@/components/AuthForms";
-import { SignUpForm } from "@/components/SignUpForm";
+
+import "./App.css";
 
 const queryClient = new QueryClient();
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading } = useAuth();
-  
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user) {
-    return <Navigate to="/auth/login" replace />;
-  }
-
-  return children;
-};
-
-const AppRoutes = () => {
+function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/auth/login" element={<AuthForms />} />
-      <Route path="/auth/signup" element={<SignUpForm />} />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/create-goal"
-        element={
-          <ProtectedRoute>
-            <GoalCreation />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/edit-goal/:goalId"
-        element={
-          <ProtectedRoute>
-            <GoalEdit />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/create-group"
-        element={
-          <ProtectedRoute>
-            <GroupCreation />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/group/:groupId"
-        element={
-          <ProtectedRoute>
-            <GroupLanding />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/group/:groupId/manage"
-        element={
-          <ProtectedRoute>
-            <GroupManagement />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
-  );
-};
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <AuthProvider>
-          <AppRoutes />
+          <Router>
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/create-goal" element={<GoalCreation />} />
+              <Route path="/edit-goal/:goalId" element={<GoalEdit />} />
+              <Route path="/create-group" element={<GroupCreation />} />
+              <Route path="/manage-group/:groupId" element={<GroupManagement />} />
+            </Routes>
+          </Router>
           <Toaster />
         </AuthProvider>
-      </BrowserRouter>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
