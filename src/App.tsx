@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Dashboard from "@/pages/Dashboard";
 import Landing from "@/pages/Landing";
 import Settings from "@/pages/Settings";
@@ -26,12 +27,54 @@ function App() {
           <Router basename={baseUrl}>
             <Routes>
               <Route path="/" element={<Landing />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/create-goal" element={<GoalCreation />} />
-              <Route path="/edit-goal/:goalId" element={<GoalEdit />} />
-              <Route path="/create-group" element={<GroupCreation />} />
-              <Route path="/manage-group/:groupId" element={<GroupManagement />} />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/settings" 
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/create-goal" 
+                element={
+                  <ProtectedRoute>
+                    <GoalCreation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/edit-goal/:goalId" 
+                element={
+                  <ProtectedRoute>
+                    <GoalEdit />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/create-group" 
+                element={
+                  <ProtectedRoute>
+                    <GroupCreation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/manage-group/:groupId" 
+                element={
+                  <ProtectedRoute>
+                    <GroupManagement />
+                  </ProtectedRoute>
+                } 
+              />
             </Routes>
           </Router>
           <Toaster />
