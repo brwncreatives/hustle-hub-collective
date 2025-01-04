@@ -15,12 +15,15 @@ import "./App.css";
 
 const queryClient = new QueryClient();
 
+// Get the base URL from the environment or default to '/'
+const baseUrl = import.meta.env.BASE_URL || '/';
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <AuthProvider>
-          <Router>
+          <Router basename={baseUrl}>
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/dashboard" element={<Dashboard />} />
