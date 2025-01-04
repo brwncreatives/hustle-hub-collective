@@ -34,10 +34,14 @@ export const BingoBoardCell = ({ goal, index, isCompletedLine }: BingoBoardCellP
   };
 
   const getMemberName = (goal: GroupBoardGoal) => {
-    if (!goal.user?.first_name && !goal.user?.last_name) {
+    const firstName = goal.user?.first_name;
+    const lastName = goal.user?.last_name;
+    
+    if (!firstName && !lastName) {
       return 'Anonymous Member';
     }
-    return `${goal.user?.first_name || ''} ${goal.user?.last_name || ''}`.trim();
+    
+    return [firstName, lastName].filter(Boolean).join(' ');
   };
 
   return (
