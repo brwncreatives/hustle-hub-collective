@@ -81,10 +81,10 @@ export function MemberFeed() {
         if (completedTasks) {
           completedTasks.forEach(task => {
             if (task.goals) {
-              const userProfile = profileMap.get(task.goals.user_id);
-              const userName = userProfile && (userProfile.first_name || userProfile.last_name)
-                ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim()
-                : 'Member';
+              const profile = profileMap.get(task.goals.user_id);
+              const firstName = profile?.first_name || '';
+              const lastName = profile?.last_name || '';
+              const userName = firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Member';
               
               allActivities.push({
                 id: `task-${task.id}`,
@@ -103,10 +103,10 @@ export function MemberFeed() {
 
         if (newGoals) {
           newGoals.forEach(goal => {
-            const userProfile = profileMap.get(goal.user_id);
-            const userName = userProfile && (userProfile.first_name || userProfile.last_name)
-              ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim()
-              : 'Member';
+            const profile = profileMap.get(goal.user_id);
+            const firstName = profile?.first_name || '';
+            const lastName = profile?.last_name || '';
+            const userName = firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Member';
             
             allActivities.push({
               id: `goal-${goal.id}`,
