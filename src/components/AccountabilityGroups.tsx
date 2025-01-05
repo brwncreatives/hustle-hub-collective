@@ -21,47 +21,39 @@ const AccountabilityGroups = () => {
   const { data: memberGroups, isLoading } = useQuery({
     queryKey: ["memberGroups", user?.id],
     queryFn: async () => {
-      console.log("Fetching groups for user:", user?.id);
+      if (!user?.id) return [];
       
-      // First, get the group IDs for the user
-      const { data: groupMembers, error: memberError } = await supabase
-        .from("group_members")
-        .select("group_id, role")
-        .eq("user_id", user?.id);
+      console.log("Fetching groups for user:", user.id);
+      
+      // First, get all groups where user is either a member or owner
+      const { data: groups, error: groupsError } = await supabase
+        .from('groups')
+        .select(`
+          id,
+          name,
+          group_members!inner (
+            role
+          )
+        `)
+        .eq('group_members.user_id', user.id);
 
-      if (memberError) {
-        console.error("Error fetching group members:", memberError);
-        throw memberError;
+      if (groupsError) {
+        console.error("Error fetching groups:", groupsError);
+        throw groupsError;
       }
 
-      if (!groupMembers?.length) {
-        return [];
-      }
-
-      // Then, get the group details for those IDs
-      const groupIds = groupMembers.map(member => member.group_id);
-      const { data: groups, error: groupError } = await supabase
-        .from("groups")
-        .select("id, name")
-        .in("id", groupIds);
-
-      if (groupError) {
-        console.error("Error fetching groups:", groupError);
-        throw groupError;
-      }
-
-      // Combine the data
-      const combinedData = groupMembers.map(member => ({
-        group_id: member.group_id,
-        role: member.role,
-        groups: groups?.find(group => group.id === member.group_id) || { 
-          id: member.group_id,
-          name: "Unknown Group"
+      // Transform the data to match the expected format
+      const formattedGroups = groups?.map(group => ({
+        group_id: group.id,
+        role: group.group_members[0]?.role || 'member',
+        groups: {
+          id: group.id,
+          name: group.name
         }
-      }));
+      })) || [];
 
-      console.log("Combined group data:", combinedData);
-      return combinedData as GroupMemberResponse[];
+      console.log("Formatted groups:", formattedGroups);
+      return formattedGroups as GroupMemberResponse[];
     },
     enabled: !!user?.id,
   });
