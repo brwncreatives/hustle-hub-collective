@@ -30,7 +30,7 @@ const AccountabilityGroups = () => {
         .select(`
           group_id,
           role,
-          groups (
+          groups:groups (
             id,
             name
           )
@@ -42,17 +42,7 @@ const AccountabilityGroups = () => {
         throw error;
       }
 
-      const formattedGroups = groups?.map((group: any) => ({
-        group_id: group.group_id,
-        role: group.role,
-        groups: {
-          id: group.groups.id,
-          name: group.groups.name
-        }
-      })) || [];
-
-      console.log("Formatted groups:", formattedGroups);
-      return formattedGroups as GroupMemberResponse[];
+      return (groups || []) as GroupMemberResponse[];
     },
     enabled: !!user?.id,
   });

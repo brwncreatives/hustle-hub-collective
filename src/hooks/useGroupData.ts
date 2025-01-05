@@ -2,15 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface GroupData {
-  groups: {
-    name: string;
-  };
-}
-
-interface GroupResponse {
-  groups: {
-    name: string;
-  } | null;
+  name: string | null;
 }
 
 export const useGroupData = (userId: string | undefined) => {
@@ -37,8 +29,7 @@ export const useGroupData = (userId: string | undefined) => {
         if (error) throw error;
 
         if (groupData?.groups) {
-          const typedGroupData = groupData as GroupResponse;
-          setGroupName(typedGroupData.groups?.name || "");
+          setGroupName(groupData.groups.name || "");
         } else {
           setGroupName("");
         }
