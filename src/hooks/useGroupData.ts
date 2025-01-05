@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface GroupResponse {
   groups: {
     name: string;
-  };
+  } | null;
 }
 
 export const useGroupData = (userId: string | undefined) => {
