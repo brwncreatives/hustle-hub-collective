@@ -22,25 +22,46 @@ const AccountabilityGroups = () => {
     queryKey: ["memberGroups", user?.id],
     queryFn: async () => {
       console.log("Fetching groups for user:", user?.id);
-      const { data, error } = await supabase
+      
+      // First, get the group IDs for the user
+      const { data: groupMembers, error: memberError } = await supabase
         .from("group_members")
-        .select(`
-          group_id,
-          role,
-          groups:groups (
-            id,
-            name
-          )
-        `)
+        .select("group_id, role")
         .eq("user_id", user?.id);
 
-      if (error) {
-        console.error("Error fetching groups:", error);
-        throw error;
+      if (memberError) {
+        console.error("Error fetching group members:", memberError);
+        throw memberError;
       }
 
-      console.log("Fetched groups:", data);
-      return data as unknown as GroupMemberResponse[];
+      if (!groupMembers?.length) {
+        return [];
+      }
+
+      // Then, get the group details for those IDs
+      const groupIds = groupMembers.map(member => member.group_id);
+      const { data: groups, error: groupError } = await supabase
+        .from("groups")
+        .select("id, name")
+        .in("id", groupIds);
+
+      if (groupError) {
+        console.error("Error fetching groups:", groupError);
+        throw groupError;
+      }
+
+      // Combine the data
+      const combinedData = groupMembers.map(member => ({
+        group_id: member.group_id,
+        role: member.role,
+        groups: groups?.find(group => group.id === member.group_id) || { 
+          id: member.group_id,
+          name: "Unknown Group"
+        }
+      }));
+
+      console.log("Combined group data:", combinedData);
+      return combinedData as GroupMemberResponse[];
     },
     enabled: !!user?.id,
   });
