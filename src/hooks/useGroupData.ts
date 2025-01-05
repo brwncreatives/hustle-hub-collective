@@ -7,6 +7,12 @@ interface GroupData {
   };
 }
 
+interface GroupResponse {
+  groups: {
+    name: string;
+  } | null;
+}
+
 export const useGroupData = (userId: string | undefined) => {
   const [groupName, setGroupName] = useState<string>("");
 
@@ -31,7 +37,8 @@ export const useGroupData = (userId: string | undefined) => {
         if (error) throw error;
 
         if (groupData?.groups) {
-          setGroupName((groupData.groups as GroupData["groups"]).name || "");
+          const typedGroupData = groupData as GroupResponse;
+          setGroupName(typedGroupData.groups?.name || "");
         } else {
           setGroupName("");
         }
