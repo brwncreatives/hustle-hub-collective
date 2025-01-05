@@ -77,12 +77,12 @@ const GroupManagement = () => {
       }
 
       // Transform the data to match our GroupMember type
-      const transformedData = data.map((member: any) => ({
+      const transformedData = data.map((member) => ({
         ...member,
         profiles: member.profiles[0] // Take the first profile since it's returning an array
-      }));
+      })) as GroupMember[];
 
-      return transformedData as GroupMember[];
+      return transformedData;
     },
     enabled: !!groupId,
   });
