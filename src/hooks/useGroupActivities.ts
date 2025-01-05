@@ -7,7 +7,8 @@ import { useGroupData } from "./useGroupData";
 export const useGroupActivities = (userId: string | undefined) => {
   const [activities, setActivities] = useState<FeedActivity[]>([]);
   const [loading, setLoading] = useState(true);
-  const { groupName } = useGroupData(userId);
+  const { data: groupMembers } = useGroupData(userId);
+  const groupName = groupMembers?.[0]?.groups?.name || "";
 
   useEffect(() => {
     const fetchActivities = async () => {
