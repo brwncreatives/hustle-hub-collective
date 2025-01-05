@@ -30,19 +30,28 @@ const AccountabilityGroups = () => {
         .select(`
           group_id,
           role,
-          groups:groups (
+          groups!inner (
             id,
             name
           )
         `)
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .throwOnError();
 
       if (error) {
         console.error("Error fetching groups:", error);
         throw error;
       }
 
-      return (data || []) as GroupMemberResponse[];
+      // Transform the data to match the expected type
+      return (data || []).map((item: any) => ({
+        group_id: item.group_id,
+        role: item.role,
+        groups: {
+          id: item.groups.id,
+          name: item.groups.name
+        }
+      })) as GroupMemberResponse[];
     },
     enabled: !!user?.id,
   });
