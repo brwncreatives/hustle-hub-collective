@@ -42,7 +42,7 @@ const AccountabilityGroups = () => {
         throw error;
       }
 
-      const formattedGroups = groups?.map(group => ({
+      const formattedGroups = groups?.map((group: any) => ({
         group_id: group.group_id,
         role: group.role,
         groups: {

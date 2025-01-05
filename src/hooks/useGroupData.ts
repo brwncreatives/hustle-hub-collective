@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface GroupData {
   groups: {
     name: string;
-  } | null;
+  };
 }
 
 export const useGroupData = (userId: string | undefined) => {
@@ -31,7 +31,7 @@ export const useGroupData = (userId: string | undefined) => {
         if (error) throw error;
 
         if (groupData?.groups) {
-          setGroupName((groupData.groups as { name: string }).name || "");
+          setGroupName((groupData.groups as GroupData["groups"]).name || "");
         } else {
           setGroupName("");
         }

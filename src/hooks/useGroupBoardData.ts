@@ -84,14 +84,14 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (goalsError) throw goalsError;
 
-      const transformedGoals = (goals || []).map(goal => ({
+      const transformedGoals = (goals || []).map((goal: any) => ({
         id: goal.id,
         title: goal.title,
         status: goal.status,
         user_id: goal.user_id,
         user: {
-          first_name: goal.profiles?.first_name || null,
-          last_name: goal.profiles?.last_name || null
+          first_name: goal.profiles?.first_name || "",
+          last_name: goal.profiles?.last_name || ""
         }
       }));
 
