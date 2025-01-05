@@ -25,25 +25,24 @@ const AccountabilityGroups = () => {
       
       console.log("Fetching groups for user:", user.id);
       
-      const { data: groups, error } = await supabase
+      const { data, error } = await supabase
         .from('group_members')
         .select(`
           group_id,
           role,
-          groups (
+          groups:groups (
             id,
             name
           )
         `)
-        .eq('user_id', user.id)
-        .returns<GroupMemberResponse[]>();
+        .eq('user_id', user.id);
 
       if (error) {
         console.error("Error fetching groups:", error);
         throw error;
       }
 
-      return groups || [];
+      return (data || []) as GroupMemberResponse[];
     },
     enabled: !!user?.id,
   });
