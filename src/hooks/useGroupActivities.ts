@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { FeedActivity, Profile } from "@/types/activity";
+import { FeedActivity } from "@/types/activity";
 import { formatUserName } from "@/utils/profileUtils";
 import { useGroupData } from "./useGroupData";
 
@@ -19,19 +19,19 @@ export const useGroupActivities = (userId: string | undefined) => {
       }
 
       try {
-        // Fetch all profiles first
         const { data: profiles } = await supabase
           .from('profiles')
           .select('id, first_name, last_name');
 
-        console.log("User profiles:", profiles);
+        if (!profiles) {
+          console.error("No profiles found");
+          return;
+        }
 
-        // Create a map of user profiles for easy lookup
         const profileMap = new Map(
-          profiles?.map(profile => [profile.id, profile]) || []
+          profiles.map(profile => [profile.id, profile])
         );
 
-        // Fetch completed tasks with explicit joins
         const { data: completedTasks, error: tasksError } = await supabase
           .from('tasks')
           .select(`
@@ -46,7 +46,6 @@ export const useGroupActivities = (userId: string | undefined) => {
 
         if (tasksError) throw tasksError;
 
-        // Fetch new goals with explicit joins
         const { data: newGoals, error: goalsError } = await supabase
           .from('goals')
           .select('*, user_id')
@@ -55,7 +54,6 @@ export const useGroupActivities = (userId: string | undefined) => {
 
         if (goalsError) throw goalsError;
 
-        // Transform and combine activities
         const allActivities: FeedActivity[] = [];
 
         if (completedTasks) {
@@ -97,7 +95,6 @@ export const useGroupActivities = (userId: string | undefined) => {
           });
         }
 
-        // Sort activities by timestamp
         allActivities.sort((a, b) => 
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );

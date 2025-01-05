@@ -35,7 +35,11 @@ export function MemberFeed() {
           <ScrollArea className="h-[400px] pr-4">
             {loading ? (
               <div className="flex items-center justify-center h-[300px]">
-                <p className="text-white/60">Loading activities...</p>
+                <div className="animate-pulse space-y-4 w-full">
+                  <div className="h-20 bg-white/5 rounded-lg" />
+                  <div className="h-20 bg-white/5 rounded-lg" />
+                  <div className="h-20 bg-white/5 rounded-lg" />
+                </div>
               </div>
             ) : activities.length === 0 ? (
               <EmptyFeed />
