@@ -18,7 +18,7 @@ export const useGroupData = (userId: string | undefined) => {
       }
 
       try {
-        const { data: groupData, error: groupError } = await supabase
+        const { data: groupData, error } = await supabase
           .from('group_members')
           .select(`
             groups (
@@ -26,9 +26,9 @@ export const useGroupData = (userId: string | undefined) => {
             )
           `)
           .eq('user_id', userId)
-          .maybeSingle() as { data: GroupMemberData | null, error: any };
+          .maybeSingle();
 
-        if (groupError) throw groupError;
+        if (error) throw error;
 
         if (groupData?.groups) {
           setGroupName(groupData.groups.name || "");

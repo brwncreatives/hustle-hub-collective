@@ -24,14 +24,14 @@ export const useGroupBoardData = (userId: string | undefined) => {
     if (!userId) return;
 
     try {
-      const { data: groupMember, error: groupError } = await supabase
+      const { data: groupMember, error } = await supabase
         .from('group_members')
         .select('group_id')
         .eq('user_id', userId)
         .maybeSingle();
 
-      if (groupError) {
-        console.error('Error fetching user group:', groupError);
+      if (error) {
+        console.error('Error fetching user group:', error);
         toast({
           title: "Error",
           description: "Could not fetch your group information. Please try again later.",
@@ -84,8 +84,7 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (goalsError) throw goalsError;
 
-      // Transform the goals data to match GroupBoardGoal structure
-      const transformedGoals = (goals as unknown as GoalWithProfile[]).map(goal => ({
+      const transformedGoals = (goals as GoalWithProfile[]).map(goal => ({
         id: goal.id,
         title: goal.title,
         status: goal.status,

@@ -25,30 +25,30 @@ const AccountabilityGroups = () => {
       
       console.log("Fetching groups for user:", user.id);
       
-      // First, get all groups where user is either a member or owner
-      const { data: groups, error: groupsError } = await supabase
-        .from('groups')
+      const { data: groups, error } = await supabase
+        .from('group_members')
         .select(`
-          id,
-          name,
-          group_members!inner (
-            role
+          group_id,
+          role,
+          groups (
+            id,
+            name
           )
         `)
-        .eq('group_members.user_id', user.id);
+        .eq('user_id', user.id);
 
-      if (groupsError) {
-        console.error("Error fetching groups:", groupsError);
-        throw groupsError;
+      if (error) {
+        console.error("Error fetching groups:", error);
+        throw error;
       }
 
       // Transform the data to match the expected format
       const formattedGroups = groups?.map(group => ({
-        group_id: group.id,
-        role: group.group_members[0]?.role || 'member',
+        group_id: group.group_id,
+        role: group.role,
         groups: {
-          id: group.id,
-          name: group.name
+          id: group.groups.id,
+          name: group.groups.name
         }
       })) || [];
 
