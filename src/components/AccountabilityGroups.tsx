@@ -1,77 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-
-interface Group {
-  id: string;
-  name: string;
-}
-
-interface GroupMember {
-  group_id: string;
-  role: string;
-  groups: Group;
-}
+import { useGroupData } from "@/hooks/useGroupData";
 
 const AccountabilityGroups = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const { data: memberGroups, isLoading } = useQuery({
-    queryKey: ["memberGroups", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      
-      try {
-        const { data, error } = await supabase
-          .from('group_members')
-          .select(`
-            group_id,
-            role,
-            groups (
-              id,
-              name
-            )
-          `)
-          .eq('user_id', user.id);
-
-        if (error) {
-          console.error("Error fetching groups:", error);
-          toast({
-            title: "Error",
-            description: "Failed to fetch your groups. Please try again.",
-            variant: "destructive",
-          });
-          return [];
-        }
-
-        if (!data) return [];
-
-        return data.map((item) => ({
-          group_id: item.group_id,
-          role: item.role,
-          groups: {
-            id: item.groups?.id || '',
-            name: item.groups?.name || ''
-          }
-        }));
-      } catch (error) {
-        console.error("Error in groups query:", error);
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred. Please try again.",
-          variant: "destructive",
-        });
-        return [];
-      }
-    },
-    enabled: !!user?.id,
-  });
+  const { data: memberGroups, isLoading } = useGroupData(user?.id);
 
   const handleGroupClick = (groupId: string) => {
     navigate(`/groups/${groupId}`);

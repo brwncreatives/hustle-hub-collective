@@ -1,47 +1,67 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
-interface GroupResponse {
-  groups: {
-    name: string;
-  } | null;
+interface Group {
+  id: string;
+  name: string;
+}
+
+interface GroupMember {
+  group_id: string;
+  role: string;
+  groups: Group;
 }
 
 export const useGroupData = (userId: string | undefined) => {
-  const [groupName, setGroupName] = useState<string>("");
+  const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchGroupData = async () => {
-      if (!userId) {
-        setGroupName("");
-        return;
-      }
+  return useQuery({
+    queryKey: ["groupMembers", userId],
+    queryFn: async () => {
+      if (!userId) return [];
 
       try {
-        const { data: groupData, error } = await supabase
+        const { data, error } = await supabase
           .from('group_members')
           .select(`
+            group_id,
+            role,
             groups (
+              id,
               name
             )
           `)
-          .eq('user_id', userId)
-          .maybeSingle<GroupResponse>();
+          .eq('user_id', userId);
 
         if (error) {
-          console.error('Error fetching group data:', error);
-          throw error;
+          console.error("Error fetching groups:", error);
+          toast({
+            title: "Error",
+            description: "Failed to fetch your groups. Please try again.",
+            variant: "destructive",
+          });
+          return [];
         }
 
-        setGroupName(groupData?.groups?.name || "");
+        return (data || []).map((item): GroupMember => ({
+          group_id: item.group_id,
+          role: item.role,
+          groups: {
+            id: item.groups?.id || '',
+            name: item.groups?.name || ''
+          }
+        }));
       } catch (error) {
-        console.error('Error fetching group data:', error);
-        setGroupName("");
+        console.error("Error in groups query:", error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred. Please try again.",
+          variant: "destructive",
+        });
+        return [];
       }
-    };
-
-    fetchGroupData();
-  }, [userId]);
-
-  return { groupName };
+    },
+    enabled: !!userId,
+  });
 };
