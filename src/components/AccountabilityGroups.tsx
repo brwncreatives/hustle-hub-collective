@@ -42,7 +42,6 @@ const AccountabilityGroups = () => {
         throw error;
       }
 
-      // Transform the data to match the expected format
       const formattedGroups = groups?.map(group => ({
         group_id: group.group_id,
         role: group.role,

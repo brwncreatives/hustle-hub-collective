@@ -9,8 +9,8 @@ interface GoalWithProfile {
   status: string;
   user_id: string;
   profiles: {
-    first_name: string | null;
-    last_name: string | null;
+    first_name: string;
+    last_name: string;
   };
 }
 
@@ -84,7 +84,7 @@ export const useGroupBoardData = (userId: string | undefined) => {
 
       if (goalsError) throw goalsError;
 
-      const transformedGoals = (goals as GoalWithProfile[]).map(goal => ({
+      const transformedGoals = (goals || []).map(goal => ({
         id: goal.id,
         title: goal.title,
         status: goal.status,
