@@ -35,7 +35,7 @@ const AccountabilityGroups = () => {
           .select(`
             group_id,
             role,
-            groups (
+            groups!inner (
               id,
               name
             )
@@ -52,19 +52,14 @@ const AccountabilityGroups = () => {
           return [];
         }
 
-        // Transform and validate the data
-        return (data || [])
-          .filter((item): item is { group_id: string; role: string; groups: Group } => {
-            return Boolean(item && item.groups && typeof item.groups === 'object');
-          })
-          .map(item => ({
-            group_id: item.group_id,
-            role: item.role,
-            groups: {
-              id: item.groups.id,
-              name: item.groups.name
-            }
-          }));
+        return (data || []).map((item): GroupMember => ({
+          group_id: item.group_id,
+          role: item.role,
+          groups: {
+            id: item.groups.id,
+            name: item.groups.name
+          }
+        }));
       } catch (error) {
         console.error("Error in groups query:", error);
         toast({
