@@ -27,15 +27,13 @@ const AccountabilityGroups = () => {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      console.log("Fetching groups for user:", user.id);
-      
       try {
         const { data, error } = await supabase
           .from('group_members')
           .select(`
             group_id,
             role,
-            groups!inner (
+            groups (
               id,
               name
             )
@@ -52,12 +50,14 @@ const AccountabilityGroups = () => {
           return [];
         }
 
-        return (data || []).map((item): GroupMember => ({
+        if (!data) return [];
+
+        return data.map((item) => ({
           group_id: item.group_id,
           role: item.role,
           groups: {
-            id: item.groups.id,
-            name: item.groups.name
+            id: item.groups?.id || '',
+            name: item.groups?.name || ''
           }
         }));
       } catch (error) {
