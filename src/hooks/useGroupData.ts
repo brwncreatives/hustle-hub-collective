@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface GroupData {
-  name: string | null;
+  groups: {
+    name: string;
+  };
 }
 
 export const useGroupData = (userId: string | undefined) => {

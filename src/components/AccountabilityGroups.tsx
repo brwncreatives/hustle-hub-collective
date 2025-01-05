@@ -42,7 +42,17 @@ const AccountabilityGroups = () => {
         throw error;
       }
 
-      return (groups || []) as GroupMemberResponse[];
+      // Transform the data to match our expected type
+      const transformedGroups = groups?.map((group: any) => ({
+        group_id: group.group_id,
+        role: group.role,
+        groups: {
+          id: group.groups.id,
+          name: group.groups.name
+        }
+      }));
+
+      return transformedGroups || [];
     },
     enabled: !!user?.id,
   });
