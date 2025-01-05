@@ -26,7 +26,7 @@ export const useGroupData = (userId: string | undefined) => {
             )
           `)
           .eq('user_id', userId)
-          .maybeSingle();
+          .single();
 
         if (error) throw error;
 

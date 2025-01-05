@@ -30,29 +30,20 @@ const AccountabilityGroups = () => {
         .select(`
           group_id,
           role,
-          groups:groups (
+          groups (
             id,
             name
           )
         `)
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .returns<GroupMemberResponse[]>();
 
       if (error) {
         console.error("Error fetching groups:", error);
         throw error;
       }
 
-      // Transform the data to match our expected type
-      const transformedGroups = groups?.map((group: any) => ({
-        group_id: group.group_id,
-        role: group.role,
-        groups: {
-          id: group.groups.id,
-          name: group.groups.name
-        }
-      }));
-
-      return transformedGroups || [];
+      return groups || [];
     },
     enabled: !!user?.id,
   });
