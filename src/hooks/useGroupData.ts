@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface GroupData {
   groups: {
     name: string;
-  };
+  } | null;
 }
 
 export const useGroupData = (userId: string | undefined) => {
@@ -28,13 +28,13 @@ export const useGroupData = (userId: string | undefined) => {
           .eq('user_id', userId)
           .maybeSingle();
 
-        if (error) throw error;
-
-        if (groupData?.groups) {
-          setGroupName(groupData.groups.name || "");
-        } else {
-          setGroupName("");
+        if (error) {
+          console.error('Error fetching group data:', error);
+          throw error;
         }
+
+        // Safely access the nested name property
+        setGroupName(groupData?.groups?.name || "");
       } catch (error) {
         console.error('Error fetching group data:', error);
         setGroupName("");
