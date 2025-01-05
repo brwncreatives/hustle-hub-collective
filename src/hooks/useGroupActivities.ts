@@ -25,6 +25,8 @@ export const useGroupActivities = (userId: string | undefined) => {
 
         if (!profiles) {
           console.error("No profiles found");
+          setActivities([]);
+          setLoading(false);
           return;
         }
 
@@ -60,19 +62,21 @@ export const useGroupActivities = (userId: string | undefined) => {
           completedTasks.forEach(task => {
             if (task.goals) {
               const profile = profileMap.get(task.goals.user_id);
-              const userName = formatUserName(profile);
-              
-              allActivities.push({
-                id: `task-${task.id}`,
-                type: 'complete_task',
-                userId: task.goals.user_id,
-                userName,
-                timestamp: task.updated_at,
-                data: {
-                  taskTitle: task.title,
-                  goalTitle: task.goals.title
-                }
-              });
+              if (profile) {
+                const userName = formatUserName(profile);
+                
+                allActivities.push({
+                  id: `task-${task.id}`,
+                  type: 'complete_task',
+                  userId: task.goals.user_id,
+                  userName,
+                  timestamp: task.updated_at,
+                  data: {
+                    taskTitle: task.title,
+                    goalTitle: task.goals.title
+                  }
+                });
+              }
             }
           });
         }
@@ -80,18 +84,20 @@ export const useGroupActivities = (userId: string | undefined) => {
         if (newGoals) {
           newGoals.forEach(goal => {
             const profile = profileMap.get(goal.user_id);
-            const userName = formatUserName(profile);
-            
-            allActivities.push({
-              id: `goal-${goal.id}`,
-              type: 'add_goal',
-              userId: goal.user_id,
-              userName,
-              timestamp: goal.created_at,
-              data: {
-                goalTitle: goal.title
-              }
-            });
+            if (profile) {
+              const userName = formatUserName(profile);
+              
+              allActivities.push({
+                id: `goal-${goal.id}`,
+                type: 'add_goal',
+                userId: goal.user_id,
+                userName,
+                timestamp: goal.created_at,
+                data: {
+                  goalTitle: goal.title
+                }
+              });
+            }
           });
         }
 

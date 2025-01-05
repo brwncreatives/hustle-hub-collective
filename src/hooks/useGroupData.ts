@@ -43,7 +43,7 @@ export const useGroupData = (userId: string | undefined) => {
         return [];
       }
 
-      return (data || []).map((item): GroupMember => ({
+      return (data || []).map((item: any): GroupMember => ({
         group_id: item.group_id,
         role: item.role,
         groups: {
