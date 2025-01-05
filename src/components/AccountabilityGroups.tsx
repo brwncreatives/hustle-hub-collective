@@ -52,9 +52,11 @@ const AccountabilityGroups = () => {
           return [];
         }
 
-        // Filter out any null groups and transform the data
+        // Transform and validate the data
         return (data || [])
-          .filter(item => item.groups) // Remove any items with null groups
+          .filter((item): item is { group_id: string; role: string; groups: Group } => {
+            return Boolean(item && item.groups && typeof item.groups === 'object');
+          })
           .map(item => ({
             group_id: item.group_id,
             role: item.role,
@@ -62,7 +64,7 @@ const AccountabilityGroups = () => {
               id: item.groups.id,
               name: item.groups.name
             }
-          })) as GroupMember[];
+          }));
       } catch (error) {
         console.error("Error in groups query:", error);
         toast({
