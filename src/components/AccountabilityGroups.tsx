@@ -21,6 +21,7 @@ const AccountabilityGroups = () => {
   const { data: memberGroups, isLoading } = useQuery({
     queryKey: ["memberGroups", user?.id],
     queryFn: async () => {
+      console.log("Fetching groups for user:", user?.id);
       const { data, error } = await supabase
         .from("group_members")
         .select(`
@@ -34,16 +35,18 @@ const AccountabilityGroups = () => {
         .eq("user_id", user?.id);
 
       if (error) {
+        console.error("Error fetching groups:", error);
         throw error;
       }
 
+      console.log("Fetched groups:", data);
       return data as unknown as GroupMemberResponse[];
     },
     enabled: !!user?.id,
   });
 
   const handleGroupClick = (groupId: string) => {
-    navigate(`/manage-group/${groupId}`);
+    navigate(`/groups/${groupId}`);
   };
 
   if (isLoading) {
@@ -59,6 +62,11 @@ const AccountabilityGroups = () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {memberGroups?.length === 0 && (
+          <p className="text-muted-foreground text-center py-4">
+            You haven't joined any groups yet.
+          </p>
+        )}
         {memberGroups?.map((memberGroup) => (
           <div
             key={memberGroup.group_id}
