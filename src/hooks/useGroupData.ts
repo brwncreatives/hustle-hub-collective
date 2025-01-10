@@ -43,16 +43,14 @@ export const useGroupData = (userId: string | undefined) => {
         }
 
         // Transform the data to match the GroupData interface
-        const transformedData = (data || []).map((item: any): GroupData => {
-          return {
-            group_id: item.group_id,
-            role: item.role,
-            groups: {
-              id: item.groups?.id || '',
-              name: item.groups?.name || ''
-            }
-          };
-        });
+        const transformedData = (data || []).map((item: any): GroupData => ({
+          group_id: item.group_id,
+          role: item.role,
+          groups: {
+            id: item.groups?.id || '',
+            name: item.groups?.name || ''
+          }
+        }));
 
         return transformedData;
       } catch (error) {
