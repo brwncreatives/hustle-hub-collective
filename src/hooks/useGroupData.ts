@@ -30,7 +30,8 @@ export const useGroupData = (userId: string | undefined) => {
               name
             )
           `)
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .single();
 
         if (error) {
           console.error("Error fetching groups:", error);
@@ -43,14 +44,14 @@ export const useGroupData = (userId: string | undefined) => {
         }
 
         // Transform the data to match the GroupData interface
-        const transformedData = (data || []).map((item: any): GroupData => ({
-          group_id: item.group_id,
-          role: item.role,
+        const transformedData: GroupData[] = data ? [{
+          group_id: data.group_id,
+          role: data.role,
           groups: {
-            id: item.groups?.id || '',
-            name: item.groups?.name || ''
+            id: data.groups?.id || '',
+            name: data.groups?.name || ''
           }
-        }));
+        }] : [];
 
         return transformedData;
       } catch (error) {
@@ -65,7 +66,7 @@ export const useGroupData = (userId: string | undefined) => {
     },
     enabled: !!userId,
     retry: 1,
-    staleTime: 30000, // Cache data for 30 seconds
-    refetchOnWindowFocus: false, // Prevent unnecessary refetches
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
   });
 };
