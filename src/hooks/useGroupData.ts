@@ -19,38 +19,59 @@ export const useGroupData = (userId: string | undefined) => {
     queryFn: async () => {
       if (!userId) return [];
 
-      const { data, error } = await supabase
-        .from('group_members')
-        .select(`
-          group_id,
-          role,
-          groups:group_id (
-            id,
-            name
-          )
-        `)
-        .eq('user_id', userId);
+      try {
+        const { data, error } = await supabase
+          .from('group_members')
+          .select(`
+            group_id,
+            role,
+            groups:group_id (
+              id,
+              name
+            )
+          `)
+          .eq('user_id', userId)
+          .throwOnError();
 
-      if (error) {
-        console.error("Error fetching groups:", error);
+        if (error) {
+          console.error("Error fetching groups:", error);
+          toast({
+            title: "Error",
+            description: "Failed to fetch your groups. Please try again.",
+            variant: "destructive",
+          });
+          throw error;
+        }
+
+        // Transform the data to match the GroupData interface
+        const transformedData = (data || []).map((item): GroupData => {
+          // Ensure we have a valid groups object
+          const groupData = item.groups && typeof item.groups === 'object' ? item.groups : { id: '', name: '' };
+          
+          return {
+            group_id: item.group_id,
+            role: item.role,
+            groups: {
+              id: groupData.id || '',
+              name: groupData.name || ''
+            }
+          };
+        });
+
+        return transformedData;
+      } catch (error) {
+        console.error("Error in useGroupData:", error);
         toast({
           title: "Error",
-          description: "Failed to fetch your groups. Please try again.",
+          description: "An unexpected error occurred while fetching groups.",
           variant: "destructive",
         });
         throw error;
       }
-
-      // Transform the data to match the GroupData interface
-      const transformedData = (data || []).map((item): GroupData => ({
-        group_id: item.group_id,
-        role: item.role,
-        groups: item.groups[0] || { id: '', name: '' } // Access first element of the array
-      }));
-
-      return transformedData;
     },
     enabled: !!userId,
     retry: 1,
+    staleTime: 30000, // Cache data for 30 seconds
+    refetchOnWindowFocus: false, // Prevent unnecessary refetches
   });
 };
