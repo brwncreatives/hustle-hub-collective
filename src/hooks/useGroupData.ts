@@ -19,17 +19,18 @@ export const useGroupData = (userId: string | undefined) => {
     queryFn: async () => {
       if (!userId) return [];
 
-      const { data, error } = await supabase
+      const { data: groupMembers, error } = await supabase
         .from('group_members')
         .select(`
           group_id,
           role,
-          groups:groups (
+          groups!inner (
             id,
             name
           )
         `)
-        .eq('user_id', userId);
+        .eq('user_id', userId)
+        .throwOnError();
 
       if (error) {
         console.error("Error fetching groups:", error);
@@ -41,7 +42,15 @@ export const useGroupData = (userId: string | undefined) => {
         throw error;
       }
 
-      return (data || []) as GroupData[];
+      // Ensure the data matches the GroupData interface
+      return (groupMembers || []).map((member): GroupData => ({
+        group_id: member.group_id,
+        role: member.role,
+        groups: {
+          id: member.groups.id,
+          name: member.groups.name
+        }
+      }));
     },
     enabled: !!userId,
     retry: 1,
