@@ -37,14 +37,14 @@ export const useGroupData = (userId: string | undefined) => {
 
         console.log("Group data fetched:", data);
         
-        return (data || []).map((item: GroupData) => ({
+        return (data || []).map((item: any) => ({
           group_id: item.group_id,
           role: item.role,
           groups: {
             id: item.groups?.id || '',
             name: item.groups?.name || ''
           }
-        }));
+        })) as GroupData[];
       } catch (error) {
         console.error("Error fetching groups:", error);
         toast({
