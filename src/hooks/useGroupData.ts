@@ -30,8 +30,7 @@ export const useGroupData = (userId: string | undefined) => {
               name
             )
           `)
-          .eq('user_id', userId)
-          .throwOnError();
+          .eq('user_id', userId);
 
         if (error) {
           console.error("Error fetching groups:", error);
@@ -44,16 +43,13 @@ export const useGroupData = (userId: string | undefined) => {
         }
 
         // Transform the data to match the GroupData interface
-        const transformedData = (data || []).map((item): GroupData => {
-          // Ensure we have a valid groups object
-          const groupData = item.groups && typeof item.groups === 'object' ? item.groups : { id: '', name: '' };
-          
+        const transformedData = (data || []).map((item: any): GroupData => {
           return {
             group_id: item.group_id,
             role: item.role,
             groups: {
-              id: groupData.id || '',
-              name: groupData.name || ''
+              id: item.groups?.id || '',
+              name: item.groups?.name || ''
             }
           };
         });
