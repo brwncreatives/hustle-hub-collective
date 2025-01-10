@@ -25,13 +25,12 @@ export const useGroupData = (userId: string | undefined) => {
           .select(`
             group_id,
             role,
-            groups:group_id (
+            groups (
               id,
               name
             )
           `)
-          .eq('user_id', userId)
-          .maybeSingle();
+          .eq('user_id', userId);
 
         if (error) {
           console.error("Error fetching groups:", error);
@@ -43,17 +42,15 @@ export const useGroupData = (userId: string | undefined) => {
           throw error;
         }
 
-        if (!data) return [];
-
         // Transform the data to match the GroupData interface
-        const transformedData: GroupData[] = [{
-          group_id: data.group_id,
-          role: data.role,
+        const transformedData: GroupData[] = data?.map(item => ({
+          group_id: item.group_id,
+          role: item.role,
           groups: {
-            id: data.groups?.id || '',
-            name: data.groups?.name || ''
+            id: item.groups?.id || '',
+            name: item.groups?.name || ''
           }
-        }];
+        })) || [];
 
         return transformedData;
       } catch (error) {
