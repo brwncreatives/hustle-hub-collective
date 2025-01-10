@@ -25,7 +25,7 @@ export const useGroupData = (userId: string | undefined) => {
           .select(`
             group_id,
             role,
-            groups (
+            groups:group_id (
               id,
               name
             )
