@@ -19,42 +19,31 @@ export const useGroupData = (userId: string | undefined) => {
     queryFn: async () => {
       if (!userId) return [];
 
-      try {
-        const { data, error } = await supabase
-          .from('group_members')
-          .select(`
-            group_id,
-            role,
-            groups:group_id (
-              id,
-              name
-            )
-          `)
-          .eq('user_id', userId)
-          .throwOnError();
+      const { data, error } = await supabase
+        .from('group_members')
+        .select(`
+          group_id,
+          role,
+          groups:group_id (
+            id,
+            name
+          )
+        `)
+        .eq('user_id', userId);
 
-        if (error) throw error;
-
-        console.log("Group data fetched:", data);
-        
-        return (data || []).map((item: any) => ({
-          group_id: item.group_id,
-          role: item.role,
-          groups: {
-            id: item.groups?.id || '',
-            name: item.groups?.name || ''
-          }
-        })) as GroupData[];
-      } catch (error) {
+      if (error) {
         console.error("Error fetching groups:", error);
         toast({
           title: "Error",
           description: "Failed to fetch your groups. Please try again.",
           variant: "destructive",
         });
-        return [];
+        throw error;
       }
+
+      return (data || []) as GroupData[];
     },
     enabled: !!userId,
+    retry: 1,
   });
 };
