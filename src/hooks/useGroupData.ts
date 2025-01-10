@@ -45,10 +45,7 @@ export const useGroupData = (userId: string | undefined) => {
       const transformedData = (data || []).map((item): GroupData => ({
         group_id: item.group_id,
         role: item.role,
-        groups: {
-          id: item.groups.id,
-          name: item.groups.name
-        }
+        groups: item.groups[0] || { id: '', name: '' } // Access first element of the array
       }));
 
       return transformedData;
