@@ -31,7 +31,7 @@ export const useGroupData = (userId: string | undefined) => {
             )
           `)
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error("Error fetching groups:", error);
@@ -43,15 +43,17 @@ export const useGroupData = (userId: string | undefined) => {
           throw error;
         }
 
+        if (!data) return [];
+
         // Transform the data to match the GroupData interface
-        const transformedData: GroupData[] = data ? [{
+        const transformedData: GroupData[] = [{
           group_id: data.group_id,
           role: data.role,
           groups: {
             id: data.groups?.id || '',
             name: data.groups?.name || ''
           }
-        }] : [];
+        }];
 
         return transformedData;
       } catch (error) {
