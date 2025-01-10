@@ -2,6 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+interface GroupData {
+  group_id: string;
+  role: string;
+  groups: {
+    id: string;
+    name: string;
+  };
+}
+
 export const useGroupData = (userId: string | undefined) => {
   const { toast } = useToast();
 
@@ -28,7 +37,7 @@ export const useGroupData = (userId: string | undefined) => {
 
         console.log("Group data fetched:", data);
         
-        return (data || []).map((item) => ({
+        return (data || []).map((item: GroupData) => ({
           group_id: item.group_id,
           role: item.role,
           groups: {
