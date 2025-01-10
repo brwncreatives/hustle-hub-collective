@@ -46,8 +46,8 @@ export const useGroupData = (userId: string | undefined) => {
         group_id: item.group_id,
         role: item.role,
         groups: {
-          id: item.groups?.id || '',
-          name: item.groups?.name || ''
+          id: item.groups.id,
+          name: item.groups.name
         }
       }));
 
