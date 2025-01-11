@@ -61,6 +61,21 @@ export const TaskList = ({ goalId }: TaskListProps) => {
     }));
   };
 
+  const handleCollapsibleChange = (open: boolean) => {
+    // Store the current scroll position
+    const scrollPosition = window.scrollY;
+    
+    setIsOpen(open);
+    
+    // Use requestAnimationFrame to restore scroll position after the state update
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: scrollPosition,
+        behavior: 'instant'
+      });
+    });
+  };
+
   if (tasks.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-4">
@@ -96,7 +111,7 @@ export const TaskList = ({ goalId }: TaskListProps) => {
       />
 
       {/* Other Weeks - Collapsible */}
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <Collapsible open={isOpen} onOpenChange={handleCollapsibleChange}>
         <CollapsibleTrigger asChild>
           <Button variant="ghost" size="sm" className="flex items-center gap-1 w-full justify-between">
             <span>Other weeks</span>
