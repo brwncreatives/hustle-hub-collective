@@ -24,7 +24,7 @@ export const useGroupData = (userId: string | undefined) => {
         .select(`
           group_id,
           role,
-          groups!inner (
+          groups (
             id,
             name
           )
@@ -42,8 +42,8 @@ export const useGroupData = (userId: string | undefined) => {
         throw error;
       }
 
-      // Ensure the data matches the GroupData interface
-      return (groupMembers || []).map((member): GroupData => ({
+      // Transform the data to match the GroupData interface
+      return (groupMembers || []).map((member: any): GroupData => ({
         group_id: member.group_id,
         role: member.role,
         groups: {
