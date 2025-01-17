@@ -19,20 +19,41 @@ export const useGroupData = (userId: string | undefined) => {
     queryFn: async () => {
       if (!userId) return [];
 
-      const { data: groupMembers, error } = await supabase
-        .from('group_members')
-        .select(`
-          group_id,
-          role,
-          groups:group_id (
-            id,
-            name
-          )
-        `)
-        .eq('user_id', userId)
-        .throwOnError();
+      try {
+        // First, get the user's group memberships
+        const { data: memberships, error: membershipError } = await supabase
+          .from('group_members')
+          .select('group_id, role')
+          .eq('user_id', userId);
 
-      if (error) {
+        if (membershipError) throw membershipError;
+
+        if (!memberships?.length) return [];
+
+        // Then, get the group details for those memberships
+        const groupIds = memberships.map(m => m.group_id);
+        const { data: groups, error: groupsError } = await supabase
+          .from('groups')
+          .select('id, name')
+          .in('id', groupIds);
+
+        if (groupsError) throw groupsError;
+
+        // Combine the data to match the GroupData interface
+        const groupData: GroupData[] = memberships.map(membership => {
+          const group = groups?.find(g => g.id === membership.group_id);
+          return {
+            group_id: membership.group_id,
+            role: membership.role,
+            groups: {
+              id: group?.id || membership.group_id,
+              name: group?.name || 'Unknown Group'
+            }
+          };
+        });
+
+        return groupData;
+      } catch (error: any) {
         console.error("Error fetching groups:", error);
         toast({
           title: "Error",
@@ -41,16 +62,6 @@ export const useGroupData = (userId: string | undefined) => {
         });
         throw error;
       }
-
-      // Transform the data to match the GroupData interface
-      return (groupMembers || []).map((member: any): GroupData => ({
-        group_id: member.group_id,
-        role: member.role,
-        groups: {
-          id: member.groups.id,
-          name: member.groups.name
-        }
-      }));
     },
     enabled: !!userId,
     retry: 1,
