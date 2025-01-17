@@ -20,41 +20,33 @@ export const useGroupData = (userId: string | undefined) => {
       if (!userId) return [];
 
       try {
-        // First, get the user's group memberships
-        const { data: memberships, error: membershipError } = await supabase
+        const { data: memberships, error } = await supabase
           .from('group_members')
-          .select('group_id, role')
+          .select(`
+            group_id,
+            role,
+            groups:groups(id, name)
+          `)
           .eq('user_id', userId);
 
-        if (membershipError) throw membershipError;
+        if (error) {
+          console.error("Error fetching group memberships:", error);
+          throw error;
+        }
 
-        if (!memberships?.length) return [];
-
-        // Then, get the group details for those memberships
-        const groupIds = memberships.map(m => m.group_id);
-        const { data: groups, error: groupsError } = await supabase
-          .from('groups')
-          .select('id, name')
-          .in('id', groupIds);
-
-        if (groupsError) throw groupsError;
-
-        // Combine the data to match the GroupData interface
-        const groupData: GroupData[] = memberships.map(membership => {
-          const group = groups?.find(g => g.id === membership.group_id);
-          return {
-            group_id: membership.group_id,
-            role: membership.role,
-            groups: {
-              id: group?.id || membership.group_id,
-              name: group?.name || 'Unknown Group'
-            }
-          };
-        });
+        // Transform the data to match the GroupData interface
+        const groupData: GroupData[] = memberships?.map(membership => ({
+          group_id: membership.group_id,
+          role: membership.role,
+          groups: {
+            id: membership.groups?.id || membership.group_id,
+            name: membership.groups?.name || 'Unknown Group'
+          }
+        })) || [];
 
         return groupData;
       } catch (error: any) {
-        console.error("Error fetching groups:", error);
+        console.error("Error in useGroupData:", error);
         toast({
           title: "Error",
           description: "Failed to fetch your groups. Please try again.",
